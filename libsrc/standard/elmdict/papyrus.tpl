@@ -40,7 +40,7 @@
 (60xx,0010) VERS="PA3"	VR="US"   VM="1"	Owner="PAPYRUS 3.0"	Keyword="OverlayRows"		Name="Overlay Rows"
 (60xx,0011) VERS="PA3"	VR="US"   VM="1"	Owner="PAPYRUS 3.0"	Keyword="OverlayColumns"	Name="Overlay Columns"
 (60xx,0040) VERS="PA3"	VR="LO"   VM="1"	Owner="PAPYRUS 3.0"	Keyword="OverlayType"		Name="Overlay Type"
-(60xx,0050) VERS="PA3"	VR="US"   VM="1-n	Owner="PAPYRUS 3.0"	Keyword="OverlayOrigin"		Name="Overlay Origin"
+(60xx,0050) VERS="PA3"	VR="US"   VM="1-n"	Owner="PAPYRUS 3.0"	Keyword="OverlayOrigin"		Name="Overlay Origin"
 (60xx,0060) VERS="PA3"	VR="LO"   VM="1"	Owner="PAPYRUS 3.0"	Keyword="Editable"		Name="Editable"
 (60xx,0070) VERS="PA3"	VR="LO"   VM="1"	Owner="PAPYRUS 3.0"	Keyword="OverlayFont"		Name="Overlay Font"
 (60xx,0072) VERS="PA3"	VR="LO"   VM="1"	Owner="PAPYRUS 3.0"	Keyword="OverlayStyle"		Name="Overlay Style"
