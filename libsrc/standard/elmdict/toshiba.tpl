@@ -168,7 +168,7 @@
 (7079,0043) VERS="TSH"	VR="SH"   VM="1"	Owner="TOSHIBA_MEC_XA3"	Keyword="?"		Name="?"
 (7079,0044) VERS="TSH"	VR="US"   VM="1"	Owner="TOSHIBA_MEC_XA3"	Keyword="?"		Name="?"
 (7079,0045) VERS="TSH"	VR="SH"   VM="1"	Owner="TOSHIBA_MEC_XA3"	Keyword="?"		Name="?"
-(7079,0046) VERS="TSH"	VR="SS"   VM="1"	Owner="TOSHIBA_MEC_XA3"	Keyword="?"		Name="?
+(7079,0046) VERS="TSH"	VR="SS"   VM="1"	Owner="TOSHIBA_MEC_XA3"	Keyword="?"		Name="?"
 (7079,0047) VERS="TSH"	VR="SS"   VM="18"	Owner="TOSHIBA_MEC_XA3"	Keyword="?"		Name="?"
 (7079,0048) VERS="TSH"	VR="US"   VM="12"	Owner="TOSHIBA_MEC_XA3"	Keyword="?"		Name="?"
 (7079,0049) VERS="TSH"	VR="US"   VM="3"	Owner="TOSHIBA_MEC_XA3"	Keyword="?"		Name="?"
