@@ -1,0 +1,30 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = ge9800dc.cc ge9800conv.cc ge9800mpln.cc \
+		 ge9800mmsc.cc ge9800mdt.cc \
+		 ge9800dmp.cc ge9800dmpf.cc \
+		 ge9800hdrc.cc ge9800.cc
+
+OBJS =   ge9800dc.o  ge9800conv.o  ge9800mpln.o  \
+		 ge9800mmsc.o  ge9800mdt.o  \
+		 ge9800dmp.o  ge9800dmpf.o  \
+		 ge9800hdrc.o  ge9800.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdge9800.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(ge9800,dconvert)
+
+ProjectConvertTemplate(ge9800hdrp.h,ge9800,convert,prefix=GE9800_ role=headerpart)
+ProjectConvertTemplate(ge9800hdrw.h,ge9800,convert,prefix=GE9800_ role=wholeheader)
+ProjectConvertTemplate(ge9800hdrc.h,ge9800,convert,prefix=GE9800_ role=constructheader)
+ProjectConvertTemplate(ge9800conv.h,ge9800,convert,prefix=GE9800_ role=dicom)
+ProjectConvertTemplate(ge9800dmpf.h,ge9800,convert,prefix=GE9800_ role=dump)
+
+ge9800dmpf.o: ge9800dmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) ge9800dmpf.cc
+
+DependCCTarget()
+

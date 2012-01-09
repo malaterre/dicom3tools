@@ -1,0 +1,197 @@
+.TH DCDIRDMP 1 "1 May 2011" "DICOM PS3" "DICOM PS3 - Describe DICOMDIR content"
+.SH NAME
+dcdirdmp \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Describe DICOMDIR content
+.SH SYNOPSIS
+.HP 10
+.B dcdirdmp
+[
+.B \-v|verbose|vv|veryverbose
+]
+[
+.B \-showrecordinfo
+]
+[
+.B \-description
+]
+[
+.B \-p|paths
+]
+[
+.B \-filename
+]
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B dcdirdmp
+reads the named dicom input file and interprets it as a DICOMDIR file, that
+is a DICOM file containing an instance of the Basic Directory IOD.
+.LP
+If the file contains a valid instance of the directory, the hierarchical
+record structure is traversed and displayed in a depth first manner. The
+default output displays selected attribute values for recognized types
+of directory record, including the Referenced File ID. The verbose options
+increase the amount of information dumped.
+.LP
+Note that directory record offset values within attributes are in bytes
+from the start of the file (including meta-information header and
+pre-amble) and these point to the beginning of the Item delimiter that
+introduces each item in the directory record sequence. The offset values
+displayed in the verbose output for the first attribute of each sequence
+item will therefore be 8 bytes greater, as the Item delimiter itself
+is not displayed.
+.SH OPTIONS
+The description and verbose output go to standard error.
+.LP
+Binary attributes are written in hexadecimal with a preceding
+"0x". Numeric string attributes are written in decimal. Attribute values
+are displayed in hexadecimal or string format as determined by the value representation.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-v|verbose
+.RS
+Display all attributes in each directory record.
+.RE
+.TP
+.B \-vv|veryverbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading and once read.
+.RE
+.TP
+.B \-showrecordinfo
+.RS
+Display byte offset with each directory record entry, in hexadecimal.
+.RE
+.TP
+.B \-description
+.RS
+Display the Study and Series Description attribute values.
+.RE
+.TP
+.B \-p|paths
+.RS
+Show Unix style path information for each referenced file only (suppresses normal output).
+Used, for example, to feed paths as command line arguments to some other utility.
+.RE
+.TP
+.B \-filename
+.RS
+Show the name of the file supplied in the arguments; a hyphen will be reported if no filename was supplied.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcdirdmp DICOMDIR
+.RE
+PATIENT SMITH^^^^ 1634-94
+.RE
+        STUDY 1  19960101 113013 
+.RE
+                VISIT
+.RE
+                STUDY COMPONENT XA ?
+.RE
+                SERIES 1 XA
+.RE
+                        IMAGE 2
+.RE
+                         -> XA000002
+.RE
+
+.RE
+% dcdirdmp -description DICOMDIR
+.RE
+PATIENT Jones^Thomas 3648263
+.RE
+        STUDY 1  20110101 103425 CT Chest/Abdo/Pelvis 
+.RE
+                SERIES 1 CT Portal Venous Phase
+.RE
+                        IMAGE 1
+.RE
+                         -> DICOM\\IM1
+.RE
+
+.RE
+% dcdirdmp -v DICOMDIR
+.RE
+PATIENT SMITH^^^^ 1634-94
+.RE
+(0x0004,0x1400) UL Next Directory Record Offset ...
+.RE
+ ...
+.RE
+(0x0010,0x0010) PN Patient's Name VR=<PN> ... 
+.RE
+ ...
+.RE
+(0x0010,0x0020) LO Patient's ID ... 
+.RE
+(0x0010,0x0030) DA Patient's Birth Date ...
+.RE
+(0x0010,0x0040) CS Patient's Sex  ...
+.RE
+        STUDY 1  19960101 113013 
+.RE
+        (0x0004,0x1400) UL Next Directory Record Offset ...
+.RE
+ ...
+.RE
+        (0x0008,0x0050) SH Accession Number ...
+.RE
+...
+.RE
+\ 
+.RE
+% dcdirdmp -vv dicomdir.
+.RE
+******** While reading ... ********
+.RE
+@0x00000084,0x00000000 of 0xffffffff: (0x0002,0x0000) ...
+.RE
+ ...
+.RE
+RootDirectoryFirstRecord = 0x190
+.RE
+RootDirectoryLastRecord = 0x190
+.RE
+Number of records = 7
+.RE
+Offset = 0x190
+.RE
+        @0x00000198: (0x0004,0x1400) UL Next Dir Record ... 
+.RE
+...
+.RE
+Offset = 0x2a4
+.RE
+        @0x000002ac: (0x0004,0x1400) UL Next Dir Record ...
+.RE
+ ...
+.RE
+PATIENT 1634-94-1 1634-94
+.RE
+@0x00000198: (0x0004,0x1400) UL Next Dir Record Offset ...
+.RE
+ ...
+.RE
+@0x00000268: (0x0010,0x0010) PN Patient's Name ...
+.RE
+ ...
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcdump(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2011. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP
+MRDR not yet handled properly.

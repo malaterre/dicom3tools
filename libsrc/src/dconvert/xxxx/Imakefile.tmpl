@@ -1,0 +1,30 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = xxxxdc.cc xxxxconv.cc xxxxmpln.cc \
+		 xxxxmmsc.cc xxxxmdt.cc \
+		 xxxxdmp.cc xxxxdmpf.cc \
+		 xxxxhdrc.cc xxxx.cc
+
+OBJS = 		 xxxxdc.o  xxxxconv.o  xxxxmpln.o  \
+		 xxxxmmsc.o  xxxxmdt.o  \
+		 xxxxdmp.o  xxxxdmpf.o  \
+		 xxxxhdrc.o  xxxx.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdxxxx.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(xxxx,dconvert)
+
+ProjectConvertTemplate(xxxxhdrp.h,xxxx,convert,prefix=XXXX_ role=headerpart)
+ProjectConvertTemplate(xxxxhdrw.h,xxxx,convert,prefix=XXXX_ role=wholeheader)
+ProjectConvertTemplate(xxxxhdrc.h,xxxx,convert,prefix=XXXX_ role=constructheader)
+ProjectConvertTemplate(xxxxconv.h,xxxx,convert,prefix=XXXX_ role=dicom)
+ProjectConvertTemplate(xxxxdmpf.h,xxxx,convert,prefix=XXXX_ role=dump)
+
+xxxxdmpf.o: xxxxdmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) xxxxdmpf.cc
+
+DependCCTarget()
+

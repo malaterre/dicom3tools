@@ -1,0 +1,1737 @@
+#include <fstream.h>
+
+#include "attrmxls.h"
+#include "attrtype.h"
+#include "attrseq.h"
+#include "attrothr.h"
+#include "attrval.h"
+#include "elmdict.h"
+#include "elmconst.h"
+#include "sopclu.h"
+#include "sopcli.h"
+#include "transynu.h"
+#include "uidgen.h"
+#include "mesgtext.h"
+#include "dcopt.h"
+
+// In a lot of places, there is an assumption that sequences and items will
+// be written delimited, ie. with undefined lengths ... this will break if
+// this changes (write() in attrseq.cc) :(
+
+// The icon image stuff uses a non-pixel data OB, and hence there is no
+// means of taking into account CP 14 setOutputEncoding stuff ... this
+// shouldn't be a problem as the TS is supposed to be explicit, but it
+// does mean a loss of generality :(
+
+// Writing this highlighted the fact the getVL() for sequences is not
+// working and reviseVL() was never implemented :(
+
+// The approach to making the icon image is make everything 8 bit, and
+// use the first "plane" as is regardless of whether it is color or indexed
+// (or even worse, interleaved) :( ... this will work really well for
+// MONOCHROME2 images where BitsStored is not much bigger than the real
+// maximum and the PixelRepresentaion is unsigned !
+
+static ElementDictionary staticDictionary;
+
+static bool
+errorIfStringValuesDontMatch(const char *dirValue,
+	AttributeList &list,Tag valueTag,
+	const char *valueDescription,
+	const char *uniqueKeyDescription,
+	const char *uniqueKeyValue,
+	const char *filename,TextOutputStream &log)
+{
+	Assert(filename);
+	Assert(dirValue);
+	Assert(valueDescription);
+	Assert(uniqueKeyDescription);
+	char *listValue=AttributeValue(list[valueTag],"");
+	Assert(listValue);
+
+	bool result;
+	if (strcmp(dirValue,listValue) != 0) {
+		log << filename << ": "<< "Error - Different " << valueDescription << " in instance <"
+		    << (listValue ? listValue : "")
+		    << "> for existing " << uniqueKeyDescription << " <"
+		    << (uniqueKeyValue ? uniqueKeyValue : "")
+		    << "> already entered in directory as " << valueDescription << " <"
+		    << (dirValue ? dirValue : "")
+		    << "> - using original value and assuming they are the same entity"
+		    << endl;
+		result=false;
+	}
+	else {
+		result=true;
+	}
+	if (listValue) delete[] listValue;
+	return result;
+}
+
+static Attribute *
+isAttributePresentElseError(AttributeList &list,Tag tag,const char *label,const char *filename,TextOutputStream &log)
+{
+	Assert(label);
+	Assert(filename);
+	Attribute *a=list[tag];
+	if (a)
+		return a;
+	else {
+		log << filename << ": "
+		    << EMsgDC(MissingAttribute)
+		    << " - " << label
+		    << endl;
+		return 0;
+	}
+}
+
+static Attribute *
+isAttributePresentElseNull(AttributeList &list,Tag tag)
+{
+	return list[tag];
+}
+
+static Attribute *
+isValuePresentElseError(AttributeList &list,Tag tag,const char *label,const char *filename,TextOutputStream &log)
+{
+	Assert(label);
+	Assert(filename);
+	Attribute *a=list[tag];
+	if (a && a->getVM())
+		return a;
+	else {
+		log << filename << ": " 
+		    << EMsgDC(MissingAttribute)
+		    << " - " << label
+		    << endl;
+		return 0;
+	}
+}
+
+static const char *
+getStringValueElseError(AttributeList &list,Tag tag,const char *label,const char *filename,TextOutputStream &log)
+{
+	Attribute *a=isValuePresentElseError(list,tag,label,filename,log);
+	if (a) {
+		return AttributeValue(a);	//SC 2.0.1 didn't like it as ? arg :(
+	}
+	else {
+		return "";
+	}
+}
+
+static const char *
+getStringValueElseZeroLength(AttributeList &list,Tag tag)
+{
+	Attribute *a=list[tag];
+	if (a && a->getVM() > 0) {
+		return AttributeValue(a);	//SC 2.0.1 didn't like it as ? arg :(
+	}
+	else {
+		return "";
+	}
+}
+
+static const char *
+getStringValueElseNull(AttributeList &list,Tag tag)
+{
+	Attribute *a=list[tag];
+	if (a && a->getVM() > 0) {
+		return AttributeValue(a);	//SC 2.0.1 didn't like it as ? arg :(
+	}
+	else {
+		return 0;
+	}
+}
+
+static Attribute *
+getCopyOfImageTypeAttributeElseNull(AttributeList &list,Tag tag)
+{
+	Attribute *attr=isAttributePresentElseNull(list,tag);
+        CodeStringAttribute *newAttr = 0;
+
+        if (attr) {
+                newAttr=new CodeStringAttribute(tag);
+                Assert(newAttr);
+                unsigned count = attr->getVM();
+                unsigned i;
+                for (i=0; i < count; ++i) {
+                        char *s;
+                        bool gotit=attr->getValue(i,s);
+                        Assert(gotit);
+                        Assert(s);      // should be "" rather than 0 if zero length
+                        newAttr->addValue(s);
+                        // should we now free s ???? :(
+                }
+        }
+        return newAttr;
+}
+
+
+static Attribute *
+getCopyOfCodeSequenceAttributeElseError(AttributeList &list,Tag tag,const char *label,const char *filename,TextOutputStream &log)
+{
+	Attribute *attr=isAttributePresentElseError(list,tag,label,filename,log);
+	SequenceAttribute *newAttr = 0;
+
+	// really would be nice to have a deep copy (clone) of any sequence attribute and its items, but for now ...
+
+	if (attr) {
+		Assert(attr->isSequence());
+		newAttr = new SequenceAttribute(tag);
+		Assert(newAttr);
+		AttributeList **items;
+		int itemCount = attr->getLists(&items);
+		AttributeList **iptr;
+		int i;
+		for (i=0,iptr=items; i<itemCount; ++i,++iptr) {
+			AttributeList *item=*iptr;
+			Assert(item);
+			AttributeList *newItem = new AttributeList();
+			Assert(newItem);
+			(*newAttr)+=newItem;
+
+			const char *codeValue=getStringValueElseError((*item),TagFromName(CodeValue),"Code Value",filename,log);
+			Assert(codeValue);
+			(*newItem)+=new ShortStringAttribute(TagFromName(CodeValue),codeValue);
+
+			const char *codingSchemeDesignator=getStringValueElseError((*item),TagFromName(CodingSchemeDesignator),"Coding Scheme Designator",filename,log);
+			Assert(codingSchemeDesignator);
+			(*newItem)+=new ShortStringAttribute(TagFromName(CodingSchemeDesignator),codingSchemeDesignator);
+
+			const char *codeMeaning=getStringValueElseError((*item),TagFromName(CodeMeaning),"Code Meaning",filename,log);
+			Assert(codeMeaning);
+			(*newItem)+=new LongStringAttribute(TagFromName(CodeMeaning),codeMeaning);
+		}
+	}
+	return newAttr;
+}
+
+
+static Attribute *
+getCopyOfReferencedImageSequenceAttribute(Attribute *attr,Tag tag,const char *label,const char *filename,TextOutputStream &log)
+{
+	SequenceAttribute *newAttr = 0;
+
+	// really would be nice to have a deep copy (clone) of any sequence attribute and its items, but for now ...
+
+	if (attr) {
+		Assert(attr->isSequence());
+		newAttr = new SequenceAttribute(tag);
+		Assert(newAttr);
+		AttributeList **items;
+		int itemCount = attr->getLists(&items);
+		AttributeList **iptr;
+		int i;
+		for (i=0,iptr=items; i<itemCount; ++i,++iptr) {
+			AttributeList *item=*iptr;
+			Assert(item);
+			AttributeList *newItem = new AttributeList();
+			Assert(newItem);
+			(*newAttr)+=newItem;
+
+			const char *referencedSOPClassUID=getStringValueElseError((*item),TagFromName(ReferencedSOPClassUID),"Referenced SOP Class UID",filename,log);
+			Assert(referencedSOPClassUID);
+			(*newItem)+=new UIStringAttribute(TagFromName(ReferencedSOPClassUID),referencedSOPClassUID);
+
+			const char *referencedSOPInstanceUID=getStringValueElseError((*item),TagFromName(ReferencedSOPInstanceUID),"Referenced SOP Instance UID",filename,log);
+			Assert(referencedSOPInstanceUID);
+			(*newItem)+=new UIStringAttribute(TagFromName(ReferencedSOPInstanceUID),referencedSOPInstanceUID);
+		}
+	}
+	return newAttr;
+}
+
+
+static Attribute *
+getCopyOfReferencedImageSequenceAttributeElseNull(AttributeList &list,Tag tag,const char *label,const char *filename,TextOutputStream &log)
+{
+	Attribute *attr=isAttributePresentElseNull(list,tag);
+	return getCopyOfReferencedImageSequenceAttribute(attr,tag,label,filename,log);
+}
+
+
+static Attribute *
+getCopyOfReferencedImageSequenceAttributeElseError(AttributeList &list,Tag tag,const char *label,const char *filename,TextOutputStream &log)
+{
+	Attribute *attr=isAttributePresentElseError(list,tag,label,filename,log);
+	return getCopyOfReferencedImageSequenceAttribute(attr,tag,label,filename,log);
+}
+
+
+static Attribute *
+getCopyOfReferencedSeriesSequenceAttributeElseError(AttributeList &list,Tag tag,const char *label,const char *filename,TextOutputStream &log)
+{
+	Attribute *attr=isAttributePresentElseError(list,tag,label,filename,log);
+	SequenceAttribute *newAttr = 0;
+
+	// really would be nice to have a deep copy (clone) of any sequence attribute and its items, but for now ...
+
+	if (attr) {
+		Assert(attr->isSequence());
+		newAttr = new SequenceAttribute(tag);
+		Assert(newAttr);
+		AttributeList **items;
+		int itemCount = attr->getLists(&items);
+		AttributeList **iptr;
+		int i;
+		for (i=0,iptr=items; i<itemCount; ++i,++iptr) {
+			AttributeList *item=*iptr;
+			Assert(item);
+			AttributeList *newItem = new AttributeList();
+			Assert(newItem);
+			(*newAttr)+=newItem;
+
+			const char *seriesInstanceUID=getStringValueElseError((*item),TagFromName(SeriesInstanceUID),"Series Instance UID",filename,log);
+			Assert(seriesInstanceUID);
+			(*newItem)+=new UIStringAttribute(TagFromName(SeriesInstanceUID),seriesInstanceUID);
+
+			// Need to turn off until nested sequence attribute length calculation feature implemented ...
+
+			//Attribute *referencedImageSequence=getCopyOfReferencedImageSequenceAttributeElseError((*item),TagFromName(ReferencedImageSequence),"Referenced Image Sequence",filename,log);
+			//Assert(referencedImageSequence);
+			//(*newItem)+=referencedImageSequence;
+		}
+	}
+	return newAttr;
+}
+
+
+static SequenceAttribute *
+makeIconImageSequence(AttributeList *srclist,const TransferSyntax *transfersyntax,Uint16 iRows=64,Uint16 iColumns=64)
+{
+	SequenceAttribute *aIconImageSequence = 0;
+
+	Assert(srclist);
+	Assert(transfersyntax);
+	Assert(!transfersyntax->isImplicitVR());	// don't support CP 14 or length calculation here
+
+	Uint16 vRows 				= AttributeValue((*srclist)[TagFromName(Rows)]);
+	Uint16 vColumns 			= AttributeValue((*srclist)[TagFromName(Columns)]);
+	Uint16 vNumberOfFrames 			= AttributeValue((*srclist)[TagFromName(NumberOfFrames)]);
+	char * vPhotometricInterpretation 	= AttributeValue((*srclist)[TagFromName(PhotometricInterpretation)]);
+	Uint16 vSamplesPerPixel 		= AttributeValue((*srclist)[TagFromName(SamplesPerPixel)]);
+	Uint16 vBitsAllocated 			= AttributeValue((*srclist)[TagFromName(BitsAllocated)]);
+	Uint16 vBitsStored 			= AttributeValue((*srclist)[TagFromName(BitsStored)]);
+	Uint16 vHighBit 			= AttributeValue((*srclist)[TagFromName(HighBit)]);
+	Uint16 vPixelRepresentation 		= AttributeValue((*srclist)[TagFromName(PixelRepresentation)],0xffff);
+	Uint16 vPlanarConfiguration 		= AttributeValue((*srclist)[TagFromName(PlanarConfiguration)],0xffff);
+
+	Attribute *aPixelData = (*srclist)[TagFromName(PixelData)];
+
+	if (vRows && vColumns && vPhotometricInterpretation
+	 && vSamplesPerPixel && vBitsAllocated && vBitsStored && vHighBit
+	 && vPixelRepresentation != 0xffff
+	 && (vSamplesPerPixel <= 1 || vPlanarConfiguration != 0xffff)) {
+
+		Uint16 downRows=vRows/iRows;
+		Uint16 downColumns=vColumns/iColumns;
+
+		Assert(downRows);	// < icon size not yet supported
+		Assert(downColumns);
+
+		SourceBase<Uint16> *source=SupplySourceFromAttribute(aPixelData).getSource();
+		Assert(source);
+
+		unsigned char *iconPixelData=new unsigned char[iRows*iColumns];
+		Assert(iconPixelData);
+
+		unsigned row=0;
+		unsigned column=0;
+		unsigned irow=0;
+		unsigned icolumn=0;
+		unsigned char *p=iconPixelData;
+		while (row < vRows && source->read()) {
+			size_t n=source->getBufferCount();
+			Assert(n);
+			const Uint16 *buffer=source->getBuffer();
+			Assert(buffer);
+			while (n-- && row < vRows) {
+				if (row%downRows == 0 && column%downColumns == 0 && irow < iRows && icolumn < iColumns) {
+					Assert(p-iconPixelData < iRows*iColumns);
+					*p++=*buffer>>(vBitsStored-8);
+					if (++icolumn >= iColumns) {
+						icolumn=0;
+						++irow;
+					}
+				}
+				buffer++;
+				if (++column >= vColumns) {
+					column=0;
+					++row;
+				}
+			}
+		}
+		Assert(p-iconPixelData == iRows*iColumns);
+		//Assert(column == 0 && row == vRows*vNumberOfFrames);
+		aIconImageSequence=new SequenceAttribute(TagFromName(IconImageSequence));
+		AttributeList *iconlist = new AttributeList;
+		Assert(iconlist);
+
+		Attribute *aIconPixelData=new OtherByteSmallNonPixelAttribute(TagFromName(PixelData));
+		Assert(aIconPixelData);
+		aIconPixelData->setValue(iconPixelData,Uint32(iRows*iColumns));
+		(*iconlist)+=aIconPixelData;
+
+		(*iconlist)+=new UnsignedShortAttribute(TagFromName(SamplesPerPixel),1);
+		(*iconlist)+=new CodeStringAttribute(TagFromName(PhotometricInterpretation),"MONOCHROME2");
+		(*iconlist)+=new UnsignedShortAttribute(TagFromName(Rows),iRows);
+		(*iconlist)+=new UnsignedShortAttribute(TagFromName(Columns),iColumns);
+		(*iconlist)+=new UnsignedShortAttribute(TagFromName(BitsAllocated),8);
+		(*iconlist)+=new UnsignedShortAttribute(TagFromName(BitsStored),8);
+		(*iconlist)+=new UnsignedShortAttribute(TagFromName(HighBit),7);
+		(*iconlist)+=new UnsignedShortAttribute(TagFromName(PixelRepresentation),0);
+
+		(*aIconImageSequence)+=iconlist;
+		// aIconImageSequence->reviseVL();	// Not yet implemented :(
+	}
+	
+	return aIconImageSequence;
+}
+
+
+static Uint32		// Taken straight from attrmxls.cc
+fixedlength(
+	const TransferSyntax *metats,const TransferSyntax *datats,Attribute *a)
+{
+	// returned the length in bytes of the fixed part of an element
+	// ie. that part other than that returned by a->getVL()
+	// obviously this is dictated by the Value Representation which
+	// in turn depends on the Transfer Syntax
+
+	Assert(a);
+
+	const TransferSyntax *ts = a->getTag().isMetaheaderGroup()
+		? metats
+		: datats;
+
+	Assert(ts);
+
+	Uint32 length=4;	// length of tag itself
+	// work out length of "value length" field
+	if (ts->isImplicitVR())
+		length+=4;
+	else if (ts->isExplicitVR()) {
+		const char *vru=a->getVR();
+		if (vru) {	// Explicit OB,OW,SQ
+			if (vru[0]=='O' && (vru[1]=='B' || vru[1]=='W')
+			 || vru[0]=='S' &&  vru[1]=='Q')
+				length+=6;
+			else
+				length+=2;
+		}
+		else
+			Assert(0);
+		length+=2;	// add length of explicit VR itself
+	}
+	else
+		Assert(0);
+	return length;
+}
+
+static bool
+addLengths(AttributeList &list,const TransferSyntax *metats,const TransferSyntax *datats)		// Derived from attrmxls.cc
+{
+	// Fixup and/or insert group lengths
+
+	// each (nnnn,0000) group length element
+	// contains the length in bytes of the rest of the group
+	// not including the length element itself
+
+	bool metaseen=false;
+	bool dothisgroup=true;
+	Uint16 doinggroup=0;
+	Uint32 length=0;
+	AttributeList lengthlist;
+	AttributeListIterator listi(list);
+	while (1) {
+		Attribute *a;
+		Tag tag;
+		if (!listi) {
+			a=listi();
+			Assert(a);
+			tag=a->getTag();
+		}
+		if (!!listi || tag.getGroup() > doinggroup) {
+			if (length && dothisgroup && doinggroup == 0x0002) {
+				lengthlist+=new UnsignedLongAttribute(Tag(doinggroup,0),length);
+			}
+			if (!!listi)
+				break;
+			else {
+				doinggroup=tag.getGroup();
+				dothisgroup=true;
+				length=0;
+			}
+		}
+		else if (tag.getGroup() == doinggroup) {
+			if (a->getVL() == 0xffffffff)
+				dothisgroup=false;
+			else
+				length+=fixedlength(metats,datats,a)+a->getVL();
+			++listi;
+		}
+		else
+			++listi;
+
+		if (tag.isMetaheaderGroup())
+			metaseen=true;
+		else
+			if (metaseen) break;
+	}
+
+	list+=(lengthlist);
+
+	return true;
+}
+
+class DirectoryRecordWriteOrder {
+	int order;
+public:
+	static const int ParentChildSibling = 1;
+	static const int ParentSiblingChild = 2;
+	static const int SiblingChildParent = 3;
+	static const int SiblingParentChild = 4;
+	static const int ChildSiblingParent = 5;
+	static const int ChildParentSibling = 6;
+
+	DirectoryRecordWriteOrder(int i) { order = i; }
+
+	int getOrder(void) { return order; }
+};
+
+class DirectoryRecordBase {
+protected:
+	DirectoryRecordBase *sibling;
+	DirectoryRecordBase *child;
+
+	AttributeList *list;
+
+	Uint32 selfoffset;
+
+	virtual TextOutputStream& writeSpecific(TextOutputStream &log) = 0;
+	virtual TextOutputStream& indentSpecific(TextOutputStream &log) = 0;
+
+public:
+	DirectoryRecordBase(DirectoryRecordBase *nextsib)
+		{
+			child=0;
+			sibling=nextsib;
+
+			list=new AttributeList();
+			(*list)+=new UnsignedLongAttribute(TagFromName(NextDirectoryRecordOffset),0);
+			(*list)+=new UnsignedShortAttribute(TagFromName(RecordInUseFlag),0xffff);
+			(*list)+=new UnsignedLongAttribute(TagFromName(LowerLevelDirectoryOffset),0);
+
+			selfoffset=0;
+		}
+
+	virtual ~DirectoryRecordBase()
+		{
+			if (child) delete child;
+			if (sibling) delete sibling;
+		}
+
+	void setChild(DirectoryRecordBase *newchild)
+		{
+			child=newchild;
+		}
+
+	TextOutputStream& write(TextOutputStream &log,const TransferSyntax *ts)
+		{
+			writeSpecific(log);
+			indentSpecific(log);
+			log << "Length = " << getLength(ts) << endl;
+			if (list) {
+				AttributeListIterator i(*list);
+				while (!i) {
+					Attribute *a=i();
+					Assert(a);
+					indentSpecific(log);
+					a->write(log,&staticDictionary,false);
+					log << endl;
+					++i;
+				}
+			}
+
+			if (child)     child->write(log,ts);
+			if (sibling) sibling->write(log,ts);
+			return log;
+		}
+
+	Uint32 getLength(const TransferSyntax *ts)	// NOT including leading Item (8) and possible trailing Item Delimitation Item (8)
+		{
+			Uint32 length=0;
+			if (list) {
+				AttributeListIterator i(*list);
+				while (!i) {
+					Attribute *a=i();
+					Assert(a);
+					length+=fixedlength(0,ts,a);
+					if (strcmp(a->getVR(),"SQ") == 0) {
+						SequenceAttribute *as=(SequenceAttribute *)a;
+						AttributeList **alists;
+						int count=as->getLists(&alists);
+						while (count--) {
+							Assert(*alists);
+							length+=8;	// Item
+							AttributeListIterator i(**alists);
+							while (!i) {
+								Attribute *a=i();
+								Assert(a);
+								Assert(strcmp(a->getVR(),"SQ") != 0);	// No nested sequences here :(
+								length+=fixedlength(0,ts,a)+a->getVL();
+								++i;
+							}
+							length+=8;	// Item Delimiter
+							++alists;
+						}
+						length+=8;		// Sequence Delimiter
+					}
+					else
+						length+=a->getVL();	// this is broken for sequences :(
+					++i;
+				}
+			}
+			return length;
+		}
+
+	void linkOffsetChild(void)
+		{
+			Attribute *aLowerLevelDirectoryOffset=(*list)[TagFromName(LowerLevelDirectoryOffset)];
+			Assert(aLowerLevelDirectoryOffset);
+			if (child) {
+				aLowerLevelDirectoryOffset->setValue(0u,(unsigned long)child->getOffset());
+				child->linkOffset();
+			}
+			else {
+				aLowerLevelDirectoryOffset->setValue(0u,(unsigned long)0);
+			}
+		}
+
+	void linkOffsetSibling(void)
+		{
+			Attribute *aNextDirectoryRecordOffset=(*list)[TagFromName(NextDirectoryRecordOffset)];
+			Assert(aNextDirectoryRecordOffset);
+			if (sibling) {
+				aNextDirectoryRecordOffset->setValue(0u,(unsigned long)sibling->getOffset());
+				sibling->linkOffset();
+			}
+			else {
+				aNextDirectoryRecordOffset->setValue(0u,(unsigned long)0);
+			}
+		}
+
+	void linkOffset(void)
+		{
+			linkOffsetChild();
+			linkOffsetSibling();
+		}
+
+	Uint32 setOffsetSelf(const TransferSyntax *ts,Uint32 startoffset,Uint32 &lastoffset)
+		{
+			selfoffset=startoffset;		// save this ... will be needed at top level to locate 1st directory record
+
+			lastoffset=startoffset;
+
+			startoffset+=8;			// Item tag and length
+			startoffset+=getLength(ts);	// Ourself
+			startoffset+=8;			// Item delimiter tag and length
+
+			return startoffset;
+		}
+
+	Uint32 setOffsetChild(const TransferSyntax *ts,Uint32 startoffset,TextOutputStream &log,bool verbose,Uint32 &lastoffset,DirectoryRecordWriteOrder order)
+		{
+			if (child) {
+				startoffset=child->setOffset(ts,startoffset,log,verbose,lastoffset,order);
+			}
+
+			return startoffset;
+		}
+
+	Uint32 setOffsetSibling(const TransferSyntax *ts,Uint32 startoffset,TextOutputStream &log,bool verbose,Uint32 &lastoffset,DirectoryRecordWriteOrder order)
+		{
+			if (sibling) {
+				startoffset=sibling->setOffset(ts,startoffset,log,verbose,lastoffset,order);
+			}
+
+			return startoffset;
+		}
+
+	Uint32 setOffset(const TransferSyntax *ts,Uint32 startoffset,TextOutputStream &log,bool verbose,Uint32 &lastoffset,DirectoryRecordWriteOrder order)
+		{
+			if (verbose) {
+				writeSpecific(log);
+				indentSpecific(log);
+				log << "Start offset = " << startoffset << endl;
+			}
+
+			if (order.getOrder() == DirectoryRecordWriteOrder::ParentChildSibling) {
+				startoffset=setOffsetSelf   (ts,startoffset,lastoffset);
+				startoffset=setOffsetChild  (ts,startoffset,log,verbose,lastoffset,order);
+				startoffset=setOffsetSibling(ts,startoffset,log,verbose,lastoffset,order);
+			}
+			else if (order.getOrder() == DirectoryRecordWriteOrder::ParentSiblingChild) {
+				startoffset=setOffsetSelf   (ts,startoffset,lastoffset);
+				startoffset=setOffsetSibling(ts,startoffset,log,verbose,lastoffset,order);
+				startoffset=setOffsetChild  (ts,startoffset,log,verbose,lastoffset,order);
+			}
+			else if (order.getOrder() == DirectoryRecordWriteOrder::SiblingChildParent) {
+				startoffset=setOffsetSibling(ts,startoffset,log,verbose,lastoffset,order);
+				startoffset=setOffsetChild  (ts,startoffset,log,verbose,lastoffset,order);
+				startoffset=setOffsetSelf   (ts,startoffset,lastoffset);
+			}
+			else if (order.getOrder() == DirectoryRecordWriteOrder::SiblingParentChild) {
+				startoffset=setOffsetSibling(ts,startoffset,log,verbose,lastoffset,order);
+				startoffset=setOffsetSelf   (ts,startoffset,lastoffset);
+				startoffset=setOffsetChild  (ts,startoffset,log,verbose,lastoffset,order);
+			}
+			else if (order.getOrder() == DirectoryRecordWriteOrder::ChildSiblingParent) {
+				startoffset=setOffsetChild  (ts,startoffset,log,verbose,lastoffset,order);
+				startoffset=setOffsetSibling(ts,startoffset,log,verbose,lastoffset,order);
+				startoffset=setOffsetSelf   (ts,startoffset,lastoffset);
+			}
+			else if (order.getOrder() == DirectoryRecordWriteOrder::ChildParentSibling) {
+				startoffset=setOffsetChild  (ts,startoffset,log,verbose,lastoffset,order);
+				startoffset=setOffsetSelf   (ts,startoffset,lastoffset);
+				startoffset=setOffsetSibling(ts,startoffset,log,verbose,lastoffset,order);
+			}
+			else {
+				Assert(0);
+			}
+
+			return startoffset;
+		}
+
+	Uint32 getOffset(void) { return selfoffset; }
+
+	void flatten(SequenceAttribute *aDirectoryRecordSequence,DirectoryRecordWriteOrder order)
+		{
+			if (order.getOrder() == DirectoryRecordWriteOrder::ParentChildSibling) {
+				(*aDirectoryRecordSequence)+=list;
+				if (child)     child->flatten(aDirectoryRecordSequence,order);
+				if (sibling) sibling->flatten(aDirectoryRecordSequence,order);
+			}
+			else if (order.getOrder() == DirectoryRecordWriteOrder::ParentSiblingChild) {
+				(*aDirectoryRecordSequence)+=list;
+				if (sibling) sibling->flatten(aDirectoryRecordSequence,order);
+				if (child)     child->flatten(aDirectoryRecordSequence,order);
+			}
+			else if (order.getOrder() == DirectoryRecordWriteOrder::SiblingChildParent) {
+				if (sibling) sibling->flatten(aDirectoryRecordSequence,order);
+				if (child)     child->flatten(aDirectoryRecordSequence,order);
+				(*aDirectoryRecordSequence)+=list;
+			}
+			else if (order.getOrder() == DirectoryRecordWriteOrder::SiblingParentChild) {
+				if (sibling) sibling->flatten(aDirectoryRecordSequence,order);
+				(*aDirectoryRecordSequence)+=list;
+				if (child)     child->flatten(aDirectoryRecordSequence,order);
+			}
+			else if (order.getOrder() == DirectoryRecordWriteOrder::ChildSiblingParent) {
+				if (child)     child->flatten(aDirectoryRecordSequence,order);
+				if (sibling) sibling->flatten(aDirectoryRecordSequence,order);
+				(*aDirectoryRecordSequence)+=list;
+			}
+			else if (order.getOrder() == DirectoryRecordWriteOrder::ChildParentSibling) {
+				if (child)     child->flatten(aDirectoryRecordSequence,order);
+				(*aDirectoryRecordSequence)+=list;
+				if (sibling) sibling->flatten(aDirectoryRecordSequence,order);
+			}
+			else {
+				Assert(0);
+			}
+		}
+};
+
+class InstanceDirectoryRecord : public DirectoryRecordBase {
+	const char *sopInstanceUID;
+	const char *sopClassUID;
+	const char *instanceNumber;
+
+	TextOutputStream& indentSpecific(TextOutputStream &log)
+		{
+			log << "\t\t\t";
+			return log;
+		}
+
+	TextOutputStream& writeSpecific(TextOutputStream &log)
+		{
+			indentSpecific(log);
+			log << "Instance "
+			    << (sopInstanceUID ? sopInstanceUID : "") << " "
+			    << (instanceNumber ? instanceNumber : "") 
+			    << endl;
+			return log;
+		}
+public:
+	InstanceDirectoryRecord(const char *uid,AttributeList *srclist,InstanceDirectoryRecord *nextsib,
+			const char *filename,const char *inputTransferSyntaxUID,
+			const TransferSyntax *outputTransferSyntax,
+			bool doicon,bool doposition,bool validatefilenamevr,TextOutputStream &log)
+		: DirectoryRecordBase(nextsib)
+		{
+			sopInstanceUID=uid;
+			Assert(sopInstanceUID);
+			(*list)+=new UIStringAttribute(TagFromName(ReferencedSOPInstanceUIDInFile),sopInstanceUID);
+
+			sopClassUID=getStringValueElseError((*srclist),TagFromName(SOPClassUID),"SOP Class UID",filename,log);
+			Assert(sopClassUID);
+			(*list)+=new UIStringAttribute(TagFromName(ReferencedSOPClassUIDInFile),sopClassUID);
+
+			Assert(inputTransferSyntaxUID);
+			(*list)+=new UIStringAttribute(TagFromName(ReferencedTransferSyntaxUIDInFile),inputTransferSyntaxUID);
+
+			const char *directoryRecordType = getDirectoryRecordTypeFromUID(sopClassUID);
+			if (!directoryRecordType) directoryRecordType="IMAGE";	// Assume image if unrecognzied SOP Class
+
+			(*list)+=new CodeStringAttribute(TagFromName(DirectoryRecordType),directoryRecordType);
+
+			{
+				Assert(filename);
+				Attribute *a=new CodeStringFileComponentAttribute(TagFromName(ReferencedFileID),filename);
+				(*list)+=a;
+				Assert(a);
+				if (validatefilenamevr) a->validateVR(log,&staticDictionary);
+			}
+
+			if (strcmp(directoryRecordType,"IMAGE") == 0) {
+				instanceNumber=getStringValueElseError((*srclist),TagFromName(InstanceNumber),"Instance Number",filename,log);
+				Assert(instanceNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(InstanceNumber),instanceNumber);
+
+				if (doicon) {
+					Attribute *aIconImageSequence = makeIconImageSequence(srclist,outputTransferSyntax);
+					if (aIconImageSequence) (*list)+=aIconImageSequence;
+				}
+
+                                // The following are not required in the IOD, but some profiles ...
+
+                                // ImageType (XABC-CD,XA1K-CD:1)
+
+			        Attribute *imageType=getCopyOfImageTypeAttributeElseNull((*srclist),TagFromName(ImageType));
+			        if (imageType) (*list)+=imageType;
+
+                                // CalibrationImage (XABC-CD,XA1K-CD:2)
+
+				const char *calibrationImage=getStringValueElseZeroLength((*srclist),TagFromName(CalibrationImage));
+				Assert(calibrationImage);
+				(*list)+=new CodeStringAttribute(TagFromName(CalibrationImage),calibrationImage);
+
+                                // ReferencedImageSequence (XABC-CD,XA1K-CD:1C if ImageType value 3 is BIPLANE A or B)
+                                // ReferencedImageSequence (CTMR:1C if present in image)
+
+			        Attribute *referencedImageSequence=getCopyOfReferencedImageSequenceAttributeElseNull((*srclist),TagFromName(ReferencedImageSequence),"Referenced Image Sequence",filename,log);
+			        if (referencedImageSequence) (*list)+=referencedImageSequence;
+
+                                // The Image Plane Module attributes are all (CTMR:1C if present in image)
+                                // (Rows and COlumns are actually 1 since always present)
+				if (doposition) {
+					// Do it safely safe in the absence of reference counting ...
+
+					Attribute *a;
+					a=(*srclist)[TagFromName(ReferencedImageSequence)];
+					if (a) { (*srclist)-=a; (*list)+=a; }
+
+					a=(*srclist)[TagFromName(ImagePositionPatient)];
+					if (a) { (*srclist)-=a; (*list)+=a; }
+
+					a=(*srclist)[TagFromName(ImageOrientationPatient)];
+					if (a) { (*srclist)-=a; (*list)+=a; }
+
+					a=(*srclist)[TagFromName(FrameOfReferenceUID)];
+					if (a) { (*srclist)-=a; (*list)+=a; }
+
+					a=(*srclist)[TagFromName(TableHeight)];
+					if (a) { (*srclist)-=a; (*list)+=a; }
+
+					a=(*srclist)[TagFromName(Rows)];
+					if (a) { (*srclist)-=a; (*list)+=a; }
+
+					a=(*srclist)[TagFromName(Columns)];
+					if (a) { (*srclist)-=a; (*list)+=a; }
+
+					a=(*srclist)[TagFromName(PixelSpacing)];
+					if (a) { (*srclist)-=a; (*list)+=a; }
+				}
+			}
+			else if (strcmp(directoryRecordType,"SR DOCUMENT") == 0) {
+				instanceNumber=getStringValueElseError((*srclist),TagFromName(InstanceNumber),"Instance Number",filename,log);
+				Assert(instanceNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(InstanceNumber),instanceNumber);
+
+				const char *completionFlag=getStringValueElseError((*srclist),TagFromName(CompletionFlag),"Completion Flag",filename,log);
+				Assert(completionFlag);
+				(*list)+=new CodeStringAttribute(TagFromName(CompletionFlag),completionFlag);
+
+				const char *verificationFlag=getStringValueElseError((*srclist),TagFromName(VerificationFlag),"Verification Flag",filename,log);
+				Assert(verificationFlag);
+				(*list)+=new CodeStringAttribute(TagFromName(VerificationFlag),verificationFlag);
+
+				if (strcmp(verificationFlag,"VERIFIED") == 0) {
+					const char *verificationDateTime=getStringValueElseError((*srclist),TagFromName(VerificationDateTime),"Verification DateTime",filename,log);
+					Assert(verificationDateTime);
+					(*list)+=new DateTimeStringAttribute(TagFromName(VerificationDateTime),verificationDateTime);
+				}
+
+				const char *contentDate=getStringValueElseError((*srclist),TagFromName(ContentDate),"Content Date",filename,log);
+				Assert(contentDate);
+				(*list)+=new DateStringAttribute(TagFromName(ContentDate),contentDate);
+
+				const char *contentTime=getStringValueElseError((*srclist),TagFromName(ContentTime),"Content Time",filename,log);
+				Assert(contentTime);
+				(*list)+=new TimeStringAttribute(TagFromName(ContentTime),contentTime);
+
+				Attribute *conceptNameCodeSequence=getCopyOfCodeSequenceAttributeElseError((*srclist),TagFromName(ConceptNameCodeSequence),"Concept Name Code Sequence",filename,log);
+				Assert(conceptNameCodeSequence);
+				(*list)+=conceptNameCodeSequence;
+
+				// Should do Content Sequence with extracted modifiers but this is hard :(
+			}
+			else if (strcmp(directoryRecordType,"PRESENTATION") == 0) {
+				instanceNumber=getStringValueElseError((*srclist),TagFromName(InstanceNumber),"Instance Number",filename,log);
+				Assert(instanceNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(InstanceNumber),instanceNumber);
+
+				const char *presentationLabel=getStringValueElseError((*srclist),TagFromName(PresentationLabel),"Presentation Label",filename,log);
+				Assert(presentationLabel);
+				(*list)+=new CodeStringAttribute(TagFromName(PresentationLabel),presentationLabel);
+
+				const char *presentationDescription=getStringValueElseZeroLength((*srclist),TagFromName(PresentationDescription));
+				Assert(presentationDescription);
+				(*list)+=new LongStringAttribute(TagFromName(PresentationDescription),presentationDescription);
+
+				const char *presentationCreationDate=getStringValueElseError((*srclist),TagFromName(PresentationCreationDate),"Presentation Creation Date",filename,log);
+				Assert(presentationCreationDate);
+				(*list)+=new DateStringAttribute(TagFromName(PresentationCreationDate),presentationCreationDate);
+
+				const char *presentationCreationTime=getStringValueElseError((*srclist),TagFromName(PresentationCreationTime),"Presentation Creation Time",filename,log);
+				Assert(presentationCreationTime);
+				(*list)+=new TimeStringAttribute(TagFromName(PresentationCreationTime),presentationCreationTime);
+
+				const char *presentationCreatorsName=getStringValueElseZeroLength((*srclist),TagFromName(PresentationCreatorsName));
+				Assert(presentationCreatorsName);
+				(*list)+=new LongStringAttribute(TagFromName(PresentationCreatorsName),presentationCreatorsName);
+
+				Attribute *referencedSeriesSequence=getCopyOfReferencedSeriesSequenceAttributeElseError((*srclist),TagFromName(ReferencedSeriesSequence),"Referenced Series Sequence",filename,log);
+				Assert(referencedSeriesSequence);
+				(*list)+=referencedSeriesSequence;
+			}
+			else if (strcmp(directoryRecordType,"WAVEFORM") == 0) {
+				instanceNumber=getStringValueElseError((*srclist),TagFromName(InstanceNumber),"Instance Number",filename,log);
+				Assert(instanceNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(InstanceNumber),instanceNumber);
+
+				const char *contentDate=getStringValueElseError((*srclist),TagFromName(ContentDate),"Content Date",filename,log);
+				Assert(contentDate);
+				(*list)+=new DateStringAttribute(TagFromName(ContentDate),contentDate);
+
+				const char *contentTime=getStringValueElseError((*srclist),TagFromName(ContentTime),"Content Time",filename,log);
+				Assert(contentTime);
+				(*list)+=new TimeStringAttribute(TagFromName(ContentTime),contentTime);
+                        }
+			else if (strcmp(directoryRecordType,"OVERLAY") == 0) {
+				const char *overlayNumber=getStringValueElseError((*srclist),TagFromName(OverlayNumber),"Overlay Number",filename,log);
+				Assert(overlayNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(OverlayNumber),overlayNumber);
+                        }
+			else if (strcmp(directoryRecordType,"MODALITY LUT") == 0 || strcmp(directoryRecordType,"MODALITY LUT") == 0) {
+				const char *lutNumber=getStringValueElseError((*srclist),TagFromName(LUTNumber),"LUT Number",filename,log);
+				Assert(lutNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(LUTNumber),lutNumber);
+                        }
+			else if (strcmp(directoryRecordType,"CURVE") == 0) {
+				const char *curveNumber=getStringValueElseError((*srclist),TagFromName(CurveNumber),"Curve Number",filename,log);
+				Assert(curveNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(CurveNumber),curveNumber);
+                        }
+			else if (strcmp(directoryRecordType,"STORED PRINT") == 0) {
+				instanceNumber=getStringValueElseError((*srclist),TagFromName(InstanceNumber),"Instance Number",filename,log);
+				Assert(instanceNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(InstanceNumber),instanceNumber);
+                        }
+			else if (strcmp(directoryRecordType,"RT DOSE") == 0) {
+				instanceNumber=getStringValueElseError((*srclist),TagFromName(InstanceNumber),"Instance Number",filename,log);
+				Assert(instanceNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(InstanceNumber),instanceNumber);
+
+				const char *doseSummationType=getStringValueElseError((*srclist),TagFromName(DoseSummationType),"Dose Summation Type",filename,log);
+				Assert(doseSummationType);
+				(*list)+=new CodeStringAttribute(TagFromName(DoseSummationType),doseSummationType);
+
+                                const char *doseComment=getStringValueElseNull((*srclist),TagFromName(DoseComment));
+                                if (doseComment) (*list)+=new LongStringAttribute(TagFromName(DoseComment),doseComment);
+			}
+			else if (strcmp(directoryRecordType,"RT STRUCTURE SET") == 0) {
+				instanceNumber=getStringValueElseError((*srclist),TagFromName(InstanceNumber),"Instance Number",filename,log);
+				Assert(instanceNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(InstanceNumber),instanceNumber);
+
+				const char *structureSetLabel=getStringValueElseError((*srclist),TagFromName(StructureSetLabel),"Structure Set Label",filename,log);
+				Assert(structureSetLabel);
+				(*list)+=new CodeStringAttribute(TagFromName(StructureSetLabel),structureSetLabel);
+
+				const char *structureSetDate=getStringValueElseZeroLength((*srclist),TagFromName(StructureSetDate));
+				Assert(structureSetDate);
+				(*list)+=new DateStringAttribute(TagFromName(StructureSetDate),structureSetDate);
+
+				const char *structureSetTime=getStringValueElseZeroLength((*srclist),TagFromName(StructureSetTime));
+				Assert(structureSetTime);
+				(*list)+=new TimeStringAttribute(TagFromName(StructureSetTime),structureSetTime);
+			}
+			else if (strcmp(directoryRecordType,"RT PLAN") == 0) {
+				instanceNumber=getStringValueElseError((*srclist),TagFromName(InstanceNumber),"Instance Number",filename,log);
+				Assert(instanceNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(InstanceNumber),instanceNumber);
+
+				const char *rtPlanLabel=getStringValueElseError((*srclist),TagFromName(RTPlanLabel),"RT Plan Label",filename,log);
+				Assert(rtPlanLabel);
+				(*list)+=new CodeStringAttribute(TagFromName(RTPlanLabel),rtPlanLabel);
+
+				const char *rtPlanDate=getStringValueElseZeroLength((*srclist),TagFromName(RTPlanDate));
+				Assert(rtPlanDate);
+				(*list)+=new DateStringAttribute(TagFromName(RTPlanDate),rtPlanDate);
+
+				const char *rtPlanTime=getStringValueElseZeroLength((*srclist),TagFromName(RTPlanTime));
+				Assert(rtPlanTime);
+				(*list)+=new TimeStringAttribute(TagFromName(RTPlanTime),rtPlanTime);
+			}
+			else if (strcmp(directoryRecordType,"RT TREAT RECORD") == 0) {
+				instanceNumber=getStringValueElseError((*srclist),TagFromName(InstanceNumber),"Instance Number",filename,log);
+				Assert(instanceNumber);
+				(*list)+=new IntegerStringAttribute(TagFromName(InstanceNumber),instanceNumber);
+
+				const char *treatmentDate=getStringValueElseZeroLength((*srclist),TagFromName(TreatmentDate));
+				Assert(treatmentDate);
+				(*list)+=new DateStringAttribute(TagFromName(TreatmentDate),treatmentDate);
+
+				const char *treatmentTime=getStringValueElseZeroLength((*srclist),TagFromName(TreatmentTime));
+				Assert(treatmentTime);
+				(*list)+=new TimeStringAttribute(TagFromName(TreatmentTime),treatmentTime);
+			}
+		}
+
+	~InstanceDirectoryRecord()
+		{
+			if (sopInstanceUID) delete[] sopInstanceUID;
+			if (instanceNumber)    delete[] instanceNumber;
+		}
+
+	InstanceDirectoryRecord *getSibling()	{ return (InstanceDirectoryRecord *)sibling; }
+
+	const char *getSOPInstanceUID()		{ return sopInstanceUID; }
+	const char *getInstanceNumber()		{ return instanceNumber; }
+
+	bool matches(const char *uid)
+		{
+			Assert(uid);
+			Assert(sopInstanceUID);
+			return strcmp(uid,sopInstanceUID) == 0 ? true : false;
+		}
+};
+
+class SeriesDirectoryRecord : public DirectoryRecordBase {
+	const char *seriesInstanceUID;
+	const char *seriesNumber;
+	const char *modality;
+
+	TextOutputStream& indentSpecific(TextOutputStream &log)
+		{
+			log << "\t\t";
+			return log;
+		}
+
+	TextOutputStream& writeSpecific(TextOutputStream &log)
+		{
+			indentSpecific(log);
+			log << "Series "
+			    << (seriesInstanceUID ? seriesInstanceUID : "") << " "
+			    << (seriesNumber ? seriesNumber : "") 
+			    << endl;
+			return log;
+		}
+public:
+	SeriesDirectoryRecord(const char *uid,AttributeList *srclist,SeriesDirectoryRecord *nextsib,const char *filename,TextOutputStream &log)
+		: DirectoryRecordBase(nextsib)
+		{
+			// the following are Type 1 in directory record ...
+
+			seriesInstanceUID=uid;
+			Assert(seriesInstanceUID);
+			(*list)+=new UIStringAttribute(TagFromName(SeriesInstanceUID),seriesInstanceUID);
+
+			seriesNumber=getStringValueElseError((*srclist),TagFromName(SeriesNumber),"Series Number",filename,log);
+			Assert(seriesNumber);
+			(*list)+=new IntegerStringAttribute(TagFromName(SeriesNumber),seriesNumber);
+
+			modality=getStringValueElseError((*srclist),TagFromName(Modality),"Modality",filename,log);
+			Assert(modality);
+			(*list)+=new CodeStringAttribute(TagFromName(Modality),modality);
+
+			(*list)+=new CodeStringAttribute(TagFromName(DirectoryRecordType),"SERIES");
+
+                        // The following are not required in the IOD, but some profiles ...
+
+                        // InstitutionName (XABC-CD,XA1K-CD:2)
+
+			const char *institutionName=getStringValueElseZeroLength((*srclist),TagFromName(InstitutionName));
+			Assert(institutionName);
+			(*list)+=new LongStringAttribute(TagFromName(InstitutionName),institutionName);
+
+                        // InstitutionAddress (XABC-CD,XA1K-CD:2)
+
+			const char *institutionAddress=getStringValueElseZeroLength((*srclist),TagFromName(InstitutionAddress));
+			Assert(institutionAddress);
+			(*list)+=new ShortTextAttribute(TagFromName(InstitutionAddress),institutionAddress);
+
+                        // PerformingPhysicianName (XABC-CD,XA1K-CD:2)
+                        // should really check for and copy multiple values :(
+
+			const char *performingPhysicianName=getStringValueElseZeroLength((*srclist),TagFromName(PerformingPhysicianName));
+			Assert(performingPhysicianName);
+			(*list)+=new PersonNameAttribute(TagFromName(PerformingPhysicianName),performingPhysicianName);
+		}
+
+	~SeriesDirectoryRecord()
+		{
+			if (seriesInstanceUID) delete[] seriesInstanceUID;
+			if (seriesNumber)      delete[] seriesNumber;
+			if (modality)          delete[] modality;
+		}
+
+	SeriesDirectoryRecord *getSibling()	{ return (SeriesDirectoryRecord *)sibling; }
+	InstanceDirectoryRecord   *getChild()	{ return (InstanceDirectoryRecord *)child; }
+
+	const char *getSeriesInstanceUID()	{ return seriesInstanceUID; }
+	const char *getSeriesNumber()		{ return seriesNumber; }
+
+	bool matches(const char *uid)
+		{
+			Assert(uid);
+			Assert(seriesInstanceUID);
+			return strcmp(uid,seriesInstanceUID) == 0 ? true : false;
+		}
+
+	bool checkMatch(AttributeList *srclist,const char *filename,TextOutputStream &log,bool verbose)
+		{
+			Assert(seriesInstanceUID);
+			Assert(seriesNumber);
+			Assert(modality);
+
+			if (verbose) log << filename << " matches "
+					     << seriesInstanceUID
+					     << " "
+					     << seriesNumber
+					     << endl;
+
+			(void)errorIfStringValuesDontMatch(seriesNumber,*srclist,
+				TagFromName(SeriesNumber),"Series Number",
+				"Series Instance UID",seriesInstanceUID,filename,log);
+
+			(void)errorIfStringValuesDontMatch(modality,*srclist,
+				TagFromName(Modality),"Modality",
+				"Series Instance UID",seriesInstanceUID,filename,log);
+		}
+};
+
+class StudyDirectoryRecord : public DirectoryRecordBase {
+	const char *studyInstanceUID;
+	const char *studyID;
+	const char *studyDate;
+	const char *studyTime;
+	const char *studyDescription;
+	const char *accessionNumber;
+
+	TextOutputStream& indentSpecific(TextOutputStream &log)
+		{
+			log << "\t";
+			return log;
+		}
+
+	TextOutputStream& writeSpecific(TextOutputStream &log)
+		{
+			indentSpecific(log);
+			log << "Study "
+			    << (studyInstanceUID ? studyInstanceUID : "") << " "
+			    << (studyID ? studyID : "") 
+			    << endl;
+			return log;
+		}
+public:
+	StudyDirectoryRecord(const char *uid,AttributeList *srclist,StudyDirectoryRecord *nextsib,const char *filename,TextOutputStream &log)
+		: DirectoryRecordBase(nextsib)
+		{
+			// the following are Type 1 in directory record ...
+
+			studyID=getStringValueElseError((*srclist),TagFromName(StudyID),"Study ID",filename,log);
+			Assert(studyID);
+			(*list)+=new ShortStringAttribute(TagFromName(StudyID),studyID);
+
+			studyInstanceUID=uid;
+			Assert(studyInstanceUID);
+			(*list)+=new UIStringAttribute(TagFromName(StudyInstanceUID),studyInstanceUID);
+
+			Attribute *a;
+
+			studyDate=getStringValueElseError((*srclist),TagFromName(StudyDate),"Study Date",filename,log);
+			Assert(studyDate);
+			(*list)+=new DateStringAttribute(TagFromName(StudyDate),studyDate);
+
+			studyTime=getStringValueElseError((*srclist),TagFromName(StudyTime),"Study Time",filename,log);
+			Assert(studyTime);
+			(*list)+=new TimeStringAttribute(TagFromName(StudyTime),studyTime);
+
+			// the following are Type 2 in directory record ...
+
+			studyDescription=AttributeValue((*srclist)[TagFromName(StudyDescription)],"");
+			Assert(studyDescription);
+			(*list)+=new LongStringAttribute(TagFromName(StudyDescription),studyDescription);
+
+			accessionNumber=AttributeValue((*srclist)[TagFromName(AccessionNumber)],"");
+			Assert(accessionNumber);
+			(*list)+=new ShortStringAttribute(TagFromName(AccessionNumber),accessionNumber);
+
+			(*list)+=new CodeStringAttribute(TagFromName(DirectoryRecordType),"STUDY");
+		}
+
+	~StudyDirectoryRecord()
+		{
+			if (studyInstanceUID) delete[] studyInstanceUID;
+			if (studyID)          delete[] studyID;
+			if (studyDate)        delete[] studyDate;
+			if (studyTime)        delete[] studyTime;
+			if (studyDescription) delete[] studyDescription;
+			if (accessionNumber)  delete[] accessionNumber;
+		}
+
+	StudyDirectoryRecord *getSibling()	{ return (StudyDirectoryRecord *)sibling; }
+	SeriesDirectoryRecord   *getChild()	{ return (SeriesDirectoryRecord *)child; }
+
+	const char *getStudyInstanceUID()	{ return studyInstanceUID; }
+	const char *getStudyID()		{ return studyID; }
+
+	bool matches(const char *uid)
+		{
+			Assert(uid);
+			Assert(studyInstanceUID);
+			return strcmp(uid,studyInstanceUID) == 0 ? true : false;
+		}
+
+	bool checkMatch(AttributeList *srclist,const char *filename,TextOutputStream &log,bool verbose)
+		{
+			Assert(studyInstanceUID);
+			Assert(studyID);
+			Assert(studyDate);
+			Assert(studyTime);
+			Assert(studyDescription);
+			Assert(accessionNumber);
+
+			if (verbose) log << filename << " matches "
+					     << studyInstanceUID
+					     << " "
+					     << studyID
+					     << endl;
+
+			(void)errorIfStringValuesDontMatch(studyID,*srclist,
+				TagFromName(StudyID),"Study ID",
+				"Study Instance UID",studyInstanceUID,filename,log);
+
+			(void)errorIfStringValuesDontMatch(studyDate,*srclist,
+				TagFromName(StudyDate),"Study Date",
+				"Study Instance UID",studyInstanceUID,filename,log);
+
+			(void)errorIfStringValuesDontMatch(studyTime,*srclist,
+				TagFromName(StudyTime),"Study Time",
+				"Study Instance UID",studyInstanceUID,filename,log);
+
+			(void)errorIfStringValuesDontMatch(studyDescription,*srclist,
+				TagFromName(StudyDescription),"Study Description",
+				"Study Instance UID",studyInstanceUID,filename,log);
+
+			(void)errorIfStringValuesDontMatch(accessionNumber,*srclist,
+				TagFromName(AccessionNumber),"Accession Number",
+				"Study Instance UID",studyInstanceUID,filename,log);
+		}
+};
+
+class PatientDirectoryRecord : public DirectoryRecordBase {
+	const char *patientID;
+	const char *patientName;
+
+	TextOutputStream& indentSpecific(TextOutputStream &log)
+		{
+			return log;
+		}
+
+	TextOutputStream& writeSpecific(TextOutputStream &log)
+		{
+			indentSpecific(log);
+			log << "Patient "
+			    << (patientID ? patientID : "") << " "
+			    << (patientName ? patientName : "") 
+			    << endl;
+			return log;
+		}
+public:
+	PatientDirectoryRecord(const char *id,AttributeList *srclist,PatientDirectoryRecord *nextsib,const char *filename,TextOutputStream &log)
+		: DirectoryRecordBase(nextsib)
+		{
+			patientID=id;
+			Assert(patientID);
+			(*list)+=new LongStringAttribute(TagFromName(PatientID),patientID);
+
+			patientName=AttributeValue((*srclist)[TagFromName(PatientName)],"");
+			Assert(patientName);
+			(*list)+=new PersonNameAttribute(TagFromName(PatientName),patientName);
+
+			(*list)+=new CodeStringAttribute(TagFromName(DirectoryRecordType),"PATIENT");
+
+                        // The following are not required in the IOD, but some profiles ...
+
+                        // PatientBirthDate (XABC-CD,XA1K-CD:2)
+
+			const char *patientBirthDate=getStringValueElseZeroLength((*srclist),TagFromName(PatientBirthDate));
+			Assert(patientBirthDate);
+			(*list)+=new DateStringAttribute(TagFromName(PatientBirthDate),patientBirthDate);
+
+                        // PatientSex (XABC-CD,XA1K-CD:2)
+
+			const char *patientSex=getStringValueElseZeroLength((*srclist),TagFromName(PatientSex));
+			Assert(patientSex);
+			(*list)+=new CodeStringAttribute(TagFromName(PatientSex),patientSex);
+		}
+
+	~PatientDirectoryRecord()
+		{
+			if (patientID)   delete[] patientID;
+			if (patientName) delete[] patientName;
+		}
+
+	PatientDirectoryRecord *getSibling()	{ return (PatientDirectoryRecord *)sibling; }
+	StudyDirectoryRecord   *getChild()	{ return (StudyDirectoryRecord *)child; }
+
+	const char *getPatientID()	{ return patientID; }
+	const char *getPatientName()	{ return patientName; }
+
+	bool matches(const char *id)
+		{
+			Assert(id);
+			Assert(patientID);
+			return strcmp(id,patientID) == 0 ? true : false;
+		}
+
+	bool checkMatch(AttributeList *srclist,const char *filename,TextOutputStream &log,bool verbose)
+		{
+			Assert(patientID);
+			Assert(patientName);
+
+			(void)errorIfStringValuesDontMatch(patientName,*srclist,
+				TagFromName(PatientName),"Patient Name",
+				"Patient ID",patientID,filename,log);
+
+			if (verbose) log << filename << " matches "
+					     << patientID
+					     << " "
+					     << patientName
+					     << endl;
+		}
+};
+
+// Derived from attrmxls.cc ...
+
+static bool
+addMetaHeader(AttributeList &list,const TransferSyntax *ts,const char *uidstamp)
+{
+//cerr << "addMetaHeader" << endl;
+	Attribute *a;
+
+	{
+		Assert(ts);
+		const char *tsuid=ts->getUID();
+		Assert(tsuid);
+		a=new UIStringAttribute(TagFromName(TransferSyntaxUID),tsuid);
+		Assert(a);
+		list+=(a);
+	}
+
+	{
+		a=new OtherByteSmallNonPixelAttribute(TagFromName(FileMetaInformationVersion));
+		Assert(a);
+		unsigned char values[2];
+		values[0]=0x00;
+		values[1]=0x01;
+		a->setValue(values,2);
+		list+=(a);
+	}
+
+	{
+		a=new UIStringAttribute(TagFromName(MediaStorageSOPClassUID),MediaStorageDirectoryStorageSOPClassUID);
+		Assert(a);
+		list+=(a);
+	}
+
+	{
+		a=new UIStringAttribute(TagFromName(MediaStorageSOPInstanceUID),GeneratedDirInstanceUID(uidstamp));
+		Assert(a);
+		list+=(a);
+	}
+
+#ifndef DEFAULTIMPLEMENTATIONCLASSUID
+#define DEFAULTIMPLEMENTATIONCLASSUID "0.0.0.0"
+#endif
+	{
+		a=new UIStringAttribute(TagFromName(ImplementationClassUID));
+		Assert(a);
+		a->addValue(DEFAULTIMPLEMENTATIONCLASSUID);
+		list+=(a);
+	}
+
+#ifndef DEFAULTIMPLEMENTATIONVERSIONNAME
+#define DEFAULTIMPLEMENTATIONVERSIONNAME "NOTSPECIFIED"
+#endif
+	{
+		a=new ShortStringAttribute(TagFromName(ImplementationVersionName));
+		Assert(a);
+		a->addValue(DEFAULTIMPLEMENTATIONVERSIONNAME);
+		list+=(a);
+	}
+
+#ifndef DEFAULTSOURCEAPPLICATIONENTITYTITLE
+#define DEFAULTSOURCEAPPLICATIONENTITYTITLE "NOTSPECIFIED"
+#endif
+	{
+		a=new ApplicationEntityAttribute(TagFromName(SourceApplicationEntityTitle));
+		Assert(a);
+		a->addValue(DEFAULTSOURCEAPPLICATIONENTITYTITLE);
+		list+=(a);
+	}
+
+	return true;
+}
+
+int
+main(int argc, char *argv[])
+{
+	bool bad=false;
+
+	GetNamedOptions 	options(argc,argv);
+	DicomInputOptions 	dicom_input_options(options);
+	DicomOutputOptions 	dicom_output_options(options);
+
+	bool verbose=options.get("verbose") || options.get("v");
+	bool veryverbose=options.get("veryverbose") || options.get("vv");
+	bool veryveryverbose=options.get("veryveryverbose") || options.get("vvv");
+	if (veryveryverbose) veryverbose=true;
+	if (veryverbose) verbose=true;
+	bool listnames=options.get("l");
+
+	const char *descriptor=0;
+	(void)(options.get("descriptor",descriptor) || options.get("readme",descriptor));
+
+	bool doicon=!options.get("noicons");
+	bool doposition=options.get("position");
+	bool dovalidatename=!options.get("novalidatename");
+
+	DirectoryRecordWriteOrder order(DirectoryRecordWriteOrder::ParentChildSibling);
+	{
+		const char *order_arg=0;
+		if (options.get("dirrecorder",order_arg)) {
+			if (!order_arg || !*order_arg) bad=true;
+			else if (strcmp(order_arg,"pcs") == 0) order=DirectoryRecordWriteOrder(DirectoryRecordWriteOrder::ParentChildSibling);
+			else if (strcmp(order_arg,"psc") == 0) order=DirectoryRecordWriteOrder(DirectoryRecordWriteOrder::ParentSiblingChild);
+			else if (strcmp(order_arg,"scp") == 0) order=DirectoryRecordWriteOrder(DirectoryRecordWriteOrder::SiblingChildParent);
+			else if (strcmp(order_arg,"spc") == 0) order=DirectoryRecordWriteOrder(DirectoryRecordWriteOrder::SiblingParentChild);
+			else if (strcmp(order_arg,"csp") == 0) order=DirectoryRecordWriteOrder(DirectoryRecordWriteOrder::ChildSiblingParent);
+			else if (strcmp(order_arg,"cps") == 0) order=DirectoryRecordWriteOrder(DirectoryRecordWriteOrder::ChildParentSibling);
+			else bad=true;
+		}
+	}
+
+	dicom_input_options.done();
+	Assert(!dicom_input_options.filename);
+
+	dicom_output_options.done();
+
+	int numberofinputfiles=!options;
+	const char **listoffilenames = new const char * [numberofinputfiles];
+	const char **ptr = listoffilenames;
+	const char *filename;
+
+	while(!options && (filename=options())) {
+		++options;
+		*ptr++=filename;
+	}
+
+	options.done();
+
+	DicomOutputOpenerFromOptions output_opener(
+		options,dicom_output_options.filename,cout);
+
+	cerr << dicom_input_options.errors();
+	cerr << dicom_output_options.errors();
+	cerr << options.errors();
+	cerr << output_opener.errors();
+
+	if (!dicom_input_options.good()
+	 || !dicom_output_options.good()
+	 || !options.good()
+	 || !output_opener.good()
+	 || !options
+	 || bad) {
+		cerr 	<< MMsgDC(Usage) << ": " << options.command()
+			<< dicom_input_options.usage()
+			<< dicom_output_options.usage()
+			<< " [-v|-verbose|-vv|-veryverbose|-vvv|-veryveryverbose]"
+			<< " [-descriptor|-readme filename]"
+			<< " [-noicons]"
+			<< " [-position]"
+			<< " [-novalidatename]"
+			<< " [-dirrecorder pcs|psc|scp|spc|csp|cps]"
+			<< " " << MMsgDC(InputFile) << " ["<< MMsgDC(InputFile) << " ...]"
+			<< " >" << MMsgDC(OutputFile)
+			<< endl;
+		exit(1);
+	}
+
+	if (!dicom_output_options.transfersyntaxuid)
+		dicom_output_options.transfersyntaxuid=ExplicitVRLittleEndianTransferSyntaxUID;
+
+	bool success=true;
+	TextOutputStream log(cerr);
+
+	PatientDirectoryRecord *headPatient=0;
+	int i;
+	for (i=0; i < numberofinputfiles; ++i) {
+		const char *filename=listoffilenames[i];
+		Assert(filename);
+		if (listnames) log << "Reading \"" << filename << "\"" << endl;
+
+#ifdef USEBINARYFLAGFORINPUTOPENMODE
+		ifstream *fstr=new ifstream(filename,ios::in|ios::binary);
+#else
+		ifstream *fstr=new ifstream(filename);
+#endif
+		if (!fstr || !*fstr || !fstr->rdbuf()->is_open()) {
+			cerr << AMsgDC(FileReadOpenFailed);
+			if (filename) cerr <<" - \"" << filename << "\"";
+			success=false;
+			break;
+		}
+
+		DicomInputStream din(*(istream *)fstr,
+			dicom_input_options.transfersyntaxuid,
+			dicom_input_options.usemetaheader);
+
+		ManagedAttributeList list;
+
+		if (veryverbose) log << "******** While reading ... " << filename << " ... ********" << endl; 
+		list.read(din,&log,veryveryverbose,0xffffffff,true,dicom_input_options.uselengthtoend,dicom_input_options.ignoreoutofordertags);
+
+		if (!list.good()) {
+			log << list.errors()
+			    << EMsgDC(DatasetReadFailed) << endl;
+			success=false;
+			break;
+		}
+
+		const char *patientID=getStringValueElseError(list,TagFromName(PatientID),"Patient ID",filename,log);
+		Assert(patientID);
+
+		PatientDirectoryRecord *ptrPatient=headPatient;
+		while (ptrPatient && !ptrPatient->matches(patientID)) ptrPatient=ptrPatient->getSibling();
+
+		StudyDirectoryRecord *headStudy,*ptrStudy;
+		if (ptrPatient) {
+			ptrPatient->checkMatch(&list,filename,log,veryverbose);
+
+			ptrStudy=headStudy=ptrPatient->getChild();
+		}
+		else {
+			if (veryverbose) log << filename << " no match for " << patientID << endl;
+
+			ptrPatient=headPatient=new PatientDirectoryRecord(patientID,&list,headPatient,filename,log);
+			ptrStudy=headStudy=0;
+		}
+
+		const char *studyInstanceUID=getStringValueElseError(list,TagFromName(StudyInstanceUID),"Study Instance UID",filename,log);
+		Assert(studyInstanceUID);
+
+		while (ptrStudy && !ptrStudy->matches(studyInstanceUID)) ptrStudy=ptrStudy->getSibling();
+
+		SeriesDirectoryRecord *headSeries,*ptrSeries;
+		if (ptrStudy) {
+			ptrStudy->checkMatch(&list,filename,log,veryverbose);
+
+			ptrSeries=headSeries=ptrStudy->getChild();
+		}
+		else {
+			if (veryverbose) log << filename << " no match for " << studyInstanceUID << endl;
+
+			ptrStudy=headStudy=new StudyDirectoryRecord(studyInstanceUID,&list,headStudy,filename,log);
+			Assert(ptrPatient);
+			ptrPatient->setChild(headStudy);
+			ptrSeries=headSeries=0;
+		}
+
+		const char *seriesInstanceUID=getStringValueElseError(list,TagFromName(SeriesInstanceUID),"Series Instance UID",filename,log);
+		Assert(seriesInstanceUID);
+
+		while (ptrSeries && !ptrSeries->matches(seriesInstanceUID)) ptrSeries=ptrSeries->getSibling();
+
+		InstanceDirectoryRecord *headInstance,*ptrInstance;
+		if (ptrSeries) {
+			ptrSeries->checkMatch(&list,filename,log,veryverbose);
+
+			ptrInstance=headInstance=ptrSeries->getChild();
+		}
+		else {
+			if (veryverbose) log << filename << " no match for " << seriesInstanceUID << endl;
+
+			ptrSeries=headSeries=new SeriesDirectoryRecord(seriesInstanceUID,&list,headSeries,filename,log);
+			Assert(ptrStudy);
+			ptrStudy->setChild(headSeries);
+			ptrInstance=headInstance=0;
+		}
+
+		const char *sopInstanceUID=getStringValueElseError(list,TagFromName(SOPInstanceUID),"SOP Instance UID",filename,log);
+		Assert(sopInstanceUID);
+
+		while (ptrInstance && !ptrInstance->matches(sopInstanceUID)) ptrInstance=ptrInstance->getSibling();
+
+		if (ptrInstance) {
+			log << "Error - duplicate SOP instance within Series for file " << filename << " matches "
+			    << ptrInstance-> getSOPInstanceUID()
+			    << " Instance Number "
+			    << (ptrInstance-> getInstanceNumber() ? ptrInstance-> getInstanceNumber() : "")
+			    << endl;
+
+			break; // because of error
+		}
+		else {
+			if (veryverbose) log << filename << " no match for " << sopInstanceUID << endl;
+
+			TransferSyntax outts(dicom_output_options.transfersyntaxuid);	// SGI CC doesn't like this inline :(
+			ptrInstance=headInstance=new InstanceDirectoryRecord(sopInstanceUID,&list,headInstance,
+				filename,
+				din.getTransferSyntaxToReadDataSet()->getUID(),
+				&outts,
+				doicon,doposition,dovalidatename,log);
+			Assert(ptrSeries);
+			ptrSeries->setChild(headInstance);
+		}
+
+		if (fstr) delete fstr;
+	}
+
+	if (veryverbose && headPatient) {
+		TransferSyntax outts(dicom_output_options.transfersyntaxuid);	// SGI CC doesn't like this inline :(
+		headPatient->write(log,&outts);
+	}
+
+	if (numberofinputfiles && listoffilenames) delete[] listoffilenames;
+
+	if (success) {
+		AttributeList list;
+
+		DicomOutputStream dout(*(ostream *)output_opener,
+			dicom_output_options.transfersyntaxuid,
+			dicom_output_options.usemetaheader,
+			dicom_output_options.useimplicitmetaheader,
+			dicom_output_options.addtiff);
+
+		if (dicom_output_options.usemetaheader) {
+			addMetaHeader(list,dout.getTransferSyntaxToWriteDataSet(),dicom_output_options.stamp);
+			(void)addLengths(list,dout.getTransferSyntaxToWriteMetaHeader(),dout.getTransferSyntaxToWriteDataSet());
+		}
+
+		list+=new CodeStringAttribute(TagFromName(FileSetID));
+
+		if (descriptor)
+			list+=new CodeStringFileComponentAttribute(TagFromName(FileSetDescriptorFileID),descriptor);
+
+		list+=new UnsignedShortAttribute(TagFromName(FileSetConsistencyFlag),0x0000);
+
+		Uint32 predictedOffset=0;
+
+		if (dicom_output_options.usemetaheader)
+			predictedOffset+=132;	// preamble
+
+		AttributeListIterator listi(list);
+		while (!listi) {
+			Attribute *a = listi();
+			Assert(a);
+			if (veryverbose) { a->write(log,&staticDictionary); log << endl; }
+			predictedOffset+=fixedlength(
+					dout.getTransferSyntaxToWriteMetaHeader(),
+					dout.getTransferSyntaxToWriteDataSet(),a)
+						+a->getVL();
+			++listi;
+		}
+
+		if (veryverbose) log << "Predicted Offset before Root Directory Entity First Directory Record attribute = " << dec << predictedOffset << endl;
+
+		Attribute *aRootDirectoryFirstRecord=new UnsignedLongAttribute(TagFromName(RootDirectoryFirstRecord),0);
+
+		predictedOffset+=fixedlength(
+					dout.getTransferSyntaxToWriteMetaHeader(),
+					dout.getTransferSyntaxToWriteDataSet(),aRootDirectoryFirstRecord)
+						+aRootDirectoryFirstRecord->getVL();
+
+		Attribute *aRootDirectoryLastRecord=new UnsignedLongAttribute(TagFromName(RootDirectoryLastRecord),0);
+
+		predictedOffset+=fixedlength(
+					dout.getTransferSyntaxToWriteMetaHeader(),
+					dout.getTransferSyntaxToWriteDataSet(),aRootDirectoryLastRecord)
+						+aRootDirectoryLastRecord->getVL();
+
+		if (veryverbose) log << "Predicted Offset before Directory Record Sequence = " << dec << predictedOffset << endl;
+
+		SequenceAttribute *aDirectoryRecordSequence=new SequenceAttribute(TagFromName(DirectoryRecordSequence));
+
+		predictedOffset+=fixedlength(
+					dout.getTransferSyntaxToWriteMetaHeader(),
+					dout.getTransferSyntaxToWriteDataSet(),aDirectoryRecordSequence);
+
+		if (veryverbose) log << "Predicted Offset before first item = " << dec << predictedOffset << endl;
+
+		if (headPatient) {
+			Uint32 lastoffset;
+
+			(void)headPatient->setOffset(
+					dout.getTransferSyntaxToWriteDataSet(),predictedOffset,log,veryverbose,lastoffset,order);
+
+			headPatient->linkOffset();
+
+			if (veryverbose) {
+				TransferSyntax outts(dicom_output_options.transfersyntaxuid);	// SGI CC doesn't like this inline :(
+				headPatient->write(log,&outts);
+			}
+
+			aRootDirectoryFirstRecord->setValue(0u,headPatient->getOffset());
+			list+=aRootDirectoryFirstRecord;
+
+			aRootDirectoryLastRecord->setValue(0u,lastoffset);
+			list+=aRootDirectoryLastRecord;
+
+			headPatient->flatten(aDirectoryRecordSequence,order);
+			list+=aDirectoryRecordSequence;
+		}
+
+		listi.first();
+		while (!listi) {
+			Attribute *a = listi();
+			Assert(a);
+			if (a->getTag().isMetaheaderGroup())
+				dout.writingMetaHeader();
+			else
+				dout.writingDataSet();
+			a->write(dout);
+			if (verbose) { a->write(log,&staticDictionary); log << endl; }
+			++listi;
+		}
+	}
+
+	return success ? 0 : 1;
+}
+
+	

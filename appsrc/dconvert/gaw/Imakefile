@@ -1,0 +1,37 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTAPPDCONVERTEXTRAINCLUDES)
+
+SRCSTODC = gawtodc.cc
+OBJSTODC = gawtodc.o
+
+SRCSDUMP = gawdump.cc
+OBJSDUMP = gawdump.o
+
+CPLUSPLUS_SRCS = $(SRCSDUMP) $(SRCSTODC)
+OBJS = $(OBJSDUMP) $(OBJSTODC)
+
+AllTarget(gawtodc)
+NormalCCProgramTarget(gawtodc,$(OBJSTODC),$(TOP)/libsrc/lib/libdgaw.a $(PROJECTDCONVERTDEPLIBS),-ldgaw $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(gawtodc,$(INSTALLBINDIR))
+InstallManPage(gawtodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(gawdump)
+NormalCCProgramTarget(gawdump,$(OBJSDUMP),$(TOP)/libsrc/lib/libdgaw.a $(PROJECTDCONVERTDEPLIBS),-ldgaw $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(gawdump,$(INSTALLBINDIR))
+InstallManPage(gawdump,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./gawdump "-awct" $(TOP)/images/genaw/ct $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./gawtodc "-awct -v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/genaw/ct $(TOP)/test/$(CURRENT_DIR) compare todc
+	@$(TOP)/support/testapp testlist ./gawdump "-awmr" $(TOP)/images/genaw/mr $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./gawtodc "-awmr -v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/genaw/mr $(TOP)/test/$(CURRENT_DIR) compare todc
+
+test.create::
+	@$(TOP)/support/testapp testlist ./gawdump "-awct" $(TOP)/images/genaw/ct $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./gawtodc "-awct -v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/genaw/ct $(TOP)/test/$(CURRENT_DIR) create todc
+	@$(TOP)/support/testapp testlist ./gawdump "-awmr" $(TOP)/images/genaw/mr $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./gawtodc "-awmr -v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/genaw/mr $(TOP)/test/$(CURRENT_DIR) create todc
+

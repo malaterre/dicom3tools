@@ -1,0 +1,30 @@
+.TH SGNTODC 1 "25 November 2007" "DICOM PS3" "Signa to DICOM"
+.SH NAME
+sgntodc \- ACR/NEMA DICOM PS3 ... Signa to DICOM
+.SH SYNOPSIS
+.HP 10
+.B sgntodc
+.B \-v|verbose
+]
+.I inputfilename
+.I outputfilename
+.SH DESCRIPTION
+.LP
+.B sgntodc
+reads the named GE Signa MR input file and converts it to a dicom output file.
+.LP
+.SH OPTIONS
+The verbose output goes to standard error.
+.PP
+The basic switches are described in dcintro(1).
+.LP
+.SH ENVIRONMENT
+.LP
+.SH FILES
+.LP
+.SH SEE ALSO
+.BR dcintro(1) ,
+.BR sgndump(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

@@ -1,0 +1,19 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBLOCALEEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = mesgtext.cc
+OBJS =           mesgtext.o
+
+LibraryTarget($(PROJECTLIBDIR)/lib$(PROJECTLOCALELIBNAME).a,$(OBJS))
+
+mesgttbl.h:	mesgtext.tpl mesgtext.awk
+	$(AWK) -f mesgtext.awk language=English < mesgtext.tpl >mesgttbl.h
+
+depend::	mesgttbl.h
+
+clean::
+	$(RM) mesgttbl.h
+
+DependCCTarget()
+

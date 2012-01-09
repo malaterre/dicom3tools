@@ -1,0 +1,39 @@
+#!/bin/sh
+
+TMPFILE="/tmp/$0.tmp.$$"
+
+if [ $# = 1 ]
+then
+	prefix="$1"
+else
+	echo "Usage: $0 prefix"
+	exit 1
+fi
+
+doonestring()	# Usage: doonestring prefix suffix string
+(
+	pbmtext "$3" | pnmcrop -quiet | pbmtoxbm | \
+		sed -e "s/noname/$1_$2/" \
+		    -e 's/^#define/static const unsigned short/' \
+		    -e 's/\([0-9]\)$/\1;/' \
+		    -e 's/_width /_width = /' \
+		    -e 's/_height /_height = /' \
+		    -e 's/static char/static const unsigned char/'
+	echo
+)
+
+doonestring "$prefix" "0percent"  "0%"
+doonestring "$prefix" "5percent"  "5%"
+doonestring "$prefix" "10percent" "10%"
+doonestring "$prefix" "20percent" "20%"
+doonestring "$prefix" "30percent" "30%"
+doonestring "$prefix" "40percent" "40%"
+doonestring "$prefix" "50percent" "50%"
+doonestring "$prefix" "60percent" "60%"
+doonestring "$prefix" "70percent" "70%"
+doonestring "$prefix" "80percent" "80%"
+doonestring "$prefix" "90percent" "90%"
+doonestring "$prefix" "95percent" "95%"
+doonestring "$prefix" "100percent" "100%"
+doonestring "$prefix" "smpte" "SMPTE TEST PATTERN"
+doonestring "$prefix" "revision" "Rev. 3/1/91 Copyright 1983"

@@ -1,0 +1,179 @@
+021122 - add GPWL modules
+
+010424 - dciodvfy issues:
+
+	- need to be able to specify attributes that may be present with conditional unsatisfied
+	- need to be able to specialize attributes and weaken conditions (defined terms, presence
+	  or absence)
+	- need to be able to forbid the presence of modules
+
+970916 - Using zero length for -r "" doesn't work
+
+
+/home/gsaohome/clunie/images/rsna97cd/ge/round0/ct/SC.1.2.840.113619.2.25.1.1762306543.872804962.246
+Linking /home/gsaohome/clunie/images/rsna97cd/ge/round1cd/ct/IM117.
+
+before adding
+
+(0x0009,0x10e8)  ?  - Warning - Unrecognized tag - assuming explicit value representation OK
+
+to dictionary, caused a problem on writing as EVRLE ->
+
+(0x0009,0x10e8)  ? 	 VR=<UN>   VL=<0x31305443>  [...]
+
+same for
+
+/home/gsaohome/clunie/images/rsna97cd/ge/round0/nm/NM.1.2.840.113619.2.43.16112.2141964.41.48.870878841.6
+Linking /home/gsaohome/clunie/images/rsna97cd/ge/round1cd/nm/IM268.
+
+Creating /home/gsaohome/clunie/images/rsna97cd/ge/round0/nm/NM.1.2.840.113619.2.43.16112.2141964.41.48.870878841.7
+Linking /home/gsaohome/clunie/images/rsna97cd/ge/round1cd/nm/IM269.
+
+Creating /home/gsaohome/clunie/images/rsna97cd/ge/round0/nm/NM.1.2.840.113619.2.43.16112.2141964.41.61.870879458.16
+Linking /home/gsaohome/clunie/images/rsna97cd/ge/round1cd/nm/IM270.
+
+> (0x0009,0x1029)  ?  - Warning - Unrecognized tag - assuming explicit value representation OK
+< (0x0009,0x1029)  ? 	 VR=<UN>   VL=<0x0004>  [0x18,0x00,0x00,0x00] 
+> (0x0009,0x1029)  ? 	 VR=<UN>   VL=<0x0018>  [0x09,0x00,0x2a,0x10,0x53,0x4c,0x04,0x00,
+> 	0x00,0x00,0x00,0x00,0x09,0x00,0x2c,0x10,0x4c,0x4f,0x00,0x00,0x09,0x00,0x2d,0x10] 
+
+need to check the VL writing logic for UN with EVRLE or something.
+
+	/home/gsaohome/clunie/dctool/appsrc/dcfile/dccp -addlengths \
+		-vr explicit -endian little \
+		-ra SourceApplicationEntityTitle NEMADEMO -nodisclaimer \
+		$from $to
+
+-------------
+
+bad tags are being silently ignored:
+
+britt{dclunie}% ancreate > test
+(0x0008,0x0000) VR=<OW> VL=<0> []
+(0x0008,0x4237) VR=<OW> VL=<0> []
+(0x0010,0x0000) VR=<OW> VL=<0> []
+britt{dclunie}% ../dcfile/dcdump <test
+(0x0008,0x0000) UL Identifying Group Length      VR=<UL>   VL=<0x0000>  [] 
+(0x0010,0x0000) UL Patient Group Length          VR=<UL>   VL=<0x0000>  [] 
+
+things that freak out transfer syntax guess ...
+
+britt{dclunie}% ancreate > test
+(0x7fe0,0x0010) VR=<OW> VL=<6> []
+10 20 30
+40 50 60
+britt{dclunie}% ../dcfile/dcdump <test
+britt{dclunie}% 
+
+britt{dclunie}% ancreate > test
+(0x0008,0x0000) VR=<OW> VL=<0> []
+(0x7fe0,0x0010) VR=<OW> VL=<0xffffffff> []
+10 20 30
+40 50 60
+britt{dclunie}% ../dcfile/dcdump <test
+Assertion failed: file "../../.././libsrc/include/dctool/attrothr.h", line 33
+
+removed the 000xnn support from ancreate ... update this in the man
+page.
+
+Check that all awk scripts that use make and match $ work on both
+buggy sun nawk and others re. RLENGTH.
+
+	- checked convert,elmdict,sopcl,transyn ... ok
+
+  4. Type `make install prefix=/usr/gnu/' (or the appropriate root
+     of your local GNU software installation tree) to copy bash to
+     your binaries directory, assumed to be ${prefix}/bin.  This will
+     also attempt to install the manual pages under ${prefix}/man
+     and the info file under ${prefix}/info.
+
+pacedump and pacetodc are not failing on an empty input file ... loop
+forever :(
+
+Clean up the use of C options (esp. defines) in imake stuff
+
+Make dctoraw work for other than -endian little (or at least where
+endian matches the ts) and 8 bit data.
+
+Check the use of Binary options vs. WithByteOrder, etc.
+
+Better implementation of attribute list ... sparse arrays with access
+and append cache ?
+
+Add to dcdisp
+	- annotation: side indicators
+	- save window/level'd image ...
+		- as DICOM with new attributes
+		- as something 8 bit
+
+The srcsink buffering stuff is still pretty horrible,
+especially wrt. checking premature eof ... probably should
+switch to bool rather than int and consider changing read()
+return value to flag rather than length. Note that currently
+read() will still be good and will return < chunksize bytes on
+last read (ie. byteswanted doesn't have to be multiple of chunksize);
+if read() is called again it will return 0 and set bad.
+However if less bytes returned than "expected", will set bad and
+return 0 immediately (though what was read will still be in the buffer
+and the getBufferCount() will be what was actually read).
+
+dccp from 12/16 bits to -r BitsAllocated 8 runs but image is wrong.
+This is not suprising, because in writing in attrothr.cc
+
+OtherUnspecifiedLargeAttributeBase::writeData(BinaryOutputStream& stream)
+{
+...
+	if (dstbytesinword == 1) {
+		Assert(dstbitsallocated == 8);	// No PackByte() yet !
+		ConvertUint16ToByte   tobyte   (*srcpixeldata,dstendian);
+		Sink<unsigned char>   output   (stream,tobyte);
+		output.write(dstlength);
+	}
+	else {
+		PackUint16            topack   (*srcpixeldata,dstbitsallocated);
+		ConvertUint16ToByte   tobyte   (topack,dstendian);
+		Sink<unsigned char>   output   (stream,tobyte);
+		output.write(dstlength);
+	}
+...
+
+ther is no shifting before topack, which just uses the low dstbitsallocated
+of the Unit16 to pack (topcak.cc line 149).
+
+Contrast this with copied reading:
+
+OtherUnspecifiedLargeAttributeCopied::activateSource(void)
+...
+		if (srcbytesinword == 1) {
+			Assert(srcbitsallocated == 8);	// No UnpackByte() yet !
+			Assert(!srcfrompack);
+			srcpixeldata=srcfrombyte;
+		}
+		else {
+			if (srcfrompack) delete srcfrompack;
+			srcfrompack = new UnpackUint16(*srcfrombyte,srcbitsallocated);
+			Assert(srcfrompack);
+			if (srcfromshift) delete srcfromshift;
+			srcfromshift = new UnshiftUint16(*srcfrompack,srcbitsallocated,srcbitsstored,srchighbit);
+			Assert(srcfromshift);
+			srcpixeldata=srcfromshift;
+		}
+
+where an UnshiftUint16 is done after unpacking.
+
+
+8 bit input with odd number of columns is wrong. For implicit VR where
+they need to be packed into OW's topack.c line 135 fails assertion. This
+affects pnmtodc
+
+Add MRDR support do dcdirdmp
+
+For dcdirdmp when an attribute for a dir record is missing, one
+still gets an assertion failure on string addValue() :(
+
+This should be cleaner !
+
+Also need to extend dir record types to handle RT that doesn't
+have images !
+
+Document raw tools in misc

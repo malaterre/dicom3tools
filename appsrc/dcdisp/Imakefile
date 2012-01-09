@@ -1,0 +1,32 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES = $(PROJECTAPPDCDISPEXTRAINCLUDES)
+
+SRCSDISP = dcdisp.cc
+OBJSDISP = dcdisp.o
+
+CPLUSPLUS_SRCS = $(SRCSDISP)
+OBJS           = $(OBJSDISP)
+
+AllTarget(dcdisp)
+NormalCCProgramTarget(dcdisp,$(OBJSDISP),$(PROJECTDCDISPDEPLIBS),$(PROJECTDCDISPLIBS),-lm)
+InstallProgram(dcdisp,$(INSTALLBINDIR))
+InstallManPage(dcdisp,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare dump
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+
+test.create::
+	@$(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create dump
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) create dump; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) create dump; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) create dump; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcdisp "-v -nodisplayloop -writeimage" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) create dump; fi

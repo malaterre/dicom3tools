@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# compare the binary pixel data of two dicom files
+
+if [ $# != 2 ]
+then
+	echo "usage: `basename $0` file1 file2"
+	exit 1
+fi
+
+TMPFILE1=/tmp/`basename $0`.$$.tmp1
+TMPFILE2=/tmp/`basename $0`.$$.tmp2
+
+dctoraw -ignoreoutofordertags "$1" >"$TMPFILE1" 2>/dev/null
+dctoraw -ignoreoutofordertags "$2" >"$TMPFILE2" 2>/dev/null
+cmp "$TMPFILE1" "$TMPFILE2"
+
+rm "$TMPFILE1" "$TMPFILE2"
+
+exit 0
+

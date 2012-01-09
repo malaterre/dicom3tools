@@ -1,0 +1,6 @@
+#define IHaveSubdirs
+
+SUBDIRS = ge9800 genesis pace signa somatom sytec vision
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

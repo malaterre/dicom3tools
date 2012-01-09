@@ -1,0 +1,6 @@
+#define IHaveSubdirs
+
+SUBDIRS = standard include lib src support docs
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

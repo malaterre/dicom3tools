@@ -1,0 +1,198 @@
+/* Put things specific to THIS project here */
+
+#ifndef ProjectIncludeDir
+#define ProjectIncludeDir      $(TOP)/libsrc/include
+#endif
+#ifndef ProjectLibsrcDir
+#define ProjectLibsrcDir       $(TOP)/libsrc/src
+#endif
+#ifndef ProjectLibDir
+#define ProjectLibDir          $(TOP)/libsrc/lib
+#endif
+#ifndef ProjectLibSupportDir
+#define ProjectLibSupportDir   $(TOP)/libsrc/support
+#endif
+#ifndef ProjectLibStandardDir
+#define ProjectLibStandardDir  $(TOP)/libsrc/standard
+#endif
+#ifndef ProjectSupportDir
+#define ProjectSupportDir      $(TOP)/support
+#endif
+
+#ifndef ProjectGenericIncludeDirName
+#define ProjectGenericIncludeDirName	generic
+#endif
+#ifndef ProjectDctoolIncludeDirName
+#define ProjectDctoolIncludeDirName	dctool
+#endif
+#ifndef ProjectDcdispIncludeDirName
+#define ProjectDcdispIncludeDirName	dcdisp
+#endif
+#ifndef ProjectOurdispIncludeDirName
+#define ProjectOurdispIncludeDirName	ourdisp
+#endif
+#ifndef ProjectPixeldatIncludeDirName
+#define ProjectPixeldatIncludeDirName	pixeldat
+#endif
+#ifndef ProjectDconvertIncludeDirName
+#define ProjectDconvertIncludeDirName	dconvert
+#endif
+#ifndef ProjectLocaleIncludeDirName
+#define ProjectLocaleIncludeDirName	locale
+#endif
+
+#ifndef ProjectGenericLibName
+#define ProjectGenericLibName   gener
+#endif
+#ifndef ProjectDctoolLibName
+#define ProjectDctoolLibName    dctl
+#endif
+#ifndef ProjectDcdispLibName
+#define ProjectDcdispLibName    ddply
+#endif
+#ifndef ProjectOurdispLibName
+#define ProjectOurdispLibName   odply
+#endif
+#ifndef ProjectDconvertLibName
+#define ProjectDconvertLibName  dconv
+#endif
+#ifndef ProjectLocaleLibName
+#define ProjectLocaleLibName    dlcl
+#endif
+
+#ifdef InstallInTopDir
+#ifndef InstallBinDir
+#define InstallBinDir $(TOP)/bin/$(PLATFORMNAME)
+#endif
+#ifndef InstallIncDir
+#define InstallIncDir $(TOP)/include
+#endif
+#ifndef InstallLibDir
+#define InstallLibDir $(TOP)/lib/$(PLATFORMNAME)
+#endif
+#ifndef InstallManDir
+#define InstallManDir $(TOP)/man
+#endif
+#endif
+
+                  PLATFORMNAME = PlatformNameForInstallPath
+
+             PROJECTINCLUDEDIR = ProjectIncludeDir
+              PROJECTLIBSRCDIR = ProjectLibsrcDir
+                 PROJECTLIBDIR = ProjectLibDir
+          PROJECTLIBSUPPORTDIR = ProjectLibSupportDir
+         PROJECTLIBSTANDARDDIR = ProjectLibStandardDir
+
+             PROJECTSUPPORTDIR = ProjectSupportDir
+
+         PROJECTGENERICLIBNAME = ProjectGenericLibName
+          PROJECTDCTOOLLIBNAME = ProjectDctoolLibName
+          PROJECTDCDISPLIBNAME = ProjectDcdispLibName
+         PROJECTOURDISPLIBNAME = ProjectOurdispLibName
+        PROJECTDCONVERTLIBNAME = ProjectDconvertLibName
+          PROJECTLOCALELIBNAME = ProjectLocaleLibName
+
+             PROJECTGENERICLIB = -l$(PROJECTGENERICLIBNAME)
+            PROJECTDCONVERTLIB = -l$(PROJECTDCONVERTLIBNAME)
+              PROJECTDCTOOLLIB = -l$(PROJECTDCTOOLLIBNAME)
+              PROJECTDCDISPLIB = -l$(PROJECTDCDISPLIBNAME)
+             PROJECTOURDISPLIB = -l$(PROJECTOURDISPLIBNAME)
+              PROJECTLOCALELIB = -l$(PROJECTLOCALELIBNAME)
+
+            PROJECTACRNEMALIBS = $(PROJECTDCTOOLLIB)   $(PROJECTLOCALELIB)  $(PROJECTGENERICLIB) 
+           PROJECTDCONVERTLIBS = $(PROJECTDCONVERTLIB) $(PROJECTDCTOOLLIB)  $(PROJECTLOCALELIB)  $(PROJECTGENERICLIB) 
+             PROJECTDCFILELIBS = $(PROJECTDCTOOLLIB)   $(PROJECTLOCALELIB)  $(PROJECTGENERICLIB) 
+             PROJECTDCDISPLIBS = $(PROJECTDCDISPLIB)   $(PROJECTOURDISPLIB) $(PROJECTDCTOOLLIB)  $(PROJECTLOCALELIB) $(PROJECTGENERICLIB) DisplayLoadFlags
+               PROJECTMISCLIBS = $(PROJECTLOCALELIB)   $(PROJECTGENERICLIB) 
+                PROJECTALLLIBS = $(PROJECTDCONVERTLIB) $(PROJECTDCDISPLIB)  $(PROJECTOURDISPLIB) $(PROJECTDCTOOLLIB) $(PROJECTLOCALELIB) $(PROJECTGENERICLIB) DisplayLoadFlags
+
+          PROJECTGENERICDEPLIB = $(PROJECTLIBDIR)/lib$(PROJECTGENERICLIBNAME).a
+         PROJECTDCONVERTDEPLIB = $(PROJECTLIBDIR)/lib$(PROJECTDCONVERTLIBNAME).a
+           PROJECTDCTOOLDEPLIB = $(PROJECTLIBDIR)/lib$(PROJECTDCTOOLLIBNAME).a
+           PROJECTDCDISPDEPLIB = $(PROJECTLIBDIR)/lib$(PROJECTDCDISPLIBNAME).a
+          PROJECTOURDISPDEPLIB = $(PROJECTLIBDIR)/lib$(PROJECTOURDISPLIBNAME).a
+           PROJECTLOCALEDEPLIB = $(PROJECTLIBDIR)/lib$(PROJECTLOCALELIBNAME).a
+
+         PROJECTACRNEMADEPLIBS = $(PROJECTDCTOOLDEPLIB)   $(PROJECTLOCALEDEPLIB)  $(PROJECTGENERICDEPLIB) 
+        PROJECTDCONVERTDEPLIBS = $(PROJECTDCONVERTDEPLIB) $(PROJECTDCTOOLDEPLIB)  $(PROJECTLOCALEDEPLIB)  $(PROJECTGENERICDEPLIB) 
+          PROJECTDCFILEDEPLIBS = $(PROJECTDCTOOLDEPLIB)   $(PROJECTLOCALEDEPLIB)  $(PROJECTGENERICDEPLIB) 
+          PROJECTDCDISPDEPLIBS = $(PROJECTDCDISPDEPLIB)   $(PROJECTOURDISPDEPLIB) $(PROJECTDCTOOLDEPLIB)  $(PROJECTLOCALEDEPLIB) $(PROJECTGENERICDEPLIB) DisplayDependFlags
+            PROJECTMISCDEPLIBS = $(PROJECTLOCALEDEPLIB)   $(PROJECTGENERICDEPLIB)
+             PROJECTALLDEPLIBS = $(PROJECTDCONVERTDEPLIB) $(PROJECTDCDISPDEPLIB)  $(PROJECTOURDISPDEPLIB) $(PROJECTDCTOOLDEPLIB) $(PROJECTLOCALEDEPLIB) $(PROJECTGENERICDEPLIB) DisplayDependFlags
+
+  PROJECTGENERICINCLUDEDIRNAME = ProjectGenericIncludeDirName
+   PROJECTLOCALEINCLUDEDIRNAME = ProjectLocaleIncludeDirName
+   PROJECTDCTOOLINCLUDEDIRNAME = ProjectDctoolIncludeDirName
+   PROJECTDCDISPINCLUDEDIRNAME = ProjectDcdispIncludeDirName
+  PROJECTOURDISPINCLUDEDIRNAME = ProjectOurdispIncludeDirName
+ PROJECTPIXELDATINCLUDEDIRNAME = ProjectPixeldatIncludeDirName
+ PROJECTDCONVERTINCLUDEDIRNAME = ProjectDconvertIncludeDirName
+
+ PROJECTLIBGENERICEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME)
+
+ PROJECTLIBOURDISPEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTOURDISPINCLUDEDIRNAME) \
+                                  SystemIncludeOption/**/$(X11INCLUDEPATH)
+
+PROJECTLIBDCONVERTEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCTOOLINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTPIXELDATINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCONVERTINCLUDEDIRNAME)
+
+  PROJECTLIBDCDISPEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCDISPINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCTOOLINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTOURDISPINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTPIXELDATINCLUDEDIRNAME) \
+                                  SystemIncludeOption/**/$(X11INCLUDEPATH)
+
+  PROJECTLIBDCTOOLEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCTOOLINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTPIXELDATINCLUDEDIRNAME)
+
+  PROJECTLIBLOCALEEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME)
+
+
+ PROJECTAPPACRNEMAEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCTOOLINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTPIXELDATINCLUDEDIRNAME)
+
+  PROJECTAPPDCDISPEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCDISPINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCTOOLINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTOURDISPINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTPIXELDATINCLUDEDIRNAME) \
+                                  SystemIncludeOption/**/$(X11INCLUDEPATH)
+
+  PROJECTAPPDCFILEEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCTOOLINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTPIXELDATINCLUDEDIRNAME)
+
+PROJECTAPPDCONVERTEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCTOOLINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTPIXELDATINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTDCONVERTINCLUDEDIRNAME)
+
+    PROJECTAPPMISCEXTRAINCLUDES = -I$(PROJECTINCLUDEDIR)/$(PROJECTGENERICINCLUDEDIRNAME) \
+                                  -I$(PROJECTINCLUDEDIR)/$(PROJECTLOCALEINCLUDEDIRNAME)
+
+
+        CPLUSPLUS_LOCAL_LDFLAGS = -L$(PROJECTLIBDIR)
+
+                      C_DEFINES = -DDEFAULTUIDROOT=\"DefaultUIDRoot\"  -DDEFAULTINSTANCECREATORUID=\"DefaultInstanceCreatorUID\" -DDEFAULTIMPLEMENTATIONCLASSUID=\"DefaultImplementationClassUID\" -DDEFAULTIMPLEMENTATIONVERSIONNAME=\"DefaultImplementationVersionName\" -DDEFAULTSOURCEAPPLICATIONENTITYTITLE=\"DefaultSourceApplicationEntityTitle\"
+              CPLUSPLUS_DEFINES = -DDEFAULTUIDROOT=\"DefaultUIDRoot\"  -DDEFAULTINSTANCECREATORUID=\"DefaultInstanceCreatorUID\" -DDEFAULTIMPLEMENTATIONCLASSUID=\"DefaultImplementationClassUID\" -DDEFAULTIMPLEMENTATIONVERSIONNAME=\"DefaultImplementationVersionName\" -DDEFAULTSOURCEAPPLICATIONENTITYTITLE=\"DefaultSourceApplicationEntityTitle\"
+
+
+.SUFFIXES:	.xbm .cbm
+.xbm.cbm:	;$(PROJECTSUPPORTDIR)/xbmtocbm $< $@
+

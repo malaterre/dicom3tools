@@ -1,0 +1,58 @@
+.TH DCDICT 1 "05 April 1998" "DICOM PS3" "DICOM PS3 - Extract dictionary elements"
+.SH NAME
+dcdict \- ACR/NEMA DICOM PS3 ... Extract dictionary elements
+.SH SYNOPSIS
+.HP 10
+.B dcdict
+[
+.B \-key|k " attributename ]"
+[
+.B \-tag|t " group element ]"
+.SH DESCRIPTION
+.LP
+.B dcdict
+reads the attribute name or group/element numbers from the command line, looks up the corresponding attribute in the DICOM data dictionary, and describes it.
+.SH OPTIONS
+The description of the element goes to standard error.
+.PP
+Options specific to this program are:
+.TP
+.B \-k|key " attributename"
+.RS
+Extract attributename from the dictionary.
+.RE
+.TP
+.B \-tag|t " group element"
+.RS
+Extract (group,element) from the dictionary. Note that group and element
+are assumed to be decimal unless preceded by 0x (hexadecimal) or 0 (octal).
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcdict -k Rows -k Columns
+.RE
+(0x0028,0x0010) US Rows 
+.RE
+(0x0028,0x0011) US Columns
+.RE
+\ 
+.RE
+% dcdict -t 0x28 0x10
+.RE
+(0x0028,0x0010) US Rows 
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.LP
+\ 
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

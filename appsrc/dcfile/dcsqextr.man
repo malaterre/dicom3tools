@@ -1,0 +1,67 @@
+.TH DCSQEXTR 1 "05 April 1998" "DICOM PS3" "DICOM PS3 - Extract Papyrus images"
+.SH NAME
+dcsqextr \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Extract Papyrus images
+.SH SYNOPSIS
+.HP 10
+.B dcsqextr
+[
+.B \-v|verbose
+]
+.so man1/optin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcsqextr
+reads the named dicom or acr-nema input file, assumes that a series of images
+are contained in a sequence as in a Papyrus version 3 file, and extracts
+each of them into a separate file.
+.LP
+The input encoding of the file will be automatically determined, or can
+be explicitly specified in pathological cases using the input options
+described in dcintro(1).
+.LP
+The encoding of the output files will be changed to the default or explicitly
+requested transfer syntax, as described in dcintro(1) under output
+options.
+.LP
+During the extraction, the usual replace and delete operations specified in
+dcintro(1) are suppressed.
+.SH OPTIONS
+The verbose output goes to standard error. The specified output file name
+is used as a prefix, and the SOP Instance UID and image sequence number
+(not the value of the Image Number attribute) are appended to make a
+filename for each extracted image.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcsqextr MR2images.pap3 -of MR2images
+.RE
+% ls -1 MR2images.*
+.RE
+MR2images.pap3
+.RE
+MR2images.64.572.218.916.0
+.RE
+MR2images.64.572.218.916.1
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

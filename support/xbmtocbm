@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# convention in iconeditor is to use variables names with filename
+# in them which upsets C or CC if there is a period
+
+# also, the use of 0xff and the like in the initializer list upsets
+# compilers that consider this too large an initializer for a char
+# rather than an unsigned char
+
+sed -e 's/[.]xbm/_xbm/g' -e 's/static char/static unsigned char/g' <$1 >$2

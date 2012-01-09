@@ -1,0 +1,73 @@
+.TH DCUNMETA 1 "05 April 1998" "DICOM PS3" "DICOM PS3 - Remove DICOM Metaheader"
+.SH NAME
+dcunmeta \- DICOM PS3 ... Remove DICOM Metaheader
+.SH SYNOPSIS
+.HP 10
+.B dcunmeta
+.SH DESCRIPTION
+.LP
+.B dcunmeta
+reads a DICOM PS 3.10 style file with a Meta Information Header from the standard input and writes the raw contents of the DICOM message beyond the Meta Information Header to the standard output.
+.LP
+Note that there is no processing of the DICOM message beyond the Meta Information Header - it is copied byte for byte without additions or deletions or attention to the specific Transfer Syntax present.
+.SH OPTIONS
+Input comes from standard in and output goes to standard out. Errors go to standard error.
+.LP
+There are no command line options.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcfile test.metaheader
+.RE
+Meta: UID		1.2.840.10008.1.2.1
+.RE
+Meta: Description	"Explicit VR Little Endian"
+.RE
+Meta: ByteOrder	Little
+.RE
+Meta: VR		Explicit
+.RE
+Meta: Encapsulated	No
+.RE
+Data: UID		1.2.840.10008.1.2
+.RE
+Data: Description	"Implicit VR Little Endian"
+.RE
+Data: ByteOrder	Little
+.RE
+Data: VR		Implicit
+.RE
+Data: Encapsulated	No
+.RE
+\ 
+.RE
+% dcunmeta <test.metaheader >test.implicit
+.RE
+\ 
+.RE
+% dcfile test.implicit
+.RE
+Data: UID		1.2.840.10008.1.2
+.RE
+Data: Description	"Implicit VR Little Endian"
+.RE
+Data: ByteOrder	Little
+.RE
+Data: VR		Implicit
+.RE
+Data: Encapsulated	No
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcfile(1), dcrmmeta(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

@@ -1,0 +1,69 @@
+.TH GENDUMP 1 "05 April 1998" "DICOM PS3" "Genesis dump"
+.SH NAME
+gendump \- ACR/NEMA DICOM PS3 ... Genesis dump contents
+.SH SYNOPSIS
+.HP 10
+.B gendump
+[
+.B \-ximg|\-dat|\-tape|\-offset " filehdr suitehdr examhdr serieshdr imghdr [\-lengthpresent]"
+]
+.I inputfilename
+.SH DESCRIPTION
+.LP
+.B gendump
+reads the named GE Genesis input file and dumps its contents.
+.LP
+.SH OPTIONS
+The dump output goes to standard error.
+.PP
+The basic switches are described in dcintro(1).
+.LP
+The options that select the header layout of the Advantage Windows file are as follows. Note that one must be specified and there is no default.
+.TP
+.BI \-ximg
+.RS
+The input file is the output of the "ximg" extraction tool used to extract an image from the Genesis database. This is the "generic" form of the genesis file, with an initial file header that provides the locations of the other headers. This is the default if no format option is specified.
+.RE
+.TP
+.BI \-dat|\-tape
+.RS
+The input file is from a tape or DAT archive. The Genesis database headers have been prepended to the file in the order suite/exam/series/image, then a file header (without valid pointers), and finally the pixel data. Note that the pixel data is preceded by a 4 byte length value that is skipped when this option is selected.
+.RE
+.TP
+.BI \-offset " filehdr suitehdr examhdr serieshdr imghdr"
+.RS
+The input file layout is explicitly specified by the byte offsets from 0 to the corresponding header.
+.RE
+.TP
+.BI \-lengthpresent
+.RS
+The image pixel data is preceded by a 4 byte length field that should be skipped. Only valid when the offsets are explicitly specified.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% gendump test
+.RE
+\ 
+.RE
+[block:offset] Description        <value>
+.RE
+\ 
+.RE
+ ...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1) ,
+.BR gentodc(1) ,
+.BR gawtodc(1) ,
+.BR gawdump(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

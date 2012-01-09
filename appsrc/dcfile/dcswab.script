@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# usage: dcswab infile outfile
+#
+
+TMPROOT=/tmp/`basename $0`.$$
+
+ANCREATE=ancreate
+DCCP=dccp
+DCDUMP=dcdump
+DCTORAW=dctoraw
+
+$DCDUMP $1 2>&1 | grep '10) OX Pixel Data' | sed -e 's/$/ []/' | $ANCREATE -e > $TMPROOT.pixelhead
+$DCTORAW -quiet $1 $TMPROOT.raw
+dd if="$TMPROOT.raw" of="$TMPROOT.swab" conv=swab
+$DCCP $1 $TMPROOT.nopixels -d PixelData
+cat $TMPROOT.nopixels $TMPROOT.pixelhead $TMPROOT.swab > $2
+
+rm -f $TMPROOT.*
+
+exit 0

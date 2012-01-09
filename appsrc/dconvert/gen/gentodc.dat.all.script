@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# Usage: gentodc.dat.all dirname
+#
+# where dirname is the directory name where images are
+#
+# converts files in place and adds .dcm extension
+#
+
+DCMSUFFIX="dcm"
+
+STAMP=`date +%Y%m%d%H%M%S`.$$
+
+GENTODC="gentodc"
+GENTODCOPTS="-dat"
+
+if [ ! $# = 1 ]
+then
+	echo 1>&2 "Usage: `basename $0` dirname"
+	exit 1
+fi
+
+for i in `find "$1" -type f -print`
+do
+	if [ -f "$i" ]
+	then
+		echo "Converting $i to $i.$DCMSUFFIX"
+
+		$GENTODC $GENTODCOPTS -output-vr explicit -output-endian little -stamp "$STAMP" \
+			"$i" "$i.$DCMSUFFIX"
+	fi
+done
+
+exit 0

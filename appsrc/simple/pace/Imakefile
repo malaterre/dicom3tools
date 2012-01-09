@@ -1,0 +1,24 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBGENERICEXTRAINCLUDES)
+
+SRCSTOPGM = pacetopgm.cc
+OBJSTOPGM = pacetopgm.o
+
+CPLUSPLUS_SRCS = $(SRCSTOPGM)
+OBJS = $(OBJSTOPGM)
+
+AllTarget(pacetopgm)
+
+NormalCCProgramTarget(pacetopgm,$(OBJSTOPGM),NullParameter,NullParameter,NullParameter)
+
+InstallProgram(pacetopgm,$(INSTALLBINDIR))
+InstallManPage(pacetopgm,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./pacetopgm "" $(TOP)/images/pace $(TOP)/test/$(CURRENT_DIR) compare filter
+
+test.create::
+	@$(TOP)/support/testapp testlist ./pacetopgm "" $(TOP)/images/pace $(TOP)/test/$(CURRENT_DIR) create filter

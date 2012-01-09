@@ -1,0 +1,33 @@
+Last updated Mon Aug 16 18:00:45 EDT 2004
+
+Compile and install instructions are in INSTALL.
+
+Restrictions on use and redistribution are in COPYRIGHT.
+
+A log of changes over time is in CHANGES.
+
+This is even more ultra-alpha than the previous generation of
+dicom3tools 0.nn.
+
+It is being released as a snapshot of work in progress for
+people to see the future direction of the toolkit, and assess
+its portability.
+
+Some of the tools, such as dcdisp provided significantly
+increased functionality over the earlier toolkit. The convertors
+from proprietary formats do a much better job of creating DICOM
+files than their predecssors, but are not as complete in their
+coverage of formats (yet).
+
+Sequences are supported, as are all "modern" DICOM encoding
+features, such as UN VR. Compressed transfer syntaxes are
+not explicitly supported except by scripts using external
+codecs. The data dictionary is kept up to date with the latest
+supplements and corrections to the standard.
+
+Part 10 style files with a meta-header are now the default
+form of output, though this can be suppressed with an option.
+
+Comments, criticism and general abuse are greatly appreciated and
+should be directed to "dclunie@dclunie.com".
+

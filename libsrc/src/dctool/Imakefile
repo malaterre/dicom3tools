@@ -1,0 +1,56 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCTOOLEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = charset.cc transyn.cc transynd.cc transync.cc sopclc.cc sopcli.cc \
+		 attr.cc attrtag.cc attrtypd.cc \
+		 attrtyps.cc attrtypt.cc attrtypo.cc attrtypv.cc \
+		 attrlist.cc attrlsln.cc attrothr.cc attrnew.cc attrseq.cc \
+		 attrmxrd.cc attrmxvr.cc attrmxls.cc attrvrfy.cc \
+		 elmdict.cc elmpriv.cc dcstream.cc uidgen.cc \
+		 dcopti.cc dcopto.cc dcoptc.cc \
+		 pixposn.cc \
+		 strval.cc binval.cc tagval.cc condn.cc \
+		 moduleb.cc modulev.cc modulew.cc \
+		 iodcompb.cc iodcompv.cc iodcompw.cc iodcomps.cc \
+		 dicomdir.cc ie.cc
+
+OBJS =           charset.o transyn.o  transynd.o  transync.o  sopclc.o  sopcli.o  \
+		 attr.o  attrtag.o attrtypd.o \
+		 attrtyps.o  attrtypt.o  attrtypo.o  attrtypv.o \
+		 attrlist.o  attrlsln.o  attrothr.o  attrnew.o  attrseq.o \
+		 attrmxrd.o  attrmxvr.o  attrmxls.o  attrvrfy.o \
+		 elmdict.o  elmpriv.o  dcstream.o  uidgen.o \
+		 dcopti.o  dcopto.o  dcoptc.o \
+		 pixposn.o \
+		 strval.o  binval.o  tagval.o  condn.o \
+		 moduleb.o  modulev.o  modulew.o \
+		 iodcompb.o  iodcompv.o  iodcompw.o  iodcomps.o \
+		 dicomdir.o ie.o
+
+
+LibraryTarget($(PROJECTLIBDIR)/lib$(PROJECTDCTOOLLIBNAME).a,$(OBJS))
+
+ProjectToolLibraryHeaderTemplate(transynt,transyn,transyn,role=table outname=transynt)
+ProjectToolLibraryHeaderTemplate(transync,transyn,transyn,role=constant outname=transync)
+
+ProjectToolLibraryHeaderTemplate(sopclc,sopcl,sopcl,role=constant outname=sopclc)
+ProjectToolLibraryHeaderTemplate(sopclt,sopcl,sopcl,role=table outname=sopclt)
+
+ProjectToolLibraryHeaderTemplate(elmtable,elmdict,elmdict,role=table outname=elmtable)
+
+ProjectToolLibraryHeaderTemplate(strvald,strval,strval,role=define outname=strvald)
+ProjectToolLibraryHeaderTemplate(binvald,binval,binval,role=define outname=binvald)
+ProjectToolLibraryHeaderTemplate(tagvald,tagval,tagval,role=define outname=tagvald)
+ProjectToolLibraryHeaderTemplate(condnd,condn,condn,role=define outname=condnd)
+
+ProjectToolLibraryHeaderTemplate(moduleb,module,module,role=build  outname=moduleb)
+ProjectToolLibraryHeaderTemplate(modulev,module,module,role=verify outname=modulev)
+ProjectToolLibraryHeaderTemplate(modulew,module,module,role=write  outname=modulew)
+
+ProjectToolLibraryHeaderTemplate(iodcompb,iodcomp,iodcomp,role=build  outname=iodcompb)
+ProjectToolLibraryHeaderTemplate(iodcompv,iodcomp,iodcomp,role=verify outname=iodcompv)
+ProjectToolLibraryHeaderTemplate(iodcompw,iodcomp,iodcomp,role=write  outname=iodcompw)
+ProjectToolLibraryHeaderTemplate(iodcomps,iodcomp,iodcomp,role=select outname=iodcomps)
+
+DependCCTarget()

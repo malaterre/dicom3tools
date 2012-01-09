@@ -1,0 +1,114 @@
+.TH DCUIDCHG 1 "11 March 2007" "DICOM PS3" "DICOM PS3 - Change UIDs"
+.SH NAME
+dcuidchg \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Change UIDs consistently
+.SH SYNOPSIS
+.HP 10
+.B dcuidchg
+" inputfile1 [ inputfile2 ... ]"
+.B \-outdir " dirname"
+[
+.B \-v|verbose|vv|veryverbose
+]
+[
+.B \-l
+]
+[
+.B \-f|-filelist " filename"
+]
+[
+.B \-descriptor
+]
+[
+.B \-map " filename"
+]
+.so man1/optin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcuidchg
+reads all the named dicom input files (and/or the files listed in the specified
+file) and copies them to the specified directory, changing all the instance-related UIDs
+in a consistent manner throughout the set of files.
+.LP
+Fixed UIDs such as SOP Classes and Transfer Syntaxes are not affected.
+.LP
+The UIDs obtained by two separate invocations of this utility will be different, so
+the action needs to be performed on a set of files simultaneously in order
+to maintain consistency across studies, series, frames of reference and
+in explicit references to other instances.
+.LP
+Note that the basename of the original file is used for the output file, and is
+not changed, so if the basename was derived from the SOP Instance UID, as is common
+practice, then that name would need to be changed subsequently if the UID replacement
+was being performed to prevent identity leakage.
+.LP
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-outdir dirname
+.RS
+The directory, which must already exist, to which the copied files are written, using
+the basename of the original filename.
+.RE
+.TP
+.B \-v|verbose
+.RS
+Display attributes as they are read and written.
+.RE
+.TP
+.B \-l
+.RS
+List filenames as they are read and written.
+.RE
+.TP
+.B \-f|filelist filename
+.RS
+A file containing a list of DICOM input files (one filename per line).
+.RE
+.TP
+.B \-descriptor
+.RS
+Add (or extend) DeidentificationMethod attribute with description of UID removal.
+.RE
+.TP
+.B \-map filename
+.RS
+A file to which is written the map of original to replacement UID values.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% ls -1 IMAGES/[0-9]*
+.RE
+IMAGES/IM0001
+.RE
+IMAGES/IM0002
+.RE
+% mkdir /tmp/IMAGES
+.RE
+% dcuidchg IMAGES/[0-9]* -outdir /tmp/NEWIMAGES
+.RE
+% ls -1 /tmp/NEWIMAGES
+.RE
+/tmp/NEWIMAGES/IM0001
+.RE
+/tmp/NEWIMAGES/IM0002
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1), 
+.BR dcdtchg(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP
+There is a fixed length of buffer used for reading each line from the list of filenames file.
+.LP

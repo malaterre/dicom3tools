@@ -1,0 +1,159 @@
+The file that describes the public interface:
+
+	"signa.h"
+		class SGN_Conversion {
+			SGN_Conversion(istream &i,ostream &e);
+			virtual ~SGN_Conversion();
+			bool dump(ostream &out);
+			bool convertAll(AttributeList *list,TransferSyntax *transfersyntax);
+			bool convertHeader(AttributeList *list);
+			bool convertPixelData(AttributeList *list,TransferSyntax *transfersyntax);
+		};
+
+	NB. The Imakefile is set up to install this file in the main include area
+	whenever on a "make".
+
+Files that are usually left alone (the "glue" between headers, classes, etc.):
+
+	"sgn.cc"
+
+		SGN_Conversion::SGN_Conversion(istream &i,ostream &e);
+		SGN_Conversion::~SGN_Conversion();
+
+	"sgncl.h"
+
+		class SGN_Header_BothClass  : public SGN_HeaderClass
+		{
+		public:
+			SGN_Header_BothClass(istream *ist) : SGN_HeaderClass(ist) {}
+			void Dump(TextOutputStream *log);
+			void ToDicom_Template   (AttributeList *list);
+			void ToDicom_ManualMisc (AttributeList *list);
+			void ToDicom_ManualPlane(AttributeList *list);
+			void ToDicom_ManualDates(AttributeList *list);
+		};
+
+	"sgnconv.cc"
+
+		#include "sgnconv.h"
+
+	"sgndc.c"
+
+		bool SGN_Conversion::convertHeader(AttributeList *list);
+		bool SGN_Conversion::convertPixelData(AttributeList *list,TransferSyntax *transfersyntax);
+		bool SGN_Conversion::convertAll(AttributeList *list,TransferSyntax *transfersyntax);
+
+	"sgndc.h"
+
+	"sgndmp.cc"
+
+		bool SGN_Conversion::dump(ostream &o);
+
+	"sgndmp.h"
+
+	"sgnhdrc.cc"
+
+		#include "sgnhdrc.h"
+
+Files that definitely need to be tailored for each format:
+
+	"sgn.tpl"
+
+		The template "describing" the format for header generation
+
+	"sgnmdt.cc"
+
+		void SGN_Header_BothClass::ToDicom_ManualDates(AttributeList *list);
+
+	"sgnmmsc.cc"
+
+		void SGN_Header_BothClass::ToDicom_ManualMisc(AttributeList *list);
+
+	"sgnmpln.cc"
+
+		void SGN_Header_BothClass::ToDicom_ManualPlane(AttributeList *list);
+
+	"sgnptrs.h"
+
+		define offsets, pointers and values, both fixed, and dependent on previous fields
+
+	"sgnsrc.h"
+
+		class SGN_PixelDataSource : public SourceBase<Uint16> {
+		public:
+			SGN_PixelDataSource(istream& i,long off,Uint16 r,Uint16 c) : SourceBase<Uint16>();
+			~SGN_PixelDataSource();
+			size_t read(void);
+			const Uint16 *getBuffer(void);
+			size_t getBufferCount(void) const;
+			int good(void) const;
+		};
+
+Files that are automatically generated from gen.tpl:
+
+	"sgnhdrp.h"
+
+		generated with role=headerpart
+
+		contains the detailed description of each format header
+		block class, eg.
+
+		class SGN_HeaderClass_HDR1 {
+		public:
+			SGN_HeaderClass_HDR1(istream *ist,size_t offset)
+		 		{ ReadProprietaryHeader(ist,offset,sizeof *this,(char *)this); }
+
+			Uint16_L 	FHENTRIES	; // at 0
+			Uint16_L 	FHCOUNT		; // at 2
+			...
+		};
+
+	"sgnhdrw.h"
+
+		generated with role=wholeheader
+
+		contains the declaration of the top level class that contains instances
+		classes for each block of the header, eg.
+
+		class SGN_HeaderClass
+		{
+		public:
+			SGN_HeaderClass(istream *ist);
+
+			SGN_HeaderClass_HDR1 *SGN_HeaderInstance_HDR1;
+			SGN_HeaderClass_HDR2 *SGN_HeaderInstance_HDR2;
+			...
+		};
+
+
+	"sgnhdrc.h"
+
+		generated with role=constructheader
+
+		contains the constructor for the top level class that instantiates
+		classes for each block of the header
+
+		SGN_HeaderClass::SGN_HeaderClass(istream *ist);
+
+	"sgnconv.h"
+
+		generated with role=dicom
+
+		contains the code to generate DICOM attributes
+
+		void SGN_Header_BothClass::ToDicom_Template(AttributeList *list);
+
+	"sgndmpf.h"
+		generated with role=dump
+
+		contains the code to dump a describtion of the file header content
+
+		void SGN_Header_BothClass::Dump(TextOutputStream *log);
+
+Places to put special handling code:
+
+	if you need an "extra" header file for miscellaneous stuff, use "sgnhdrm.h".
+
+	if you have special purpose code, then "sgnhdrc.cc" is a good place to put
+	it, as normally all this file does is instantiate the "sgnhdrc.h", but it
+	is always going to get loaded in any application using this library.

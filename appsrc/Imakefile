@@ -1,0 +1,6 @@
+#define IHaveSubdirs
+
+SUBDIRS = acrnema dcdisp dcfile dcintro misc simple dconvert
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

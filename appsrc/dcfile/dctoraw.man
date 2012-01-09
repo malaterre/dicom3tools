@@ -1,0 +1,82 @@
+.TH DCTORAW 1 "05 April 1998" "DICOM PS3" "DICOM PS3 - DICOM image to raw file"
+.SH NAME
+dctoraw \- ACR/NEMA DICOM PS3 ... DICOM PS3 - DICOM image to raw file
+.SH SYNOPSIS
+.HP 10
+.B dctoraw
+[
+.B \-v|verbose
+]
+[
+.B \-quiet|silent
+]
+.so man1/optin.so
+.so man1/genout.so
+.SH DESCRIPTION
+.LP
+.B dctoraw
+reads the named dicom or acr-nema input file and copies the raw image
+pixel data to a raw binary file without a header of any kind.
+.LP
+The byte order, packing or encapsulation of the raw result is dependent only
+on the encoding of the input file and cannot be changed. Use dccp(1)
+first to change the encoding if necessary.
+.LP
+.SH OPTIONS
+The raw output goes where it is specified or standard out.
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-quiet|silent
+.RS
+Suppress the normal description of image parameters.
+.RE
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dctoraw expmeta.dc3 expmeta.raw
+.RE
+******** Parameters ... ********
+.RE
+(0x0028,0x0010) US Rows                       [0x0100] 
+.RE
+(0x0028,0x0011) US Columns                    [0x0100] 
+.RE
+(0x0028,0x0002) US Samples per Pixel          [0x0001] 
+.RE
+(0x0028,0x0103) US Pixel Representation       [0x0000] 
+.RE
+(0x0028,0x0004) CS Photometric Interpretation <MONOCHROME2> 
+.RE
+(0x0028,0x0100) US Bits Allocated             [0x0010] 
+.RE
+(0x0028,0x0101) US Bits Stored                [0x0010] 
+.RE
+(0x0028,0x0102) US High Bit                   [0x000f] 
+.RE
+Encapsulated    No
+.RE
+ByteOrder       Little
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR pnmtodc(1) ,
+.BR rawtodc(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

@@ -1,0 +1,59 @@
+.TH DCJ2K 1 "29 July 2007" "DICOM PS3" "DICOM PS3 - Create J2K DICOM file"
+.SH NAME
+dcj2k \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Create J2K DICOM file
+.SH SYNOPSIS
+.HP 10
+.B dcj2k "infile" "outfile" kduoptions
+.SH DESCRIPTION
+.LP
+.B dcj2k
+reads the named dicom input file and copies the information and
+pixel data to a new dicom file, with the dataset compressed using the specified
+J2K compression options and transfer syntax, and with a meta information header prepended.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+There are no options other than thosed passed through to the Kakadu kdu_compress JPEG 2000 codec.
+.LP
+The default with no options is lossless (reversible) compression.
+.LP
+The sample precision (bit depth) and signedness are extracted from the DICOM header and passed to the codec unchanged.
+.LP
+The transfer syntax 1.2.840.10008.1.2.4.90 is chosen if reversible compression is in use, otherwise
+the transfer syntax used is 1.2.840.10008.1.2.4.91.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+# Create a lossless (reversible) compressed image
+.RE
+% dcj2k in.dcm out.dcm
+.RE
+\ 
+.RE
+# or
+.RE
+% dcj2k in.dcm out.dcm Creversible=yes
+.RE
+\ 
+.RE
+# Create a lossy compressed image with 1.0 bits per pixel
+.RE
+% dcj2k in.dcm out.dcm -rate 1.0
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcunjpeg(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+Only single sample (not color) compression is supported for now.
+.LP
+Kakadu is the only codec currently supported ... auto-detection of what is installed would be nice.
+

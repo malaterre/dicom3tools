@@ -1,0 +1,6 @@
+[
+.B \-of|\-output-file|> " name"
+]
+[
+.B \-byteorder|-endian|output-byteorder|-output-endian " big|little"
+]

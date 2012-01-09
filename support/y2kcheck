@@ -1,0 +1,10 @@
+#!/bin/sh
+
+for d in config libsrc appsrc support
+do
+	for i in `find "$d" -type f -print`
+	do
+		echo $i
+		egrep -ni 'date|year|month|day' $i | grep -vi update | grep -vi validate
+	done
+done

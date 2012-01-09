@@ -1,0 +1,3 @@
+Currently using all 16 bits and maxval of 65535 ... doesn't really matter
+but could one drop this depending on some header value ?
+

@@ -1,0 +1,33 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTAPPDCONVERTEXTRAINCLUDES)
+
+SRCSTODC = ge9800todc.cc
+OBJSTODC = ge9800todc.o
+
+SRCSDUMP = ge9800dump.cc
+OBJSDUMP = ge9800dump.o
+
+CPLUSPLUS_SRCS = $(SRCSDUMP) $(SRCSTODC)
+OBJS = $(OBJSDUMP) $(OBJSTODC)
+
+AllTarget(ge9800todc)
+NormalCCProgramTarget(ge9800todc,$(OBJSTODC),$(TOP)/libsrc/lib/libdge9800.a $(PROJECTDCONVERTDEPLIBS),-ldge9800 $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(ge9800todc,$(INSTALLBINDIR))
+InstallManPage(ge9800todc,$(INSTALLMANDIR)/man1)
+
+AllTarget(ge9800dump)
+NormalCCProgramTarget(ge9800dump,$(OBJSDUMP),$(TOP)/libsrc/lib/libdge9800.a $(PROJECTDCONVERTDEPLIBS),-ldge9800 $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(ge9800dump,$(INSTALLBINDIR))
+InstallManPage(ge9800dump,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./ge9800dump "" $(TOP)/images/ge9800 $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./ge9800todc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/ge9800 $(TOP)/test/$(CURRENT_DIR) compare todc
+
+test.create::
+	@$(TOP)/support/testapp testlist ./ge9800dump "" $(TOP)/images/ge9800 $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./ge9800todc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/ge9800 $(TOP)/test/$(CURRENT_DIR) create todc
+

@@ -1,0 +1,39 @@
+These recursively descend into lists in sequence attributes:
+
+	bool doClean(void);
+	bool doRemovePrivate(void);
+	bool addDicom(void);
+	bool setOutputEncoding(TransferSyntax *);
+
+These don't:
+
+	bool doReplace(void);
+	bool doDelete(void);
+	bool addDisclaimer(void);
+	bool addMetaHeader(void);
+	bool addLengths(void);
+
+Note that this particularly applies to setOutputEncoding(). If
+PixelData elements are contained within a sequence, then the
+transfer syntax with which they are read must be compatible
+with the transfer sequence with which they are being written,
+unless setOutputEncoding(0 has been applied. The need to do
+this arose when examing Papyrus 3 files that contain embedded
+sequences of composite image objects.
+
+"Compatibility" is defined in the sense of VR and byte order
+macthing for unencapsulated transfer syntaxes as defined by
+the "==" operator for TransferSyntax in transyn.cc.
+
+Note though that in the case of Papyrus, no attempt is made to
+fix internal pointers such as ImagePointer and PixelOffset
+which will undoubtedly be incorrect after a copy operation.
+
+The intent is to provide enough support to be able to dump
+Papyrus files, and extract pixel data from within sequences,
+not to successfully copy or reconstruct them.
+
+While on the subject of Papyrus, they seem to have add a '0'
+not a NULL to the transfer syntax and use "1.2.840.10008.1.20"
+so added this to the transfer syntax template to keep the peace.
+

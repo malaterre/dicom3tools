@@ -1,0 +1,62 @@
+.TH PGXTODC 1 "11 June 2003" "DICOM PS3" "DICOM PS3 - Create DICOM from PGX file"
+.SH NAME
+pgxtodc \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Create DICOM from PGX file
+.SH SYNOPSIS
+.HP 10
+.B pgxtodc
+[
+.B \-v|verbose
+]
+.so man1/genin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B pgxtodc
+reads the named PGX input file and copies the information and
+pixel data to a new dicom file, creating a Secondary Capture SOP
+Class instance.
+.LP
+The output encoding of the file will be the default or explicitly
+requested transfer syntax, as described in dcintro(1) under output
+options. The byte order of the pixel data will be changed from that
+in the PGX file as necessary.
+.LP
+During the translation, specific attributes may be deleted, added or
+replaced, class and instance unique identifiers generated or removed,
+group lengths added, or private attributes removed, as specified by
+the replacement options described in dcintro(1). This allows the
+specification of additional DICOM attributes, such as the patient's
+name, necessary to make a complete and useful SC instance.
+.LP
+Photometric Interpretation will be MONOCHROME2.
+images.
+.LP
+Pixel Representation will be unsigned or signed as specified in
+the PGX file.
+.LP
+Bits Stored will depend on the bit depth specified in the PGX file.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-verbose
+.RS
+Display contents after creation, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dxtopgx(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+

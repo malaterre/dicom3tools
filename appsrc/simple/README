@@ -1,0 +1,47 @@
+These applications are the absolute minimal code required to extract
+the image pixel data from a proprietary format and create a pgm file.
+
+Each program stands alone and requires no libraries, templates, or header
+files from elsewhere in the package, other than basetype.h.
+
+The C define PNMBIGRAW should be set to 0 or 1 to disallow or allow the
+use of 'extended' 16 bit little-endian PGM format - this is the default,
+rather than the portable but huge text format.
+
+All programs are filters and read from standard in and write to standard
+out.
+
+To set maxval to the "real" maxval (not less than 256) ...
+
+	in="$1"
+	out="$2"
+	maxval=`pgmhist <$in | tail -1 | awk '{print $1}'`
+	if [ "$maxval" -le 255 ] ; then maxval=256; fi
+	pnmdepth "$maxval" <"$in" >"$out"
+
+To roughly scale the dynamic range to fit in 8 bits:
+
+	in="$1"
+	out="$2"
+	maxval=`pgmhist <$in | tail -1 | awk '{print $1}'`
+	if [ "$maxval" -gt 255 ]
+	then
+		maxval=`expr "$maxval" + 1`
+		gamma=`expr "$maxval" / 256`
+		pnmgamma "$gamma" <"$in"  | pnmdepth 255 >"$out"
+	fi
+
+To roughly scale the dynamic range to fit in 8 bits, except the top x%:
+
+	in="$1"
+	out="$2"
+	percent="$3"
+
+	grepstring="[ 	]$percent[.%][0-9]*[%]*\$"
+	maxval=`pgmhist <$in | grep "$grepstring" | tail -1 | awk '{print $1}'`
+	if [ "$maxval" -gt 255 ]
+	then
+		maxval=`expr "$maxval" + 1`
+		gamma=`expr "$maxval" / 256`
+		pnmgamma "$gamma" <"$in" | pnmdepth 255 >"$out"
+	fi

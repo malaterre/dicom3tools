@@ -1,0 +1,24 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBGENERICEXTRAINCLUDES)
+
+SRCSTOPGM = sgntopgm.cc
+OBJSTOPGM = sgntopgm.o
+
+CPLUSPLUS_SRCS = $(SRCSTOPGM)
+OBJS = $(OBJSTOPGM)
+
+AllTarget(sgntopgm)
+
+NormalCCProgramTarget(sgntopgm,$(OBJSTOPGM),NullParameter,NullParameter,NullParameter)
+
+InstallProgram(sgntopgm,$(INSTALLBINDIR))
+InstallManPage(sgntopgm,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./sgntopgm "" $(TOP)/images/signa $(TOP)/test/$(CURRENT_DIR) compare filter
+
+test.create::
+	@$(TOP)/support/testapp testlist ./sgntopgm "" $(TOP)/images/signa $(TOP)/test/$(CURRENT_DIR) create filter

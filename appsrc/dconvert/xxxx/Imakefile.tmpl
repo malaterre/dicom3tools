@@ -1,0 +1,36 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTAPPDCONVERTEXTRAINCLUDES)
+
+SRCSTODC = xxxxtodc.cc
+OBJSTODC = xxxxtodc.o
+
+SRCSDUMP = xxxxdump.cc
+OBJSDUMP = xxxxdump.o
+
+CPLUSPLUS_SRCS = $(SRCSDUMP) $(SRCSTODC)
+OBJS = $(OBJSDUMP) $(OBJSTODC)
+
+AllTarget(xxxxtodc)
+NormalCCProgramTarget(xxxxtodc,$(OBJSTODC),$(TOP)/libsrc/lib/libdxxxx.a $(PROJECTDCONVERTDEPLIBS),-ldxxxx $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(xxxxtodc,$(INSTALLBINDIR))
+InstallManPage(xxxxtodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(xxxxdump)
+NormalCCProgramTarget(xxxxdump,$(OBJSDUMP),$(TOP)/libsrc/lib/libdxxxx.a $(PROJECTDCONVERTDEPLIBS),-ldxxxx $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(xxxxdump,$(INSTALLBINDIR))
+InstallManPage(xxxxdump,$(INSTALLMANDIR)/man1)
+
+InstallScript(xxxxunid,$(INSTALLBINDIR))
+InstallManPage(xxxxunid,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./xxxxdump "" $(TOP)/images/xxxx $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./xxxxtodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/xxxx $(TOP)/test/$(CURRENT_DIR) compare todc
+
+test.create::
+	@$(TOP)/support/testapp testlist ./xxxxdump "" $(TOP)/images/xxxx $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./xxxxtodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/xxxx $(TOP)/test/$(CURRENT_DIR) create todc
+

@@ -1,0 +1,48 @@
+.TH DCTOPDF 1 "08 October 2005" "DICOM PS3" "DICOM PS3 - Extract DICOM encapsulated PDF"
+.SH NAME
+dctopdf \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Extract DICOM encapsulated PDF
+.SH SYNOPSIS
+.HP 10
+.B dctopdf
+[
+.B \-v|verbose
+]
+[
+.B \-quiet|silent
+]
+.so man1/optin.so
+.so man1/binout.so
+.SH DESCRIPTION
+.LP
+.B dctopdf
+reads the named dicom input file containing an encpasulated PDF file and stores it as a PDF file.
+.LP
+.SH OPTIONS
+The PDF output goes where it is specified or standard out.
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-quiet|silent
+.RS
+Suppress the normal description of encapsulated document parameters.
+.RE
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR pdftodc(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

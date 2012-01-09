@@ -1,0 +1,73 @@
+#!/bin/sh
+
+# usage: dcmvhier files
+#
+# this script moves dicom files into a patient/study/series/image
+# hierarchy
+
+DCMSUFFIX=".dcm"
+
+DCKEY="dckey -ignoreoutofordertags -ignorereaderrors -noerror"
+MV="mv"
+MKDIRHIER="mkdir -p"
+
+TMPFILE="/tmp/`basename $0`.$$.tmp"
+
+counter=1
+
+for i in $*
+do
+	#echo "$i"
+
+	patientid=`$DCKEY -k PatientID "$i" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9a-zA-Z_.-]//g'`
+	patientname=`$DCKEY -k PatientName "$i" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9a-zA-Z_.-]//g'`
+	patientlabel=$patientid$patientname
+	if [ -z "$patientlabel" ]
+	then
+		echo "$i: Warning: Missing both Patient ID and Name - moving to BADPATIENT" 1>&2
+		patientlabel="BADPATIENT"
+	fi
+
+	studyid=`$DCKEY -k StudyID "$i" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9a-zA-Z_.-]//g'`
+	if [ -z "$studyid" ]
+	then
+		studyid="000000"
+	fi
+
+	seriesnum=`$DCKEY -k SeriesNumber "$i" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9a-zA-Z_.-]//g'`
+	if [ -z "$seriesnum" ]
+	then
+		seriesnum="0"
+	fi
+
+	imagenum=`$DCKEY -k InstanceNumber "$i" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9a-zA-Z_.-]//g'`
+	if [ -z "$imagenum" ]
+	then
+		imagenum="$$_$counter"
+	fi
+
+	if [ ! -d "$patientlabel/$studyid/$seriesnum" ]
+	then
+		$MKDIRHIER "$patientlabel/$studyid/$seriesnum"
+	fi
+
+ 	if [ ! -f "$patientlabel/$studyid/$seriesnum/$imagenum$DCMSUFFIX" ]
+	then
+		echo $MV "$i" "$patientlabel/$studyid/$seriesnum/$imagenum$DCMSUFFIX"
+		$MV "$i" "$patientlabel/$studyid/$seriesnum/$imagenum$DCMSUFFIX"
+	else
+		if [ ! -f "$patientlabel/$studyid/$seriesnum/$imagenum.$counter$DCMSUFFIX" ]
+		then
+			echo $MV "$i" "$patientlabel/$studyid/$seriesnum/$imagenum.$counter$DCMSUFFIX"
+			$MV "$i" "$patientlabel/$studyid/$seriesnum/$imagenum.$counter$DCMSUFFIX"
+		else
+			echo "$i: Not overwriting $patientlabel/$studyid/$seriesnum/$imagenum$DCMSUFFIX - aborting" 1>&2
+			echo "$i: Not overwriting $patientlabel/$studyid/$seriesnum/$imagenum.$counter$DCMSUFFIX - aborting" 1>&2
+			exit 1
+		fi
+	fi
+
+	counter=`expr $counter '+' 1`
+done
+
+rm -f "$TMPFILE"

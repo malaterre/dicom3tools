@@ -1,0 +1,216 @@
+#include <iostream.h>	// only for debugging
+#include <iomanip.h>	// only for debugging
+
+#include "basetype.h"
+#include "usegray.h"
+
+UseableWindowedGrayImage::UseableWindowedGrayImage(
+	bool invertedgrayscale,Uint16 bits,bool issigned)
+{
+	Assert(bits);
+	inverted=invertedgrayscale;
+	mingray=0;
+	Uint32 mx=(Uint32(1)<<bits)-1;
+	Assert(mx <= Uint16_MAX);
+	maxgray=Uint16(mx);
+	Assert(maxgray >= mingray);
+	ngrays=maxgray-mingray+1;
+
+	(void)setSign(bits,issigned);
+
+cerr << "UseableWindowedGrayImage::UseableWindowedGrayImage" << "\n"
+     << "\t invertedgrayscale=" << dec << invertedgrayscale << "\n"
+     << "\t bits=" << dec << bits << "\n"
+     << "\t issigned=" << dec << issigned << "\n"
+     << "\t mingray=" << dec << mingray << "\n"
+     << "\t mx=" << dec << mx << "\n"
+     << "\t maxgray=" << dec << maxgray << "\n"
+     << "\t ngrays=" << dec << ngrays << "\n"
+     << "\t signxor(hex)=" << hex << signxor << dec << "\n"
+     << endl;
+
+	graytocell=new Uint16[ngrays];
+	Assert(graytocell);
+	ncells=0;
+	indextocell=0;
+	red=0;
+	green=0;
+	blue=0;
+	needdefaultwindowsetting=true;
+}
+
+UseableWindowedGrayImage::~UseableWindowedGrayImage()
+{
+	if (graytocell) delete[] graytocell;
+	if (indextocell) delete[] indextocell;
+	if (red) delete[] red;
+	if (green) delete[] green;
+	if (blue) delete[] blue;
+}
+
+	// gray is the real gray value in the image pixel data
+	// index is the gray value windowed to a range 0..ncells
+	// cell is the actual number of the cell used in the display array
+
+	// strategy is ...
+	//	allocate lut of gray to cell
+	//	request <= 244 cells
+	//	load those cells with a linear gray scale
+	//	fill graytocell lut with cell numbers
+	//	operator[] returns cell number given gray value
+
+	// indextocell is kept around in case windowing is changed and
+	// need to recalculate graytocell
+
+bool
+UseableWindowedGrayImage::setSign(Uint16 bits,bool issigned)
+{
+	signxor=issigned
+		? 1<<(bits-1)
+		: 0;
+
+	return true;
+}
+
+bool UseableWindowedGrayImage::getColorCellsWanted(unsigned &nwanted,
+		unsigned &nminimum)
+{
+	nwanted=256;
+	nminimum=8;
+//cerr << "UseableWindowedGrayImage::getColorCellsWanted nwanted=" << dec << nwanted << endl;
+//cerr << "UseableWindowedGrayImage::getColorCellsWanted nminimum=" << dec << nminimum << endl;
+	return true;
+}
+
+bool
+UseableWindowedGrayImage::setColorCellsAvailable(unsigned n,
+		unsigned long *table)
+{
+//cerr << "UseableWindowedGrayImage::setColorCellsAvailable n=" << dec << n << endl;
+	Assert(n);
+	ncells=n;
+	indextocell=new Uint16[ncells];
+	Assert(indextocell);
+
+	unsigned i;
+	for (i=0; i<ncells; ++i) {
+		Assert(i<n);
+		Assert(indextocell[i] <= Uint16_MAX);
+//cerr << "UseableWindowedGrayImage::setColorCellsAvailable indextocell[i]=(Uint16)table[i]="
+//     << dec << (Uint16)table[i] << endl;
+		indextocell[i]=(Uint16)table[i];
+	}
+	return true;
+}
+
+bool
+UseableWindowedGrayImage::getColorCellValues(unsigned n,
+		unsigned short *&ared,
+		unsigned short *&agreen,
+		unsigned short *&ablue)
+{
+//cerr << "UseableWindowedGrayImage::getColorCellValues n=" << dec << n << endl;
+	Assert(n==ncells);
+	ared=red=new unsigned short [ncells];
+	Assert(red);
+	agreen=green=new unsigned short [ncells];
+	Assert(green);
+	ablue=blue=new unsigned short [ncells];
+	Assert(blue);
+
+	unsigned i;
+	for (i=0; i<ncells; ++i) {
+		unsigned short k =(unsigned short)(Uint32(0xffff)*i/(ncells-1));
+//cerr << "i=" << dec << i
+//     << " k=" << hex << k
+//     << dec << endl;
+		red[i]=k;
+		green[i]=k;
+		blue[i]=k;
+	}
+	return needdefaultwindowsetting
+		? setWindowRange(mingray,maxgray) : true;
+}
+
+bool
+UseableWindowedGrayImage::setWindowRange(Uint16 b,Uint16 t)
+{
+	bottom=b;
+	top=t;
+
+cerr << "UseableWindowedGrayImage::setWindowRange"
+     << " bottom=" << dec << bottom
+     << " top=" << dec << top
+     << endl;
+
+	Assert(bottom<=top);
+	Assert(bottom>=mingray);
+	Assert(top<=maxgray);
+	Assert(indextocell);
+	Assert(graytocell);
+
+	needdefaultwindowsetting=false;
+
+	unsigned long i;
+	for (i=0; i<bottom; ++i) {
+		graytocell[(inverted ? (ngrays-i-1) : i)^signxor]=indextocell[0];
+	}
+	for (i=bottom; i<=top; ++i) {
+		long index=((i-bottom)*ncells)/(top-bottom+1);
+cerr << "UseableWindowedGrayImage::setWindowRange"
+     << " mapping gray=" << dec << i
+     << " to index=" << dec << index
+     << endl;
+		Assert(index>=0);
+		Assert(index<ncells);
+		graytocell[(inverted ? (ngrays-i-1) : i)^signxor]=indextocell[index];
+	}
+	for (i=top+1; i<ngrays; ++i) {
+		graytocell[(inverted ? (ngrays-i-1) : i)^signxor]=indextocell[ncells-1];
+	}
+	return true;
+}
+
+bool
+UseableWindowedGrayImage::setWindowLevelWidth(Uint16 level,Uint16 width)
+{
+cerr << "UseableWindowedGrayImage::setImageLevelWidth"
+     << " level=" << dec << level
+     << " width=" << dec << width
+     << endl;
+	long lbottom=(long)level-width/2;
+cerr << "UseableWindowedGrayImage::setImageLevelWidth"
+     << " lbottom=" << dec << lbottom
+     << endl;
+	if (lbottom < mingray) lbottom=mingray;
+	if (lbottom > maxgray) lbottom=maxgray;	 // just in case
+cerr << "UseableWindowedGrayImage::setImageLevelWidth"
+     << " lbottom clamped to=" << dec << lbottom
+     << endl;
+	long ltop=(long)level+width/2;
+cerr << "UseableWindowedGrayImage::setImageLevelWidth"
+     << " ltop=" << dec << ltop
+     << endl;
+	if (ltop > maxgray) ltop=maxgray;
+	if (ltop < mingray) ltop=mingray;	// just in case
+cerr << "UseableWindowedGrayImage::setImageLevelWidth"
+     << " ltop clamped to=" << dec << ltop
+     << endl;
+	Assert(lbottom<=Uint16_MAX);
+	Assert(ltop<=Uint16_MAX);
+	return setWindowRange(Uint16(lbottom),Uint16(ltop));
+}
+
+bool
+UseableWindowedGrayImage::getWindowLevelWidth(Uint16 &level,Uint16 &width)
+{
+	long llevel=(top+bottom)/2;
+	long lwidth=top-bottom;
+	Assert(llevel<=Uint16_MAX);
+	Assert(lwidth<=Uint16_MAX);
+	level=Uint16(llevel);
+	width=Uint16(lwidth);
+	return true;
+}
+
+

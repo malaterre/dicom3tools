@@ -1,0 +1,30 @@
+.TH PACEUNID 1 "18 November 1995" "Vendor Archives" "PACE remove identification"
+.SH NAME
+paceunid \- PACE remove identification
+.SH SYNOPSIS
+.HP 10
+.B paceunid
+.I inputfilename
+.I outputfilename
+.SH DESCRIPTION
+.LP
+.B paceunid
+reads the named pace input file and copies it to a pace output file, replacing identifying information with something innocuous.
+.SH OPTIONS
+.LP
+\ 
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.LP
+\
+.SH AUTHOR
+Copyright (C) 1993,1994,1995. David A. Clunie. All rights reserved.
+.SH BUGS

@@ -1,0 +1,184 @@
+.TH DCTOPGM8 1 "04 December 2010" "DICOM PS3" "DICOM PS3 - DICOM image to PNM file"
+.SH NAME
+dctopgm8 \- ACR/NEMA DICOM PS3 ... DICOM PS3 - DICOM image to PNM file
+.SH SYNOPSIS
+.HP 10
+.B dctopgm8
+[
+.B \-v|verbose
+]
+[
+.B \-quiet|silent
+]
+.B \-windowwidth width
+]
+.B \-windowlevel|windowcenter center
+]
+.B \-ignorewindow
+]
+.B \-voilut numberfromzero
+]
+.B \-ignorevoilut
+]
+.B \-invertedgray
+]
+.B \-signed|unsigned
+]
+.so man1/optin.so
+.so man1/binout.so
+.SH DESCRIPTION
+.LP
+.B dctopgm8
+reads the named dicom or acr-nema input file, converts it to an 8 bit grayscale image by windowing or application of a VOI LUT and saves it as a PGM file.
+.LP
+In the absence of overriding command line options, the default behavior is to apply the first VOI LUT found, else if none, the first pair of window values in the input file, else if none, the full range of the input pixel values.
+.LP
+The input file must be unencapsulated.
+.LP
+.SH OPTIONS
+The PGM output goes where it is specified or standard out.
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-quiet|silent
+.RS
+Suppress the normal description of image parameters.
+.RE
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.TP
+.B \-windowwidth width
+.RS
+The window width to use (also supresses use of any VOI LUT).
+.RE
+.TP
+.B \-windowlevel|windowcenter center
+.RS
+The window center to use (also supresses use of any VOI LUT).
+.RE
+.TP
+.B \-ignorewindow
+.RS
+Ignore window center and width values in the input file, and use the full pixel value range instead (if no other command line options).
+.RE
+.TP
+.B \-voilut numberfromzero
+.RS
+Use the selected VOI LUT from the input file (indexed from 0 not 1).
+.RE
+.TP
+.B \-ignorevoilut
+.RS
+Ignore any VOI LUTs in the input file, and use the window values or the full pixel value range instead (if no other command line options).
+.RE
+.TP
+.B \-invertedgray
+.RS
+Invert the grayscale, overriding the PhotometricInterpretation in the input file.
+.RE
+.TP
+.B \-signed|unsigned
+.RS
+Override the sign specified in the PixelRepresentation in the input file.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dctopgm8 file.dcm file.pgm
+.RE
+Read ...
+.RE
+	Rows = 2294
+.RE
+	Columns = 1914
+.RE
+	NumberOfFrames = 0
+.RE
+	PhotometricInterpretation = MONOCHROME2
+.RE
+	SamplesPerPixel = 1
+.RE
+	BitsAllocated = 16
+.RE
+	BitsStored = 12
+.RE
+	HighBit = 11
+.RE
+	PixelRepresentation = 0
+.RE
+	PlanarConfiguration = 0
+.RE
+	RescaleIntercept = 0
+.RE
+	RescaleSlope = 1
+.RE
+	WindowCenter = 2905
+.RE
+	WindowWidth = 900
+.RE
+	VOILUTs = 3
+.RE
+	PixelData Value Length = 0x85fe78
+.RE
+Setting window values extracted from object because present not set on command line
+.RE
+Using ...
+.RE
+	Rows = 2294
+.RE
+	Columns = 1914
+.RE
+	NumberOfFrames = 1
+.RE
+	PhotometricInterpretation = MONOCHROME2
+.RE
+	SamplesPerPixel = 1
+.RE
+	BitsAllocated = 16
+.RE
+	BitsStored = 12
+.RE
+	HighBit = 11
+.RE
+	PixelRepresentation = 0
+.RE
+	PlanarConfiguration = 0
+.RE
+	RescaleIntercept = 0
+.RE
+	RescaleSlope = 1
+.RE
+	WindowCenter = 
+.RE
+	WindowWidth = 
+.RE
+	VOILUTs = 0 of 3
+.RE
+	Rows*Columns*SamplesPerPixel*BitsAllocated/8 = 0x85fe78
+.RE
+Writing ...
+.RE
+Applying VOILUT 0
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR pnmtodc(1) ,
+.BR rawtodc(1) ,
+.BR dctopnm(1) ,
+.BR dctoraw(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

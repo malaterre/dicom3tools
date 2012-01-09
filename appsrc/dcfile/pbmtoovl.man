@@ -1,0 +1,67 @@
+.TH PBMTOOVL 1 "01 June 1998" "DICOM PS3" "DICOM PS3 - Create DICOM Overlay from PBM file"
+.SH NAME
+pbmtoovl \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Create DICOM Overlay from PBM file
+.SH SYNOPSIS
+.HP 10
+.B pbmtoovl
+[
+.B \-v|verbose
+]
+.so man1/genin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B pbmtoovl
+reads the named raw PBM input file and copies the information and
+pixel data to a new dicom file, creating a Standalone Overlay SOP
+Class instance.
+.LP
+The output encoding of the file will be the default or explicitly
+requested transfer syntax, as described in dcintro(1) under output
+options. The byte order of the pixel data will be changed as necessary.
+.LP
+During the translation, specific attributes may be deleted, added or
+replaced, class and instance unique identifiers generated or removed,
+group lengths added, or private attributes removed, as specified by
+the replacement options described in dcintro(1). This allows the
+specification of additional DICOM attributes, such as the patient's
+name, necessary to make a complete and useful SC instance.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-standalone
+.RS
+Create complete Composite Standalone Overlay SOP Instance rather than just
+overlay attributes.
+.RE
+.TP
+.B \-verbose
+.RS
+Display contents after creation, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR dctoraw(1) ,
+.BR pnmtodc(1) ,
+.BR rawtodc(1) ,
+.BR dciodvfy(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP
+Only raw grayscale PBM files are supported.
+.LP
+If the standalone option is not specified, the metainformation header must be
+supressed, or an error will be generated, since SOP Class and
+Instance UIDs are mandatory in the metainformation header.

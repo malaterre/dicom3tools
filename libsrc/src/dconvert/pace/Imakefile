@@ -1,0 +1,30 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = pacedc.cc paceconv.cc pacempln.cc \
+		 pacemmsc.cc pacemdt.cc \
+		 pacedmp.cc pacedmpf.cc \
+		 pacehdrc.cc pace.cc
+
+OBJS = 		 pacedc.o  paceconv.o  pacempln.o  \
+		 pacemmsc.o  pacemdt.o  \
+		 pacedmp.o  pacedmpf.o  \
+		 pacehdrc.o  pace.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdpace.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(pace,dconvert)
+
+ProjectConvertTemplate(pacehdrp.h,pace,convert,prefix=PACE_ role=headerpart offsetwarning=off)
+ProjectConvertTemplate(pacehdrw.h,pace,convert,prefix=PACE_ role=wholeheader)
+ProjectConvertTemplate(pacehdrc.h,pace,convert,prefix=PACE_ role=constructheader)
+ProjectConvertTemplate(paceconv.h,pace,convert,prefix=PACE_ role=dicom)
+ProjectConvertTemplate(pacedmpf.h,pace,convert,prefix=PACE_ role=dump)
+
+pacedmpf.o: pacedmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) pacedmpf.cc
+
+DependCCTarget()
+

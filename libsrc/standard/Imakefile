@@ -1,0 +1,242 @@
+#define IHaveSubdirs
+
+PIXELMEDTARGETDIR = ../../../pixelmed/imgbook/com/pixelmed/dicom
+
+SUBDIRS = elmdict module iodcomp strval
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))
+
+all::	 elmdict.tpl module.tpl iodcomp.tpl strval.tpl elmdict.xml
+
+depend::	 elmdict.tpl module.tpl iodcomp.tpl strval.tpl
+
+clean::
+	$(RM) elmdict.tpl module.tpl iodcomp.tpl strval.tpl elmdict.xml DicomDictionary.java.work DicomDictionary.java TagFromName.java
+        
+iodandmodulerelationshipsbytag.dat:	$(PROJECTLIBSUPPORTDIR)/extractiodandmodulerelationshipsbytag.awk iodandmodulerelationshipsbytag.head iodcomp.tpl module.tpl
+	cat iodandmodulerelationshipsbytag.head >iodandmodulerelationshipsbytag.dat
+	cat iodcomp.tpl module.tpl | $(AWK) -f $(PROJECTLIBSUPPORTDIR)/extractiodandmodulerelationshipsbytag.awk | sort -u | xargs -L 1 $(PROJECTLIBSUPPORTDIR)/inserttagumberbeforekeyword.sh elmdict/dicom3.tpl >>iodandmodulerelationshipsbytag.dat
+
+iodandmodulerelationshipsbytag_simple.dat:	iodandmodulerelationshipsbytag.dat
+	head -1 <iodandmodulerelationshipsbytag.dat | awk -F, '{print $$1 "," $$2 "," $$3 "," $$4}' >iodandmodulerelationshipsbytag_simple.dat
+	sed -e '1d' <iodandmodulerelationshipsbytag.dat | awk -F, '{print $$1 "," $$2 "," $$3 "," $$4 "," $$5}' | sort -u -t , +2 >>iodandmodulerelationshipsbytag_simple.dat
+
+install.java:	TagFromName.java DicomDictionary.java
+	$(CP) TagFromName.java $(PIXELMEDTARGETDIR)
+	$(CP) DicomDictionary.java $(PIXELMEDTARGETDIR)
+	
+TagFromName.java:	$(PROJECTLIBSUPPORTDIR)/elmtojava_TagFromName.awk \
+		elmdict/dicom3.tpl	\
+		elmdict/dicos.tpl	\
+		elmdict/diconde.tpl	\
+		Imakefile
+	RemoveTargetProgram(TagFromName.java)
+	cat \
+		elmdict/dicom3.tpl	\
+		elmdict/dicos.tpl	\
+		elmdict/diconde.tpl	\
+		| $(SORT) -b -n +0 -1 +4 -5 \
+		| sed -e 's/xx/00/g' -e 's/\([0-9][0-9]\)x\([0-9]\)/\10\2/g' \
+		| $(AWK) -f $(PROJECTLIBSUPPORTDIR)/elmtojava_TagFromName.awk >TagFromName.java
+
+DicomDictionary.java.work:	\
+		elmdict/dicom3.tpl	\
+		elmdict/dicos.tpl	\
+		elmdict/diconde.tpl	\
+		Imakefile
+	RemoveTargetProgram(DicomDictionary.java.work)
+	cat \
+		elmdict/dicom3.tpl	\
+		elmdict/dicos.tpl	\
+		elmdict/diconde.tpl	\
+		| $(SORT) -b -n +0 -1 +4 -5 \
+		| egrep -v -i '[0-9][0-9]x[0-9]' \
+		| grep -v 'VR="NONE"' \
+		>DicomDictionary.java.work
+
+DicomDictionary.java:	DicomDictionary.java.work \
+		$(PROJECTLIBSUPPORTDIR)/DicomDictionary_header.txt \
+		$(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateTagList.awk \
+		$(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateVRByTag.awk \
+		$(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateIEByTag.awk \
+		$(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateTagByName.awk \
+		$(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateNameByTag.awk \
+		$(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateFullNameByTag.awk \
+		$(PROJECTLIBSUPPORTDIR)/DicomDictionary_trailer.txt \
+		iodcomp.tpl module.tpl Imakefile
+	RemoveTargetProgram(DicomDictionary.java)
+	cat $(PROJECTLIBSUPPORTDIR)/DicomDictionary_header.txt >DicomDictionary.java
+	$(AWK) -f $(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateTagList.awk <DicomDictionary.java.work >>DicomDictionary.java
+	$(AWK) -f $(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateVRByTag.awk <DicomDictionary.java.work >>DicomDictionary.java
+	cat iodcomp.tpl module.tpl | $(AWK) -f $(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateIEByTag.awk role=java >>DicomDictionary.java
+	$(AWK) -f $(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateTagByName.awk <DicomDictionary.java.work >>DicomDictionary.java
+	$(AWK) -f $(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateNameByTag.awk <DicomDictionary.java.work >>DicomDictionary.java
+	$(AWK) -f $(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateFullNameByTag.awk <DicomDictionary.java.work >>DicomDictionary.java
+	cat $(PROJECTLIBSUPPORTDIR)/DicomDictionary_trailer.txt >>DicomDictionary.java
+
+InformationEntity.csv:	\
+		$(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateIEByTag.awk \
+		$(PROJECTLIBSUPPORTDIR)/inserttagumberbeforekeyword.sh \
+		iodcomp.tpl module.tpl Imakefile
+	echo "Tag,Keyword,InformationEntity" >InformationEntity.csv
+	cat iodcomp.tpl module.tpl \
+		| $(AWK) -f $(PROJECTLIBSUPPORTDIR)/elmtojava_DicomDictionary_CreateIEByTag.awk role=csv \
+		| xargs -L 1 $(PROJECTLIBSUPPORTDIR)/inserttagumberbeforekeyword.sh elmdict/dicom3.tpl \
+		| sort \
+		>>InformationEntity.csv
+
+elmdict.xml: \
+		elmdict/dicom3.tpl	\
+		elmdict/dicos.tpl	\
+		elmdict/diconde.tpl	\
+		$(PROJECTLIBSUPPORTDIR)/elmtoxml.awk
+	RemoveTargetProgram(elmdict.xml)
+	cat \
+		elmdict/dicom3.tpl	\
+		elmdict/dicos.tpl	\
+		elmdict/diconde.tpl	\
+		| $(SORT) -b -n +0 -1 +4 -5 \
+		| $(AWK) -f $(PROJECTLIBSUPPORTDIR)/elmtoxml.awk >elmdict.xml
+
+elmdict.tpl:	\
+		elmdict/dicom3.tpl	\
+		elmdict/philips.tpl	\
+		elmdict/siemens.tpl	\
+		elmdict/gems.tpl	\
+		elmdict/papyrus.tpl	\
+		elmdict/toshiba.tpl	\
+		elmdict/isg.tpl		\
+		elmdict/elscint.tpl	\
+		elmdict/acuson.tpl	\
+		elmdict/camtron.tpl	\
+		elmdict/agfa.tpl	\
+		elmdict/picker.tpl	\
+		elmdict/spi.tpl	\
+		elmdict/other.tpl \
+		elmdict/dicos.tpl \
+		elmdict/diconde.tpl \
+		elmdict/dicondep.tpl
+	cat \
+		elmdict/dicom3.tpl	\
+		elmdict/philips.tpl	\
+		elmdict/siemens.tpl	\
+		elmdict/gems.tpl	\
+		elmdict/papyrus.tpl	\
+		elmdict/toshiba.tpl	\
+		elmdict/isg.tpl		\
+		elmdict/elscint.tpl	\
+		elmdict/acuson.tpl	\
+		elmdict/camtron.tpl	\
+		elmdict/agfa.tpl	\
+		elmdict/picker.tpl	\
+		elmdict/spi.tpl	\
+		elmdict/other.tpl	\
+		elmdict/dicos.tpl	\
+		elmdict/diconde.tpl	\
+		elmdict/dicondep.tpl	\
+	| $(SORT) -b -n +0 -1 +4 -5 >elmdict.tpl
+
+elmdict_standard.tpl:	\
+		elmdict/dicom3.tpl
+	cat \
+		elmdict/dicom3.tpl	\
+	| $(SORT) -b -n +0 -1 +4 -5 >elmdict_standard.tpl
+
+module.tpl:	\
+		module/base.tpl		\
+		module/file.tpl		\
+		module/pet.tpl		\
+		module/rt.tpl		\
+		module/acqctx.tpl	\
+		module/specimen.tpl	\
+		module/dx.tpl		\
+		module/vl.tpl		\
+		module/waveform.tpl	\
+		module/sr.tpl		\
+		module/softcopy.tpl	\
+		module/mr.tpl		\
+		module/ct.tpl		\
+		module/xaxrf.tpl
+	cat \
+		module/base.tpl		\
+		module/file.tpl		\
+		module/pet.tpl		\
+		module/rt.tpl		\
+		module/acqctx.tpl	\
+		module/specimen.tpl	\
+		module/dx.tpl		\
+		module/vl.tpl		\
+		module/waveform.tpl	\
+		module/sr.tpl		\
+		module/softcopy.tpl	\
+		module/mr.tpl		\
+		module/ct.tpl		\
+		module/xaxrf.tpl	\
+	>module.tpl
+
+iodcomp.tpl:	\
+		iodcomp/base.tpl	\
+		iodcomp/file.tpl	\
+		iodcomp/xaxrf.tpl	\
+		iodcomp/pet.tpl		\
+		iodcomp/rt.tpl		\
+		iodcomp/dx.tpl		\
+		iodcomp/vl.tpl		\
+		iodcomp/waveform.tpl	\
+		iodcomp/sr.tpl		\
+		iodcomp/softcopy.tpl	\
+		iodcomp/mr.tpl		\
+		iodcomp/ct.tpl
+	cat \
+		iodcomp/base.tpl	\
+		iodcomp/file.tpl	\
+		iodcomp/xaxrf.tpl	\
+		iodcomp/pet.tpl		\
+		iodcomp/rt.tpl		\
+		iodcomp/dx.tpl		\
+		iodcomp/vl.tpl		\
+		iodcomp/waveform.tpl	\
+		iodcomp/sr.tpl		\
+		iodcomp/softcopy.tpl	\
+		iodcomp/mr.tpl		\
+		iodcomp/ct.tpl		\
+	>iodcomp.tpl
+
+strval.tpl:	\
+		strval/base.tpl		\
+		strval/charset.tpl	\
+		strval/file.tpl		\
+		strval/xaxrf.tpl	\
+		strval/us.tpl		\
+		strval/nm.tpl		\
+		strval/pet.tpl		\
+		strval/rt.tpl		\
+		strval/dx.tpl		\
+		strval/sdmdx.tpl	\
+		strval/vl.tpl		\
+		strval/waveform.tpl	\
+		strval/sr.tpl		\
+		strval/softcopy.tpl	\
+		strval/mr.tpl		\
+		strval/ct.tpl
+	cat \
+		strval/base.tpl		\
+		strval/charset.tpl	\
+		strval/file.tpl		\
+		strval/xaxrf.tpl	\
+		strval/us.tpl		\
+		strval/nm.tpl		\
+		strval/pet.tpl		\
+		strval/rt.tpl		\
+		strval/dx.tpl		\
+		strval/sdmdx.tpl	\
+		strval/vl.tpl		\
+		strval/waveform.tpl	\
+		strval/sr.tpl		\
+		strval/softcopy.tpl	\
+		strval/mr.tpl		\
+		strval/ct.tpl		\
+	>strval.tpl
+
+

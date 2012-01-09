@@ -1,0 +1,36 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES = $(PROJECTAPPDCONVERTEXTRAINCLUDES)
+
+SRCSTODC = pacetodc.cc
+OBJSTODC = pacetodc.o
+
+SRCSDUMP = pacedump.cc
+OBJSDUMP = pacedump.o
+
+CPLUSPLUS_SRCS = $(SRCSDUMP) $(SRCSTODC)
+OBJS = $(OBJSDUMP) $(OBJSTODC)
+
+AllTarget(pacetodc)
+NormalCCProgramTarget(pacetodc,$(OBJSTODC),$(TOP)/libsrc/lib/libdpace.a $(PROJECTDCONVERTDEPLIBS),-ldpace $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(pacetodc,$(INSTALLBINDIR))
+InstallManPage(pacetodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(pacedump)
+NormalCCProgramTarget(pacedump,$(OBJSDUMP),$(TOP)/libsrc/lib/libdpace.a $(PROJECTDCONVERTDEPLIBS),-ldpace $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(pacedump,$(INSTALLBINDIR))
+InstallManPage(pacedump,$(INSTALLMANDIR)/man1)
+
+InstallScript(paceunid,$(INSTALLBINDIR))
+InstallManPage(paceunid,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./pacedump "" $(TOP)/images/pace $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./pacetodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/pace $(TOP)/test/$(CURRENT_DIR) compare todc
+
+test.create::
+	@$(TOP)/support/testapp testlist ./pacedump "" $(TOP)/images/pace $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./pacetodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/pace $(TOP)/test/$(CURRENT_DIR) create todc
+

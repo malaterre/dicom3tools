@@ -1,0 +1,635 @@
+#include "attrmxls.h"
+#include "attrothr.h"
+#include "mesgtext.h"
+#include "ioopt.h"
+#include "dcopt.h"
+#include "elmconst.h"
+#include "transynd.h"
+
+class PnmImage {
+private:
+	SupplySource *supplysource;
+protected:
+	Uint16 columns;
+	Uint16 rows;
+	Uint16 frames;
+	Uint16 planes;
+	Uint16 bitsneeded;
+	Uint16 bitsallocated;
+	Uint16 bitsstored;
+	Uint16 highbit;
+	bool issigned;
+
+	class SourceBase<Uint16> *getSource(void);
+	virtual Uint16 mapPixel(const Uint16 src) = 0;
+public:
+	PnmImage(
+		SupplySource *s,Uint16 c,Uint16 r,Uint16 f,Uint16 p,
+		Uint16 bn,Uint16 ba,Uint16 bs,Uint16 hb,
+		bool issgn=false);
+
+	virtual ~PnmImage();
+
+	virtual bool writeImage(ostream &out) = 0;
+};
+
+class SourceBase<Uint16> *
+PnmImage::getSource(void)
+{
+	Assert(supplysource);
+	return supplysource->getSource();
+}
+
+PnmImage::PnmImage(
+	SupplySource *s,Uint16 c,Uint16 r,Uint16 f,Uint16 p,
+	Uint16 bn,Uint16 ba,Uint16 bs,Uint16 hb,bool issgn)
+{
+	supplysource=s;
+	columns=c;
+	rows=r;
+	frames=f;
+	planes=p;
+	bitsneeded=bn;
+	bitsallocated=ba;
+	bitsstored=bs;
+	highbit=hb;
+	issigned=issgn;
+	Assert(supplysource);
+	Assert(columns);
+	Assert(rows);
+	Assert(frames);
+	Assert(planes);
+	Assert(bitsneeded);
+	Assert(bitsallocated);
+	Assert(bitsstored);
+	Assert(highbit);
+}
+
+PnmImage::~PnmImage()
+{}
+
+class PnmWindowed8BitGrayImage : public PnmImage {
+	bool inverted;
+	Uint16 signxor;
+	Uint32 ngrays;
+
+	Uint16 mapPixel(const Uint16 src);
+public:
+	PnmWindowed8BitGrayImage(SupplySourceFromAttribute *sPixelData,
+			Uint16 vColumns,Uint16 vRows,Uint16 vNumberOfFrames,
+			Uint16 vBitsAllocated,Uint16 vBitsStored,Uint16 vHighBit,
+			Uint16 vPixelRepresentation,bool invertedgrayscale)
+		: PnmImage(sPixelData,vColumns,vRows,vNumberOfFrames,
+			vBitsAllocated,vBitsStored,vHighBit,
+			vPixelRepresentation)
+		{
+	Assert(vBitsStored);
+	inverted=invertedgrayscale;
+	Uint16 mingray=0;
+	Uint32 mx=(Uint32(1)<<vBitsStored)-1;
+	Assert(mx <= Uint16_MAX);
+	Uint16 maxgray=Uint16(mx);
+	Assert(maxgray >= mingray);
+	ngrays=maxgray-mingray+1;
+
+	signxor=issigned
+		? 1<<(bits-1)
+		: 0;
+
+
+		}
+
+	bool writeImage(ostream &out);
+
+
+};
+
+Uint16
+PnmWindowed8BitGrayImage::mapPixel(const Uint16 src)
+{
+	return (inverted ? (ngrays-src-1) : src)^signxor;
+}
+
+bool
+PnmWindowed8BitGrayImage::writeImage(ostream &out)
+{
+	Assert(rows);
+	Assert(columns);
+	Assert(planes==1);
+
+	class SourceBase<Uint16> *source = getSource();
+	if (!source) return false;
+
+	unsigned row=0;
+	unsigned column=0;
+	while (row < rows*frames && source->read()) {
+		size_t n=source->getBufferCount();
+		Assert(n);
+		const Uint16 *buffer=source->getBuffer();
+		Assert(buffer);
+		while (n-- && row < rows*frames) {
+			out << (unsigned char)mapPixel(*buffer);
+			buffer++;
+		}
+	}
+	Assert(column == 0 && row == rows*frames);
+	return ostream && row >= rows*frames;	// stream ok and read enough
+}
+
+class PnmFromWindowed16BitGrayImage: public PnmImage {
+
+public:
+	PnmFromWindowed16BitGrayImage(SupplySourceFromAttribute *sPixelData,
+			Uint16 vColumns,Uint16 vRows,Uint16 vNumberOfFrames,
+			Uint16 vBitsAllocated,Uint16 vBitsStored,Uint16 vHighBit,
+			Uint16 vPixelRepresentation,bool invertedgrayscale)
+		: PnmImage(sPixelData,vColumns,vRows,vNumberOfFrames,
+			vBitsAllocated,vBitsStored,vHighBit,
+			vPixelRepresentation)
+		{
+		}
+
+};
+
+class PnmFromInterleaved24BitRGBImage: public PnmImage {
+
+public:
+	PnmFromInterleaved24BitRGBImage(SupplySourceFromAttribute *sPixelData,
+			Uint16 vColumns,Uint16 vRows,Uint16 vNumberOfFrames,
+			Uint16 vBitsAllocated,Uint16 vBitsStored,Uint16 vHighBit)
+		: PnmImage(sPixelData,vColumns,vRows,vNumberOfFrames,
+			vBitsAllocated,vBitsStored,vHighBit,false)
+		{
+		}
+
+};
+
+
+int
+main(int argc, char *argv[])
+{
+	GetNamedOptions 	options(argc,argv);
+	DicomInputOptions 	dicom_input_options(options);
+	OutputOptions		output_options(options);
+
+	bool verbose=options.get("verbose") || options.get("v");
+	bool quiet=options.get("quiet") || options.get("silent");
+
+	dicom_input_options.done();
+	output_options.done();
+	options.done();
+
+	DicomInputOpenerFromOptions input_opener(
+		options,dicom_input_options.filename,cin);
+	OutputOpenerFromOptions output_opener(
+		options,output_options.filename,cout);
+
+	cerr << dicom_input_options.errors();
+	cerr << output_options.errors();
+	cerr << options.errors();
+	cerr << input_opener.errors();
+	cerr << output_opener.errors();
+
+	if (!dicom_input_options.good()
+	 || !output_options.good()
+	 || !options.good()
+	 || !input_opener.good()
+	 || !output_opener.good()
+	 || !options) {
+		cerr 	<< MMsgDC(Usage) << ": " << options.command()
+			<< dicom_input_options.usage()
+			<< output_options.usage()
+			<< " [-v|-verbose]"
+			<< " [-quiet|-silent]"
+			<< " [" << MMsgDC(InputFile)
+				<< "[" << MMsgDC(OutputFile) << "]]"
+			<< " <" << MMsgDC(InputFile)
+			<< " >" << MMsgDC(OutputFile)
+			<< endl;
+		exit(1);
+	}
+
+	DicomInputStream din(*(istream *)input_opener);
+	ostream out(output_opener);
+
+	ManagedAttributeList list;
+
+	bool success=true;
+	TextOutputStream log(cerr);
+	if (verbose) log << "******** While reading ... ********" << endl; 
+	list.read(din,&log,verbose);
+
+	const char *errors=list.errors();
+	if (errors) log << errors << flush;
+	if (!list.good()) {
+		log << EMsgDC(DatasetReadFailed) << endl;
+		success=false;
+		//return 1;	// Press on regardless ...
+	}
+
+	Uint16 vRows = 0;
+	Attribute *aRows = list[TagFromName(Rows)];
+	if (!aRows)
+		log << WMsgDC(MissingAttribute)
+		    << " - \"Rows\""
+		    << endl;
+	else
+		vRows=AttributeValue(aRows);
+
+	Uint16 vColumns = 0;
+	Attribute *aColumns = list[TagFromName(Columns)];
+	if (!aColumns)
+		log << WMsgDC(MissingAttribute)
+		    << " - \"Columns\""
+		    << endl;
+	else
+		vColumns=AttributeValue(aColumns);
+
+	Uint16 vNumberOfFrames = 0;
+	Attribute *aNumberOfFrames = list[TagFromName(NumberOfFrames)];
+	if (aNumberOfFrames)	// optional
+		vNumberOfFrames=AttributeValue(aNumberOfFrames);
+
+	char *vPhotometricInterpretation = 0;
+	Attribute *aPhotometricInterpretation = list[TagFromName(PhotometricInterpretation)];
+	if (!aPhotometricInterpretation)
+		log << WMsgDC(MissingAttribute)
+		    << " - \"PhotometricInterpretation\""
+		    << endl;
+	else
+		vPhotometricInterpretation=AttributeValue(aPhotometricInterpretation);
+
+	Uint16 vSamplesPerPixel = 0;
+	Attribute *aSamplesPerPixel = list[TagFromName(SamplesPerPixel)];
+	if (!aSamplesPerPixel)
+		log << WMsgDC(MissingAttribute)
+		    << " - \"SamplesPerPixel\""
+		    << endl;
+	else
+		vSamplesPerPixel=AttributeValue(aSamplesPerPixel);
+
+	Uint16 vBitsAllocated = 0;
+	Attribute *aBitsAllocated = list[TagFromName(BitsAllocated)];
+	if (!aBitsAllocated)
+		log << WMsgDC(MissingAttribute)
+		    << " - \"BitsAllocated\""
+		    << endl;
+	else
+		vBitsAllocated=AttributeValue(aBitsAllocated);
+
+	Uint16 vBitsStored = 0;
+	Attribute *aBitsStored = list[TagFromName(BitsStored)];
+	if (!aBitsStored)
+		log << WMsgDC(MissingAttribute)
+		    << " - \"BitsStored\""
+		    << endl;
+	else
+		vBitsStored=AttributeValue(aBitsStored);
+
+	Uint16 vHighBit = 0;
+	Attribute *aHighBit = list[TagFromName(HighBit)];
+	if (!aHighBit)
+		log << WMsgDC(MissingAttribute)
+		    << " - \"HighBit\""
+		    << endl;
+	else
+		vHighBit=AttributeValue(aHighBit);
+
+	Uint16 vPixelRepresentation = 0xffff;
+	Attribute *aPixelRepresentation = list[TagFromName(PixelRepresentation)];
+	if (!aPixelRepresentation)
+		log << WMsgDC(MissingAttribute)
+		    << " - \"PixelRepresentation\""
+		    << endl;
+	else
+		vPixelRepresentation=AttributeValue(aPixelRepresentation);
+
+	Uint16 vPlanarConfiguration = 0xffff;
+	Attribute *aPlanarConfiguration = list[TagFromName(PlanarConfiguration)];
+	if (vSamplesPerPixel > 1 && !aPlanarConfiguration)
+		log << WMsgDC(MissingAttribute)
+		    << " - \"PlanarConfiguration\""
+		    << endl;
+	else
+		vPlanarConfiguration=AttributeValue(aPlanarConfiguration);
+
+	Float32 vRescaleIntercept = 0;
+	Attribute *aRescaleIntercept = list[TagFromName(RescaleIntercept)];
+	if (aRescaleIntercept)	// optional
+		vRescaleIntercept=AttributeValue(aRescaleIntercept);
+
+	Float32 vRescaleSlope = 0;
+	Attribute *aRescaleSlope = list[TagFromName(RescaleSlope)];
+	if (aRescaleSlope)	// optional
+		vRescaleSlope=AttributeValue(aRescaleSlope);
+
+	Attribute *aPixelData = list[TagFromName(PixelData)];
+
+	if (!aPixelData) {
+		if (!noattributes)
+			log << "\tPixeldata not in normal place ... checking for ImageLocation attribute" << endl;
+		Uint16 groupstart;
+		Uint16 groupend;
+		Attribute *aImageLocation=list[TagFromName(ImageLocation)];
+		if (aImageLocation) {
+			Uint16 vImageLocation=AttributeValue(aImageLocation);
+			if (!noattributes)
+				log << "\tImageLocation = " << hex << vImageLocation << dec << endl;
+			groupstart=vImageLocation;
+			groupend=vImageLocation;
+		}
+		else {
+			groupstart=0x7fe0;
+			groupend=0x7ffd;
+		}
+		if (!noattributes)
+			log << "\tNow searching for Pixeldata" << endl;
+		Uint16 group;
+		for (group=groupstart; !aPixelData && group <= groupend; ++group) {
+			Uint32 owner;
+			for (owner=((group&0x0001) ? 0x0100 : 0x0000);
+					!aPixelData && owner <= ((group&0x0001) ? 0xff00 : 0x0000); owner+=0x0100) {
+				if ((aPixelData=list[Tag(group,Uint16(owner|0x0010))]) && aPixelData->isOtherData()) {
+					if (!noattributes)
+						log << "\tFound Pixeldata in ";
+						aPixelData->getTag().write(log);
+						log << endl;
+					break;
+				}
+				aPixelData=0;
+			}
+		}
+	}
+
+	if (!aPixelData) {
+		log << EMsgDC(MissingAttribute)
+		    << " - \"PixelData\""
+		    << endl;
+		log << EMsgDC(NothingToDisplay) << endl;
+		return 1;
+	}
+
+	Uint32 length=aPixelData->getVL();
+
+	if (!noattributes) {
+		log << "Read ..." << endl;
+		log << "\tRows = " << dec << vRows << endl;
+		log << "\tColumns = " << dec << vColumns << endl;
+		log << "\tNumberOfFrames = " << dec << vNumberOfFrames << endl;
+		log << "\tPhotometricInterpretation = "
+		    << (vPhotometricInterpretation ? vPhotometricInterpretation : "")
+		    << endl;
+		log << "\tSamplesPerPixel = " << dec << vSamplesPerPixel << endl;
+		log << "\tBitsAllocated = " << dec << vBitsAllocated << endl;
+		log << "\tBitsStored = " << dec << vBitsStored << endl;
+		log << "\tHighBit = " << dec << vHighBit << endl;
+		log << "\tPixelRepresentation = " << dec << vPixelRepresentation << endl;
+		log << "\tPlanarConfiguration = " << hex << vPlanarConfiguration << dec << endl;
+		log << "\tRescaleIntercept = " << dec << vRescaleIntercept << endl;
+		log << "\tRescaleSlope = " << dec << vRescaleSlope << endl;
+		log << "\tPixelData Value Length = " << hex << length << dec << endl;
+	}
+
+	// Try to guess some missing attributes ...
+
+	if (vRescaleSlope*vRescaleSlope < 0.00001) vRescaleSlope=1;
+
+	if (vPixelRepresentation == 0xffff) vPixelRepresentation=0;
+	if (forceunsigned) vPixelRepresentation=0;
+	if (forcesigned) vPixelRepresentation=1;
+
+	if (!vNumberOfFrames) vNumberOfFrames=1;
+
+	if (!vSamplesPerPixel && !vPhotometricInterpretation) {
+		vSamplesPerPixel=1;
+		vPhotometricInterpretation=StrDup("MONOCHROME2");
+	}
+	else if (!vSamplesPerPixel && vPhotometricInterpretation) {
+		if (strcmp(vPhotometricInterpretation,"MONOCHROME1") == 0
+		 || strcmp(vPhotometricInterpretation,"MONOCHROME2") == 0
+		 || strcmp(vPhotometricInterpretation,"PALETTE COLOR") == 0
+		) {
+			vSamplesPerPixel=1;
+		}
+		else if (
+		    strcmp(vPhotometricInterpretation,"RGB") == 0
+		 || strcmp(vPhotometricInterpretation,"HSV") == 0
+		) {
+			vSamplesPerPixel=3;
+		}
+		else if (
+		    strcmp(vPhotometricInterpretation,"ARGB") == 0
+		 || strcmp(vPhotometricInterpretation,"CMYK") == 0
+		) {
+			vSamplesPerPixel=4;
+		}
+	}
+	else if (!vPhotometricInterpretation && vSamplesPerPixel) {
+		switch (vSamplesPerPixel) {
+			case 1:	// could check for presence of palette
+				vPhotometricInterpretation=StrDup("MONOCHROME2");
+				break;
+			case 3:	vPhotometricInterpretation=StrDup("RGB");
+				break;
+			case 4:	vPhotometricInterpretation=StrDup("ARGB");
+				break;
+		}
+	}
+
+	if (!vBitsAllocated && length && length != 0xffffffff
+	 && (vRows && vColumns && vNumberOfFrames && vSamplesPerPixel)) {
+		vBitsAllocated=Uint16(length/((Uint32)vRows*vColumns*vNumberOfFrames*vSamplesPerPixel)*8);
+	}
+
+	if (!vBitsAllocated && vBitsStored)
+		vBitsAllocated=((vBitsStored-1u)/8u+1u)*8u;
+
+	if (!vBitsAllocated) {
+		if (strcmp(aPixelData->getVR(),"OW") == 0)
+			vBitsAllocated=16;
+		else
+			vBitsAllocated=8;
+	}
+
+	Assert(vBitsAllocated <= 16);
+
+	if (!vBitsStored) vBitsStored=vBitsAllocated;
+	if (!vHighBit) vHighBit=vBitsStored-1;
+
+	Uint32 framelengthinwords=length/vNumberOfFrames*8/vBitsAllocated;
+
+	if (!vRows) {
+		if (!vColumns) {
+			if (!vSamplesPerPixel) {
+				vRows=Uint16(sqrt(framelengthinwords));
+				vColumns=Uint16(length/vRows);
+				vSamplesPerPixel=1;
+			}
+			else {
+				Uint32 left=framelengthinwords/vSamplesPerPixel;
+				vRows=Uint16(sqrt(left));
+				vColumns=Uint16(left/vRows);
+			}
+		}
+		else {
+			if (!vSamplesPerPixel) {
+				Uint32 left=framelengthinwords/vColumns;
+				vRows=Uint16(sqrt(length));
+				vSamplesPerPixel=1;
+			}
+			else {
+				vRows=Uint16(framelengthinwords/(vColumns*vSamplesPerPixel));
+			}
+		}
+	}
+	else {
+		if (!vColumns) {
+			if (!vSamplesPerPixel) {
+				vColumns=Uint16(framelengthinwords/vRows);
+				vSamplesPerPixel=1;
+			}
+			else {
+				vColumns=Uint16(framelengthinwords/(vRows*vSamplesPerPixel));
+			}
+		}
+		else {
+			if (!vSamplesPerPixel) {
+				vSamplesPerPixel=Uint16(framelengthinwords/(vRows*vColumns));
+			}
+			// else we know all three
+		}
+	}
+
+	if (!noattributes) {
+		log << "Using ..." << endl;
+		log << "\tRows = " << dec << vRows << endl;
+		log << "\tColumns = " << dec << vColumns << endl;
+		log << "\tNumberOfFrames = " << dec << vNumberOfFrames << endl;
+		log << "\tPhotometricInterpretation = "
+		    << (vPhotometricInterpretation ? vPhotometricInterpretation : "")
+		    << endl;
+		log << "\tSamplesPerPixel = " << dec << vSamplesPerPixel << endl;
+		log << "\tBitsAllocated = " << dec << vBitsAllocated << endl;
+		log << "\tBitsStored = " << dec << vBitsStored << endl;
+		log << "\tHighBit = " << dec << vHighBit << endl;
+		log << "\tPixelRepresentation = " << dec << vPixelRepresentation << endl;
+		log << "\tPlanarConfiguration = " << hex << vPlanarConfiguration << dec << endl;
+		log << "\tRescaleIntercept = " << dec << vRescaleIntercept << endl;
+		log << "\tRescaleSlope = " << dec << vRescaleSlope << endl;
+		log << "\tRows*Columns*SamplesPerPixel*BitsAllocated/8 = "
+		    << hex << (Uint32)vRows*vColumns*vSamplesPerPixel*vBitsAllocated/8
+		    << dec << endl;
+	}
+
+	Assert((Uint32)vRows*vColumns*vSamplesPerPixel <= framelengthinwords);
+
+	if (!vRows || !vColumns
+	 || !vPhotometricInterpretation || !vSamplesPerPixel
+	 || !vBitsAllocated
+	 || (vSamplesPerPixel > 1 && vPlanarConfiguration == 0xffff)) {
+		log << EMsgDC(MissingMandatoryAttributes) << endl;
+		return 1;
+	}
+
+	PnmImage *image = 0;
+	SupplySourceFromAttribute sPixelData(aPixelData);
+
+	// The standard doesn't say it, but what could a
+	// signed PixelRepresentation mean for other than grayscale ?
+
+	bool pixelrepresentationok = (vPixelRepresentation == 0);
+	bool windowlevelwidthok = !windowlevelset && !windowwidthset;
+
+	if (vSamplesPerPixel == 1) {
+		bool monochrome=false;
+		bool invertedgrayscale=false;
+		bool palettecolor=false;
+		if (strcmp(vPhotometricInterpretation,"MONOCHROME1") == 0) {
+			monochrome=true;
+			invertedgrayscale=true;
+		}
+		else if (strcmp(vPhotometricInterpretation,"MONOCHROME2") == 0) {
+			monochrome=true;
+			invertedgrayscale=false;
+		}
+		else if (strcmp(vPhotometricInterpretation,"PALETTE COLOR") == 0) {
+			palettecolor=true;
+		}
+		else {
+			log << EMsgDC(Unsupported) << " - PhotometricInterpretation = \""
+			    << (vPhotometricInterpretation ? vPhotometricInterpretation : "")
+			    << "\"" << endl;
+			return 1;
+		}
+
+		if (invertedgrayscaleoption) invertedgrayscale=!invertedgrayscale;
+
+		if (vBitsStored <= 8) {
+			if (monochrome) {
+				pixelrepresentationok=true;	// Not required to be unsigned
+				image=new PnmWindowed8BitGrayImage(&sPixelData,vColumns,vRows,vNumberOfFrames,
+						vBitsAllocated,vBitsStored,vHighBit,
+						vPixelRepresentation,invertedgrayscale);
+			}
+			else {
+				log << EMsgDC(Unsupported) << " - PhotometricInterpretation = \""
+				    << (vPhotometricInterpretation ? vPhotometricInterpretation : "")
+				    << "\" - BitsStored = " << vBitsStored
+				    << endl;
+				return 1;
+			}
+		}
+		else if (vBitsStored <= 16) {
+			if (monochrome) {
+				pixelrepresentationok=true;	// Not required to be unsigned
+				windowlevelwidthok=true;	// allowed to specify width & level on command line
+				image=new PnmFromWindowed16BitGrayImage(&sPixelData,vColumns,vRows,vNumberOfFrames,
+						vBitsAllocated,vBitsStored,vHighBit,
+						vPixelRepresentation,invertedgrayscale);
+			}
+			else {
+				log << EMsgDC(Unsupported) << " - PhotometricInterpretation = \""
+				    << (vPhotometricInterpretation ? vPhotometricInterpretation : "")
+				    << "\" - BitsStored = " << vBitsStored
+				    << endl;
+				return 1;
+			}
+		}
+		else {
+			log << EMsgDC(Unsupported) << " - BitsStored = " << vBitsStored << endl;
+			return 1;
+		}
+	}
+	else if (vSamplesPerPixel == 3) {
+		if (strcmp(vPhotometricInterpretation,"RGB") == 0) {
+			if (vPlanarConfiguration == 0)
+				image=new PnmFromInterleaved24BitRGBImage(&sPixelData,vColumns,vRows,vNumberOfFrames,
+						vBitsAllocated,vBitsStored,vHighBit);
+			else {
+				log << EMsgDC(Unsupported) << " - PlanarConfiguration = " << vPlanarConfiguration << endl;
+				return 1;
+			}
+		}
+		else {
+			log << EMsgDC(Unsupported) << " - PhotometricInterpretation = \""
+			    << (vPhotometricInterpretation ? vPhotometricInterpretation : "")
+			    << "\"" << endl;
+			return 1;
+		}
+	}
+	else {
+		log << EMsgDC(Unsupported) << " - SamplesPerPixel = " << vSamplesPerPixel << endl;
+		return 1;
+	}
+
+	if (!pixelrepresentationok) {
+		log << WMsgDC(NonMonochromeSignedPixelRepresentation) << endl;
+	}
+	if (!windowlevelwidthok) {
+		log << WMsgDC(NoNeedForWindowLevelWidth) << endl;
+	}
+
+	return success ? 0 : 1;
+}
+
+	

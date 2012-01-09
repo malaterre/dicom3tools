@@ -1,0 +1,73 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES = $(PROJECTAPPACRNEMAEXTRAINCLUDES)
+
+SRCSANCREATE = ancreate.cc
+OBJSANCREATE = ancreate.o
+
+SRCSANDUMP = andump.cc
+OBJSANDUMP = andump.o
+
+SRCSANCP = ancp.cc
+OBJSANCP = ancp.o
+
+CPLUSPLUS_SRCS = $(SRCSANCREATE) $(SRCSANDUMP) $(SRCSANCP)
+OBJS           = $(OBJSANCREATE) $(OBJSANDUMP) $(OBJSANCP)
+
+AllTarget(ancreate)
+NormalCCProgramTarget(ancreate,$(OBJSANCREATE),$(PROJECTACRNEMADEPLIBS),$(PROJECTACRNEMALIBS),-lm)
+InstallProgram(ancreate,$(INSTALLBINDIR))
+InstallManPage(ancreate,$(INSTALLMANDIR)/man1)
+
+AllTarget(andump)
+NormalCCProgramTarget(andump,$(OBJSANDUMP),$(PROJECTACRNEMADEPLIBS),$(PROJECTACRNEMALIBS),-lm)
+InstallProgram(andump,$(INSTALLBINDIR))
+InstallManPage(andump,$(INSTALLMANDIR)/man1)
+
+AllTarget(ancp)
+NormalCCProgramTarget(ancp,$(OBJSANCP),$(PROJECTACRNEMADEPLIBS),$(PROJECTACRNEMALIBS),-lm)
+InstallProgram(ancp,$(INSTALLBINDIR))
+InstallManPage(ancp,$(INSTALLMANDIR)/man1)
+
+InstallScript(andiff,$(INSTALLBINDIR))
+InstallManPage(andiff,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@./test.create.ut.sh compare
+	@./test.create.private.un.sh compare
+	@$(TOP)/support/testapp testlist ./andump "" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./andump "" $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) compare dump
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./andump "" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./andump "" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./andump "" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./andump "" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+	@$(TOP)/support/testapp testlist ./ancp "-d PatientName -d PatientBirthDate -d PatientSex -d PatientAge -d StudyDate -removeprivate -removeinstanceuid"      $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) compare ancp
+	@$(TOP)/support/testapp testlist ./ancp "-d PatientName -d PatientBirthDate -d PatientSex -d PatientAge -d StudyDate -removeprivate -removeinstanceuid"      $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare ancp
+	
+
+test.create::
+	@./test.create.ut.sh create
+	@./test.create.private.un.sh create
+	@$(TOP)/support/testapp testlist ./andump "" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./andump "" $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) create dump
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./andump "" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) create dump; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./andump "" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) create dump; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./andump "" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) create dump; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./andump "" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) create dump; fi
+	@$(TOP)/support/testapp testlist ./ancp "-d PatientName -d PatientBirthDate -d PatientSex -d PatientAge -d StudyDate -removeprivate -removeinstanceuid"      $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) create ancp
+	@$(TOP)/support/testapp testlist ./ancp "-d PatientName -d PatientBirthDate -d PatientSex -d PatientAge -d StudyDate -removeprivate -removeinstanceuid"      $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create ancp
+
+testcompareandcwithoriginal:
+	for i in `cat $(TOP)/images/acrnema/testlist` ; \
+	do \
+		echo "acrnema/$$i"; \
+		andiff $(TOP)/images/acrnema/$$i $(TOP)/test/$(CURRENT_DIR)/`echo $$i | sed 's:/:.:g'`.ancp.outfile; \
+	done
+	for i in `cat $(TOP)/images/dicom/testlist`; \
+	do \
+		echo "dicom/$$i"; \
+		andiff $(TOP)/images/dicom/$$i $(TOP)/test/$(CURRENT_DIR)/`echo $$i | sed 's:/:.:g'`.ancp.outfile; \
+	done
+

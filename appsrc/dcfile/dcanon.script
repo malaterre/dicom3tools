@@ -1,0 +1,604 @@
+#!/bin/sh
+#
+# Usage: $0 srcdir dstdir [options [newpatientname newpatientid]]
+#
+# where options is a SINGLE string, either empty or possibly containing:
+#
+#	nodesc - remove descriptions (equals nopatientdesc,nostudydesc,noseriesdesc,noimagedesc)
+#	nopatientdesc - remove descriptions at patient level
+#	nostudydesc - remove descriptions at study/procedure level
+#	noseriesdesc - remove descriptions at series and procedure step level
+#	noimagedesc - remove descriptions at image level
+#	nomanuf - remove manufacturer
+#	noretired - remove retired ACR-NEMA elements or other elements that are undesirable
+#	noclinicaltrial - remove clinical trial related attributes
+#	keepprivate - do not remove private elements
+#	keepsafeprivate - keep safe private attributes only, e.g. Philips private PET SUV factor
+#	keepuids - do not replace UIDs
+#	keeppet - keep parameters for PET SUV calculation (age,sex,size,weight)
+#	verify - verify afterwards
+#	diff - show difference afterwards
+#	mvdatedesc - more results to descriptive hierarchy (default)
+#	mvid - more results to hierarchy based on IDs
+#	mv8only - more results to 8 character A-Z0-9_ component names
+#	nomove - do not move into hierarchy
+#	none - dummy option to allow specification of name and id arguments when no options
+#
+# e.g. dcanon src dst nodesc,nomanuf Smith^Mary 1234
+
+DCDIFF=dcdiff
+DCIODVFY=dciodvfy
+DCCP=dccp
+DCKEY=dckey
+DCSMPTE=dcsmpte
+DCMVHIERDATEDESC=dcmvhier.datedesc
+DCMVHIER8ONLY=dcmvhier.8only
+DCMVHIERID=dcmvhier
+
+if [ $# = 2 ]
+then
+	"$0" "$1" "$2" " " "Doe^J" "000000"
+elif [ $# = 3 ]
+then
+	"$0" "$1" "$2" "$3" "Doe^J" "000000"
+elif [ $# = 5 ]
+then
+	srcdir=$1
+	dstdir=$2
+	options="$3"
+	newpatientname="$4"
+	newpatientid="$5"
+	TMPROOT=/tmp/`basename $0`.$$
+	uidmapfile="$TMPROOT.uids.tmp"
+	touch "$uidmapfile"
+	counterfile="$TMPROOT.counter.tmp"
+	$DCSMPTE "$TMPROOT.tmp"
+	newuidbase=`$DCKEY -noerror -k SOPInstanceUID "$TMPROOT.tmp" 2>&1 | egrep -v 'Error|Warning'`
+	rm "$TMPROOT.tmp"
+	echo 1 >"$counterfile"
+	find "$srcdir" -follow -type f -a ! -name '.DS_Store' -exec "$0" "$counterfile" "$uidmapfile" "$newuidbase" "$dstdir" "$newpatientname" "$newpatientid" "$options" '{}' ';'
+
+	nomove=`echo "$options" | grep -i nomove`
+	if [ -z "$nomove" ]
+	then
+		mv8only=`echo "$options" | grep -i mv8only`
+		mvid=`echo "$options" | grep -i mvid`
+		mvdatedesc=`echo "$options" | grep -i mvdatedesc`
+		if [ ! -z "$mv8only" ]
+		then
+			usemvhier="$DCMVHIER8ONLY"
+		elif [ ! -z "$mvid" ]
+		then
+			usemvhier="$DCMVHIERID"
+		elif [ ! -z "$mvdatedesc" ]
+		then
+			usemvhier="$DCMVHIERDATEDESC"
+		else
+			usemvhier="$DCMVHIERDATEDESC"
+		fi
+		cd "$dstdir"
+		# take care not to try to move files already nested in hierarchy ...
+		find . -name '*.dcm' | egrep -v '/.*/' | xargs -L1 -I% "$usemvhier" "%"
+		cd ..
+	fi
+	
+	rm "$uidmapfile"
+	rm "$counterfile"
+	
+elif [ $# = 8 ]
+then
+	counterfile=$1
+	uidmapfile=$2
+	newuidbase=$3
+	dstdir=$4
+	newpatientname="$5"
+	newpatientid="$6"
+	options=$7
+	srcfile=$8
+	
+	#echo "$srcfile"
+	#echo "$newpatientname"
+	#echo "$newpatientid"
+	
+	nodescriptions=`echo "$options" | grep -i nodesc`
+	nopatientdesc=`echo "$options" | grep -i nopatientdesc`
+	nostudydesc=`echo "$options" | grep -i nostudydesc`
+	noseriesdesc=`echo "$options" | grep -i noseriesdesc`
+	noimagedesc=`echo "$options" | grep -i noimagedesc`
+	
+	nomanufacturer=`echo "$options" | grep -i nomanuf`
+	noretired=`echo "$options" | grep -i noretired`
+	noclinicaltrial=`echo "$options" | grep -i noclinicaltrial`
+	keepprivate=`echo "$options" | grep -i keepprivate`
+	keepuids=`echo "$options" | grep -i keepuids`
+	keeppet=`echo "$options" | grep -i keeppet`
+	keepsafeprivate=`echo "$options" | grep -i keepsafeprivate`
+	verify=`echo "$options" | grep -i verify`
+	diff=`echo "$options" | grep -i diff`
+
+	deidMethod=`basename "$0"`
+	deidMethod="${deidMethod}\\no identifiers"
+	if [ -z "${nodescriptions}" -a -z "${nopatientdesc}" -a -z "${nostudydesc}" -a -z "${noseriesdesc}" -a -z "${noimagedesc}" ]
+	then
+		deidMethod="${deidMethod}\\keep descriptions"
+	else
+		if [ ! -z "${nodescriptions}" ]
+		then
+			deidMethod="${deidMethod}\\no descriptions"
+		else
+			deidMethod="${deidMethod}\\no"
+			if [ ! -z "${nopatientdesc}" ]
+			then
+				deidMethod="${deidMethod} patient"
+			fi
+			if [ ! -z "${nostudydesc}" ]
+			then
+				deidMethod="${deidMethod} study"
+			fi
+			if [ ! -z "${noseriesdesc}" ]
+			then
+				deidMethod="${deidMethod} series"
+			fi
+			if [ ! -z "${noimagedesc}" ]
+			then
+				deidMethod="${deidMethod} image"
+			fi
+			deidMethod="${deidMethod} descriptions"
+		fi
+	fi	
+	if [ -z "${nomanufacturer}" ]
+	then
+		deidMethod="${deidMethod}\\keep manufacturer"
+	else
+		deidMethod="${deidMethod}\\no manufacturer"
+	fi
+	if [ -z "${noretired}" ]
+	then
+		deidMethod="${deidMethod}\\keep retired"
+	else
+		deidMethod="${deidMethod}\\no retired"
+	fi
+	if [ -z "${noclinicaltrial}" ]
+	then
+		deidMethod="${deidMethod}\\keep clinical trial"
+	else
+		deidMethod="${deidMethod}\\no clinical trial"
+	fi
+	if [ -z "${keepprivate}" ]
+	then
+		if [ -z "${keepsafeprivate}" ]
+		then
+			deidMethod="${deidMethod}\\no private"
+		else
+			deidMethod="${deidMethod}\\no unsafe private"
+		fi
+	else
+		deidMethod="${deidMethod}\\keep private"
+	fi
+	if [ -z "${keepuids}" ]
+	then
+		deidMethod="${deidMethod}\\no uids"
+	else
+		deidMethod="${deidMethod}\\keep uids"
+	fi
+	if [ -z "${keeppet}" ]
+	then
+		deidMethod="${deidMethod}\\no pet demographics"
+	else
+		deidMethod="${deidMethod}\\keep pet demographics"
+	fi
+	deidMethod="${deidMethod}\\keep dates"
+	
+	srcstudyinstanceuid=`$DCKEY -noerror -k StudyInstanceUID "$srcfile" 2>&1 | egrep -v 'Error|Warning'`
+	srcseriesinstanceuid=`$DCKEY -noerror -k SeriesInstanceUID "$srcfile" 2>&1 | egrep -v 'Error|Warning'`
+	srcsopinstanceuid=`$DCKEY -noerror -k SOPInstanceUID "$srcfile" 2>&1 | egrep -v 'Error|Warning'`
+	srcframeofreferenceuid=`$DCKEY -noerror -k FrameOfReferenceUID "$srcfile" 2>&1 | egrep -v 'Error|Warning'`
+	srcsyncframeofreferenceuid=`$DCKEY -noerror -k SynchronizationFrameOfReferenceUID "$srcfile" 2>&1 | egrep -v 'Error|Warning'`
+	
+	if [ -z "$srcstudyinstanceuid" -o  -z "$srcseriesinstanceuid" -o  -z "$srcsopinstanceuid" ]
+	then
+		echo 1>&2 "Warning: Missing UIDs; ignoring $srcfile"
+	else
+		countervalue=`head -1 "$counterfile" | awk '{print $1}'`	# safer than just cat ?
+		counterfiledirty=0
+		
+		sedstring='^'"$srcstudyinstanceuid"'[^0-9.]'
+		newstudyinstanceuid=`egrep "$sedstring" "$uidmapfile" | awk '{print $2}'`
+		if [ -z "$newstudyinstanceuid" ]
+		then
+			newstudyinstanceuid="$newuidbase.$countervalue"
+			countervalue=`expr $countervalue + 1`
+			counterfiledirty=1
+			echo "$srcstudyinstanceuid $newstudyinstanceuid $countervalue" >>"$uidmapfile"
+		fi
+		#echo "Replacing StudyInstanceUID $srcstudyinstanceuid with $newstudyinstanceuid"
+		sedstring='^'"$srcstudyinstanceuid"'[^0-9.]'
+		newstudyid=`egrep "$sedstring" "$uidmapfile" | awk '{print $3}'`	# use counter value for new Study ID
+		#echo "Replacing StudyID with $newstudyid"
+				
+		sedstring='^'"$srcseriesinstanceuid"'[^0-9.]'
+		newseriesinstanceuid=`egrep "$sedstring" "$uidmapfile" | awk '{print $2}'`
+		if [ -z "$newseriesinstanceuid" ]
+		then
+			newseriesinstanceuid="$newuidbase.$countervalue"
+			countervalue=`expr $countervalue + 1`
+			counterfiledirty=1
+			echo "$srcseriesinstanceuid $newseriesinstanceuid $countervalue" >>"$uidmapfile"
+		fi
+		#echo "Replacing SeriesInstanceUID $srcseriesinstanceuid with $newseriesinstanceuid"
+				
+		sedstring='^'"$srcsopinstanceuid"'[^0-9.]'
+		newsopinstanceuid=`egrep "$sedstring" "$uidmapfile" | awk '{print $2}'`
+		if [ -z "$newsopinstanceuid" ]
+		then
+			newsopinstanceuid="$newuidbase.$countervalue"
+			countervalue=`expr $countervalue + 1`
+			counterfiledirty=1
+			echo "$srcsopinstanceuid $newsopinstanceuid $countervalue" >>"$uidmapfile"
+		fi
+		#echo "Replacing SOPInstanceUID $srcsopinstanceuid with $newsopinstanceuid"
+		
+		if [ ! -z "$srcframeofreferenceuid" ]
+		then
+			sedstring='^'"$srcframeofreferenceuid"'[^0-9.]'
+			newframeofreferenceuid=`egrep "$sedstring" "$uidmapfile" | awk '{print $2}'`
+			if [ -z "$newframeofreferenceuid" ]
+			then
+				newframeofreferenceuid="$newuidbase.$countervalue"
+				countervalue=`expr $countervalue + 1`
+				counterfiledirty=1
+				echo "$srcframeofreferenceuid $newframeofreferenceuid $countervalue" >>"$uidmapfile"
+			fi
+			#echo "Replacing FrameOfReferenceUID $srcframeofreferenceuid with $newframeofreferenceuid"
+		else
+			newframeofreferenceuid=""
+		fi
+		
+		if [ ! -z "$srcsyncframeofreferenceuid" ]
+		then
+			sedstring='^'"$srcsyncframeofreferenceuid"'[^0-9.]'
+			newsyncframeofreferenceuid=`egrep "$sedstring" "$uidmapfile" | awk '{print $2}'`
+			if [ -z "$newsyncframeofreferenceuid" ]
+			then
+				newsyncframeofreferenceuid="$newuidbase.$countervalue"
+				countervalue=`expr $countervalue + 1`
+				counterfiledirty=1
+				echo "$srcsyncframeofreferenceuid $newsyncframeofreferenceuid $countervalue" >>"$uidmapfile"
+			fi
+			#echo "Replacing SynchronizationFrameOfReferenceUID $srcsyncframeofreferenceuid with $newsyncframeofreferenceuid"
+		else
+			newsyncframeofreferenceuid=""
+		fi
+
+		if [ $counterfiledirty != 0 ]
+		then
+			echo $countervalue >"$counterfile"
+		fi
+		
+		dccpoptions="-nodisclaimer"
+		if [ -z "$keepprivate" ]
+		then
+			dccpoptions="$dccpoptions -removeprivate"
+		fi
+
+		if [ -z "$keepuids" ]
+		then
+			dccpoptions="$dccpoptions -removeinstanceuid"
+			dccpoptions="$dccpoptions -r StudyInstanceUID $newstudyinstanceuid -r SeriesInstanceUID $newseriesinstanceuid -r SOPInstanceUID $newsopinstanceuid"
+			dccpoptions="$dccpoptions -d AffectedSOPInstanceUID"
+			dccpoptions="$dccpoptions -d ConcatenationUID"
+			dccpoptions="$dccpoptions -d ContextGroupExtensionCreatorUID"
+			dccpoptions="$dccpoptions -d CreatorVersionUID"
+			dccpoptions="$dccpoptions -d DeviceUID"
+			dccpoptions="$dccpoptions -d DigitalSignatureUID"
+			dccpoptions="$dccpoptions -d DimensionOrganizationUID"
+			dccpoptions="$dccpoptions -d DoseReferenceUID"
+			dccpoptions="$dccpoptions -d FailedSOPInstanceUIDList"
+			dccpoptions="$dccpoptions -d FiducialUID"
+			dccpoptions="$dccpoptions -d ImplementationClassUID"
+			dccpoptions="$dccpoptions -d InstanceCreatorUID"
+			dccpoptions="$dccpoptions -d IrradiationEventUID"
+			dccpoptions="$dccpoptions -d LargePaletteColorLookupTableUID"
+			dccpoptions="$dccpoptions -d MediaStorageSOPInstanceUID"
+			dccpoptions="$dccpoptions -d PaletteColorLookupTableUID"
+			dccpoptions="$dccpoptions -d ReferencedFrameOfReferenceUID"
+			dccpoptions="$dccpoptions -d ReferencedGeneralPurposeScheduledProcedureStepTransactionUID"
+			dccpoptions="$dccpoptions -d ReferencedSOPInstanceUID"
+			dccpoptions="$dccpoptions -d ReferencedSOPInstanceUIDInFile"
+			dccpoptions="$dccpoptions -d RelatedFrameOfReferenceUID"
+			dccpoptions="$dccpoptions -d RequestedSOPInstanceUID"
+			dccpoptions="$dccpoptions -d StorageMediaFileSetUID"
+			dccpoptions="$dccpoptions -d TemplateExtensionCreatorUID"
+			dccpoptions="$dccpoptions -d TemplateExtensionOrganizationUID"
+			dccpoptions="$dccpoptions -d TransactionUID"
+			dccpoptions="$dccpoptions -d UID"
+
+			dccpoptions="$dccpoptions -d SourceImageSequence -d ReferencedImageSequence"
+			
+			if [ ! -z "$newframeofreferenceuid" ]
+			then
+				dccpoptions="$dccpoptions -r FrameOfReferenceUID $newframeofreferenceuid"
+			else
+				dccpoptions="$dccpoptions -d FrameOfReferenceUID"
+			fi
+			if [ ! -z "$newsyncframeofreferenceuid" ]
+			then
+				dccpoptions="$dccpoptions -r SynchronizationFrameOfReferenceUID $newsyncframeofreferenceuid"
+			else
+				dccpoptions="$dccpoptions -d SynchronizationFrameOfReferenceUID"
+			fi
+		fi
+
+		if [ ! -d "$dstdir" ]
+		then
+			mkdir -p "$dstdir"
+		fi
+
+		dstfile="$dstdir/$newsopinstanceuid.dcm"
+		
+		echo "$srcfile -> $dstfile"
+
+		"$DCCP" "$srcfile" "$dstfile" \
+			$dccpoptions \
+			-r PatientIdentityRemoved "YES" \
+			-r DeidentificationMethod "${deidMethod}" \
+			-r StudyID           "$newstudyid" \
+			-r AccessionNumber   "$newstudyid" \
+			-r PatientName       "$newpatientname" \
+			-r PatientID         "$newpatientid" \
+			-d InstitutionName \
+			-d InstitutionAddress \
+			-d RequestingPhysician \
+			-r ReferringPhysicianName " " \
+			-d ReferringPhysicianAddress \
+			-d ReferringPhysicianTelephoneNumbers \
+			-d StationName \
+			-d InstitutionalDepartmentName \
+			-d PhysiciansOfRecord \
+			-d PerformingPhysicianName \
+			-d NameOfPhysiciansReadingStudy \
+			-d OperatorsName \
+			-r PatientBirthDate " " \
+			-d PatientBirthTime \
+			-d OtherPatientIDs \
+			-d OtherPatientNames \
+			-d OtherStudyNumbers \
+			-d MedicalRecordLocator \
+			-d EthnicGroup \
+			-d Occupation \
+			-d DeviceSerialNumber \
+			-d PlateID \
+			-d GantryID \
+			-d CassetteID \
+			-d GeneratorID \
+			-d DetectorID \
+			-d RequestAttributesSequence \
+			-d ReferencedPatientSequence \
+			-d ReferringPhysicianIdentificationSequence \
+			-d PhysiciansOfRecordIdentificationSequence \
+			-d PhysiciansReadingStudyIdentificationSequence \
+			-d ReferencedStudySequence \
+			-d AdmittingDiagnosesCodeSequence \
+			-d PerformingPhysicianIdentificationSequence \
+			-d RequestingPhysicianIdentificationSequence \
+			-d OperatorIdentificationSequence \
+			-d ReferencedPerformedProcedureStepSequence \
+			-d PerformedProcedureStepID \
+			-d IssuerOfAccessionNumberSequence \
+			-d IssuerOfPatientID \
+			-d IssuerOfPatientIDQualifiersSequence \
+			-d StudyIDIssuer \
+			-d IssuerOfAdmissionID \
+			-d IssuerOfAdmissionIDSequence \
+			-d IssuerOfServiceEpisodeID \
+			-d IssuerOfServiceEpisodeIDSequence \
+			-d ResultsIDIssuer \
+			-d InterpretationIDIssuer \
+			-d PatientBirthName \
+			-d PatientMotherBirthName \
+			-d ConfidentialityConstraintOnPatientDataDescription \
+			-d PatientInsurancePlanCodeSequence \
+			-d PatientPrimaryLanguageCodeSequence \
+			-d PatientAddress \
+			-d MilitaryRank \
+			-d BranchOfService \
+			-d CountryOfResidence \
+			-d RegionOfResidence \
+			-d PatientTelephoneNumbers \
+			-d PatientReligiousPreference \
+			-d MedicalAlerts \
+			-d Allergies \
+			-d SmokingStatus \
+			-d PregnancyStatus \
+			-d LastMenstrualDate \
+			-d SpecialNeeds \
+			-d PatientState \
+			-d AdmissionID \
+			-d AdmittingDate \
+			-d AdmittingTime \
+			-d DataSetTrailingPadding \
+			-d OriginalAttributesSequence \
+			-d ModifiedAttributesSequence \
+			-d RequestedProcedureID \
+			2>&1 | grep -v Warning
+
+		if [ -z "$keepprivate" -a ! -z "$keepsafeprivate" ]
+		then
+			philipsPETPrivateCreator=`$DCKEY -noerror -k '(0x7053,0x0010)' "$srcfile" 2>&1 | egrep -v 'Error|Warning' | grep 'Philips PET Private Group'`
+			philipsPETSUVFactor=`$DCKEY -noerror -k '(0x7053,0x1000)' "$srcfile" 2>&1 | egrep -v 'Error|Warning'`
+			philipsPETActivityConcentrationFactor=`$DCKEY -noerror -k '(0x7053,0x1009)' "$srcfile" 2>&1 | egrep -v 'Error|Warning'`
+			if [ ! -z "${philipsPETSUVFactor}" -a ! -z "${philipsPETPrivateCreator}" ]
+			then
+				mv "$dstfile" "$dstfile.bak"
+				if [ -z "${philipsPETActivityConcentrationFactor}" ]
+				then
+					"$DCCP" "$dstfile.bak" "$dstfile" \
+						-r '(0x7053,0x0010)' "${philipsPETPrivateCreator}" \
+						-r '(0x7053,0x1000)' "${philipsPETSUVFactor}" \
+						2>&1 | grep -v Warning
+				else
+					"$DCCP" "$dstfile.bak" "$dstfile" \
+						-r '(0x7053,0x0010)' "${philipsPETPrivateCreator}" \
+						-r '(0x7053,0x1000)' "${philipsPETSUVFactor}" \
+						-r '(0x7053,0x1009)' "${philipsPETActivityConcentrationFactor}" \
+						2>&1 | grep -v Warning
+				fi
+				rm "$dstfile.bak"
+			fi
+		fi
+
+		if [ -z "$keeppet" ]
+		then
+			mv "$dstfile" "$dstfile.bak"
+			"$DCCP" "$dstfile.bak" "$dstfile" \
+				-nodisclaimer \
+				-r PatientSex " " \
+				-d PatientAge \
+				-d PatientSize \
+				-d PatientWeight \
+				2>&1 | grep -v Warning
+			rm "$dstfile.bak"
+		fi
+			
+		if [ ! -z "$nodescriptions" ]
+		then
+			mv "$dstfile" "$dstfile.bak"
+			"$DCCP" "$dstfile.bak" "$dstfile" \
+				-nodisclaimer \
+				-d StudyDescription \
+				-d SeriesDescription \
+				-d ImageComments \
+				-d AdmittingDiagnosesDescription \
+				-d AdditionalPatientHistory \
+				-d PatientComments \
+				-d DerivationDescription \
+				-d RequestedProcedureDescription \
+				-d PerformedProcedureStepDescription \
+				-d CommentsOnThePerformedProcedureStep \
+				-d AcquisitionComments \
+				-d ReasonForStudy \
+				-d ProtocolName \
+				2>&1 | grep -v Warning
+			rm "$dstfile.bak"
+		else
+			if [ ! -z "${nopatientdesc}" ]
+			then
+				mv "$dstfile" "$dstfile.bak"
+				"$DCCP" "$dstfile.bak" "$dstfile" \
+					-nodisclaimer \
+					-d AdmittingDiagnosesDescription \
+					-d AdditionalPatientHistory \
+					-d PatientComments \
+					2>&1 | grep -v Warning
+				rm "$dstfile.bak"
+			fi
+			if [ ! -z "${nostudydesc}" ]
+			then
+				mv "$dstfile" "$dstfile.bak"
+				"$DCCP" "$dstfile.bak" "$dstfile" \
+					-nodisclaimer \
+					-d StudyDescription \
+					-d RequestedProcedureDescription \
+					-d ReasonForStudy \
+					2>&1 | grep -v Warning
+				rm "$dstfile.bak"
+			fi
+			if [ ! -z "${noseriesdesc}" ]
+			then
+				mv "$dstfile" "$dstfile.bak"
+				"$DCCP" "$dstfile.bak" "$dstfile" \
+					-nodisclaimer \
+					-d SeriesDescription \
+					-d PerformedProcedureStepDescription \
+					-d CommentsOnThePerformedProcedureStep \
+					-d ProtocolName \
+					2>&1 | grep -v Warning
+				rm "$dstfile.bak"
+			fi
+			if [ ! -z "${noimagedesc}" ]
+			then
+				mv "$dstfile" "$dstfile.bak"
+				"$DCCP" "$dstfile.bak" "$dstfile" \
+					-nodisclaimer \
+					-d ImageComments \
+					-d AcquisitionComments \
+					-d DerivationDescription \
+					2>&1 | grep -v Warning
+				rm "$dstfile.bak"
+			fi
+		fi
+			
+		if [ ! -z "$nomanufacturer" ]
+		then
+			mv "$dstfile" "$dstfile.bak"
+			"$DCCP" "$dstfile.bak" "$dstfile" \
+				-nodisclaimer \
+				-r Manufacturer " " \
+				-d ManufacturerModelName \
+				-d SoftwareVersions \
+				2>&1 | grep -v Warning
+			rm "$dstfile.bak"
+		fi
+			
+		if [ ! -z "$noretired" ]
+		then
+			mv "$dstfile" "$dstfile.bak"
+			"$DCCP" "$dstfile.bak" "$dstfile" \
+				-nodisclaimer \
+				-d DataSetType \
+				-d DataSetSubtype \
+				-d ImagePosition \
+				-d ImageOrientation \
+				-d Location \
+				-d ImageGeometryType \
+				-d AcquisitionsInSeries \
+				-d ImagesInAcquisition \
+				-d ImageDimensions \
+				-d ImageFormat \
+				-d CompressionCode \
+				-d ImageLocation \
+				-d ImageDisplayFormat \
+				-d AnnotationDisplayFormatID \
+				-d FilmOrientation \
+				-d BorderDensity \
+				-d Trim \
+				-d ImageBoxPosition \
+				-d ManipulatedImage \
+				2>&1 | grep -v Warning
+			rm "$dstfile.bak"
+		fi
+
+		if [ ! -z "$noclinicaltrial" ]
+		then
+			mv "$dstfile" "$dstfile.bak"
+			"$DCCP" "$dstfile.bak" "$dstfile" \
+				-nodisclaimer \
+				-d ClinicalTrialSponsorName \
+				-d ClinicalTrialProtocolID \
+				-d ClinicalTrialProtocolName \
+				-d ClinicalTrialSiteID \
+				-d ClinicalTrialSiteName \
+				-d ClinicalTrialSubjectID \
+				-d ClinicalTrialSubjectReadingID \
+				-d ClinicalTrialTimePointID \
+				-d ClinicalTrialTimePointDescription \
+				-d ClinicalTrialCoordinatingCenterName \
+				-d ClinicalTrialSeriesID \
+				-d ClinicalTrialSeriesDescription \
+				2>&1 | grep -v Warning
+			rm "$dstfile.bak"
+		fi
+
+		if [ ! -z "$diff" ]
+		then
+			"$DCDIFF" "$srcfile" "$dstfile"
+		fi
+
+		if [ ! -z "$verify" ]
+		then
+			"$DCIODVFY" "$dstfile"
+		fi
+	fi
+else
+	echo 1>&2 "Error: wrong number of arguments $#"
+fi

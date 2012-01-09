@@ -1,0 +1,199 @@
+.TH DCDTCHG 1 "9 Nov 2007" "DICOM PS3" "DICOM PS3 - Change UIDs"
+.SH NAME
+dcdtchg \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Change UIDs consistently
+.SH SYNOPSIS
+.HP 10
+.B dcdtchg
+" inputfile1 [ inputfile2 ... ]"
+.B \-outdir " dirname"
+[
+.B \-v|verbose|vv|veryverbose
+]
+[
+.B \-l
+]
+[
+.B \-f|-filelist " filename"
+]
+[
+.B \-basedate " yyyymmdd"
+]
+[
+.B \-delta " ms"
+]
+[
+.B \-forcefirstday
+]
+[
+.B \-forcefirstmonth
+]
+[
+.B \-keepzone
+]
+.so man1/optin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcdtchg
+reads all the named dicom input files (and/or the files listed in the specified
+file) and copies them to the specified directory, changing all the dates and times
+in a consistent manner throughout the set of files.
+.LP
+The dates and times obtained by two separate invocations of this utility on different files will be different, so
+the action needs to be performed on a set of files simultaneously in order
+to maintain consistency across studies, series and temporal frames of reference.
+.LP
+Normalization of dates and times involves shifting the first date and time pair encountered in the first file to a
+base date, and then maintaining a consistent offset from that base date and time for all subsequent dates and times
+encountered.
+.LP
+Normalization of the times is only performed for DT attributes and for those TM attributes
+that have a known DA corresponding attribute. For example Study Date and Study Time are
+treated as a pair. Any TM attribute that does not have a corresponding known standard DA
+attribute will be left alone, unless it happens to have exactly the same value as another
+TM attribute that does have a matching date and has been normalized.
+.LP
+After date and time normalization, the day of the month and the month of the year may be forced
+to a value of 1 with the appropiate options, though this will potentially invalidate
+time intervals that span 24 hour boundaries
+.LP
+All timezone information is removed and set to UTC, and the TimezoneOffsetFromUTC attribute
+added, unless suppressed with the keepzone option.
+.LP
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-outdir dirname
+.RS
+The directory, which must already exist, to which the copied files are written, using
+the basename of the original filename.
+.RE
+.TP
+.B \-v|verbose
+.RS
+Display attributes as they are read and written.
+.RE
+.TP
+.B \-l
+.RS
+List filenames as they are read and written.
+.RE
+.TP
+.B \-f|filelist filename
+.RS
+.RE
+.TP
+.B \-basedate yyyymmdd[hhmmss]
+.RS
+Use a different date (and time) to which to normalize all dates and times rather than the default 20010101000000.
+.RE
+.TP
+.B \-delta ms
+.RS
+Use a specific delta (such as reported on a previous run of dcdtchg), so as to shift the datetimes of another
+set of instances by the same delta and hence maintain their relative temporal relationship.
+.RE
+.TP
+.B \-forcefirstday
+.RS
+Replace the day of the month with 01 after shifting the date to the base date. This will potentially
+invalidate time intervals that span 24 hour boundaries.
+.RE
+.TP
+.B \-forcefirstmonth
+.RS
+Replace the month of the year with 01 after shifting the date to the base date. This will potentially
+invalidate time intervals that span 24 hour boundaries.
+.RE
+.RE
+.B \-keepzone
+.RS
+Do not change the timezone. Any TimezoneOffsetFromUTC is left unchanged. Any timezone component of
+a DT attribute is copied to the output.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% ls -1 IMAGES/[0-9]*
+.RE
+IMAGES/IM0001
+.RE
+IMAGES/IM0002
+.RE
+% mkdir /tmp/IMAGES
+.RE
+% dcuidchg IMAGES/[0-9]* -outdir /tmp/NEWIMAGES
+.RE
+delta = -200590875000
+.RE
+% ls -1 /tmp/NEWIMAGES
+.RE
+/tmp/NEWIMAGES/IM0001
+.RE
+/tmp/NEWIMAGES/IM0002
+.RE
+% dcdiff IMAGES/IM0001 /tmp/NEWIMAGES/IM0001
+.RE
+9,10c9,10
+.RE
+< (0x0008,0x0012) DA Instance Creation Date      VR=<DA>   VL=<0x0008>  <20071109> 
+.RE
+< (0x0008,0x0013) TM Instance Creation Time      VR=<TM>   VL=<0x0006>  <161536> 
+.RE
+---
+.RE
+> (0x0008,0x0012) DA Instance Creation Date      VR=<DA>   VL=<0x0008>  <20010702> 
+.RE
+> (0x0008,0x0013) TM Instance Creation Time      VR=<TM>   VL=<0x0006>  <003421> 
+.RE
+15c15
+.RE
+< (0x0008,0x002a) DT Acquisition Date Time       VR=<DT>   VL=<0x0014>  <20070511155342-1400 > 
+.RE
+---
+.RE
+> (0x0008,0x002a) DT Acquisition Date Time       VR=<DT>   VL=<0x0014>  <20010101001227+0000 > 
+.RE
+22c22
+.RE
+< (0x0008,0x0201) SH Timezone Offset From UTC    VR=<SH>   VL=<0x0006>  <-0500> 
+.RE
+---
+.RE
+> (0x0008,0x0201) SH Timezone Offset From UTC    VR=<SH>   VL=<0x0006>  <+0000 > 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1), 
+.BR dcuidchg(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP
+There is a fixed length of buffer used for reading each line from the list of filenames file.
+.LP
+Time normalization based on combined date and time values introduces the risk that times
+may wrap around the 24 hour period (in either direction) though any corresponding date
+attribute will be appropriately incremented or decremented. That is, the interval between
+times will be preserved, except when the date day or month values are forced to 1. This
+risk is mitigated by looking for the Study Date and Time (usually the earliest) first.
+.LP
+Timezone replacement does not take into account the possibility of two attributes with the
+different explicit timezones in DT attributes (or different from the value in the
+TimezoneOffsetFromUTC attribute) being present ... all timezone information is simply
+removed and replaced with "+0000" (UTC).
+.LP
+Times and datetimes with a fractional second component are always output to a precision of 3 digits (milliseconds)
+even if greater or lesser precision was present in the input. If a fractional component is present
+but has a value of 0, then the fractional component will not be present in the output; this is
+normally the case when the times in the input are specified to second precision.
+.LP
+

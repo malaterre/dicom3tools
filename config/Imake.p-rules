@@ -1,0 +1,90 @@
+/* Rules specific to THIS particular project */
+
+/*
+ * ProjectToolLibraryHeaderTemplate - general translate template to
+ * header using awk script in support area and specifying multiple args
+ */
+#ifndef ProjectToolLibraryHeaderTemplate
+#define	ProjectToolLibraryHeaderTemplate(header,template,script,args)	@@\
+header.h: $(PROJECTLIBSTANDARDDIR)/template.tpl \			@@\
+			$(PROJECTLIBSUPPORTDIR)/script.awk		@@\
+	RemoveTargetProgram(header.h)					@@\
+	$(AWK) -f $(PROJECTLIBSUPPORTDIR)/script.awk \			@@\
+		args <$(PROJECTLIBSTANDARDDIR)/template.tpl >header.h	@@\
+									@@\
+depend::	header.h						@@\
+									@@\
+clean::									@@\
+	$(RM) header.h
+#endif /* ProjectToolLibraryHeaderTemplate */
+
+/*
+ * ProjectConvertTemplate - general translate template to
+ * header using awk script in support area
+ */
+#ifndef ProjectConvertTemplate
+#define	ProjectConvertTemplate(file,template,script,args)		@@\
+file: template.tpl $(PROJECTLIBSUPPORTDIR)/script.awk			@@\
+	RemoveTargetProgram(file)					@@\
+	$(AWK) -f $(PROJECTLIBSUPPORTDIR)/script.awk \			@@\
+		args <template.tpl >file				@@\
+									@@\
+depend::	file							@@\
+									@@\
+clean::									@@\
+	$(RM) file
+#endif /* ProjectConvertTemplate */
+
+/*
+ * ProjectInstallOnMakeUpdatedLibraryHeader
+ */
+#ifndef ProjectInstallOnMakeUpdatedLibraryHeader
+#define	ProjectInstallOnMakeUpdatedLibraryHeader(hdr,dest)		@@\
+all::	$(PROJECTINCLUDEDIR)/dest/hdr.h					@@\
+									@@\
+depend:: $(PROJECTINCLUDEDIR)/dest/hdr.h				@@\
+									@@\
+$(PROJECTINCLUDEDIR)/dest/hdr.h:	hdr.h				@@\
+	$(CP) hdr.h $(PROJECTINCLUDEDIR)/dest/hdr.h			@@\
+									@@\
+clean::									@@\
+	$(RM) $(PROJECTINCLUDEDIR)/dest/hdr.h
+#endif /* ProjectInstallOnDependUpdatedLibraryHeader */
+
+/*
+ * AllExecutableTarget - generate rules to build necessary executables during make all, accounting for executable filename extension on some platforms
+ */
+#ifndef AllExecutableTarget
+#define AllExecutableTarget(depends)						@@\
+all:: depends$(EXECUTABLESUFFIX)
+#endif /* AllExecutableTarget */
+
+/*
+ * NormalCCProgramTarget - generate rules to compile and link the indicated 
+ * program; since it does not use any default object files, it may be used for
+ * multiple programs in the same Imakefile.
+ * Accounting for executable filename extension on some platforms.
+ */
+#ifndef NormalCCProgramTarget
+#define	NormalCCProgramTarget(program,objects,deplibs,locallibs,syslibs) @@\
+program: objects deplibs						 @@\
+	RemoveTargetProgram($@$(EXECUTABLESUFFIX))		 @@\
+	$(CCC) -o $@ objects $(CPLUSPLUS_LDOPTIONS) locallibs \		 @@\
+		$(CPLUSPLUS_LDLIBS) syslibs \				 @@\
+		$(CPLUSPLUS_EXTRA_LOAD_FLAGS) 				 @@\
+	$(STRIP) $@$(EXECUTABLESUFFIX) 				 @@\
+									 @@\
+clean::									 @@\
+	$(RM) program$(EXECUTABLESUFFIX)
+#endif /* NormalCCProgramTarget */
+
+/*
+ * InstallProgram - generate rules to install an executable program using any
+ * special install flags set in $(INSTALLFLAGS).
+ * Accounting for executable filename extension on some platforms.
+ */
+#ifndef InstallProgram
+#define	InstallProgram(program,dest)					@@\
+InstallProgramWithFlags(program/**/$(EXECUTABLESUFFIX),dest,NullParameter)
+#endif /* InstallProgram */
+

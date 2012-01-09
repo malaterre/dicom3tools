@@ -1,0 +1,317 @@
+.TH RAWTODC 1 "9 December 2005" "DICOM PS3" "Create DICOM from raw file"
+.SH NAME
+rawtodc \- ACR/NEMA DICOM PS3 ... Create DICOM from raw file
+.SH SYNOPSIS
+.HP 10
+.B rawtodc
+.B \-rows|\-height|\-h " rows"
+.B \-columns|\-width|\-w " cols"
+.B \-bits|\-depth|\-d " bits"
+[
+.B \-frames " frames"
+]
+[
+.B \-little|\-l|\-big|\-b
+]
+[
+.B \-samples " samples"
+]
+[
+.B \-gray|\-grey|\-rgb|\-argb|\-hsv|\-cmyk
+]
+[
+.B \-photometric-interpretation " xxx"
+]
+[
+.B \-color-by-pixel|\-color-by-plane
+]
+[
+.B \-imagepixelmoduleonly
+]
+[
+.B \-v|verbose
+]
+.so man1/genin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B rawtodc
+reads the named raw input file and converts it to a DICOM Secondary Capture Image Storage SOP Class instance stored in a DICOM file. Only uncompressed raw images with one sample per byte or word are supported, though multiple samples per pixel are allowed. The planar configuration can be specified but not re-ordered.
+.LP
+During the translation, specific attributes may be deleted, added or
+replaced, class and instance unique identifiers generated or removed,
+group lengths added, or private attributes removed, as specified by
+the replacement options described in dcintro(1). This allows the
+specification of additional DICOM attributes, such as the patient's
+name, necessary to make a complete and useful SC instance.
+.SH OPTIONS
+The verbose output goes to standard error.
+.PP
+.PP
+The basic switches are described in dcintro(1). Options specific to this program are:
+.TP
+.BI \-rows|\-height|\-h " rows"
+.RS
+Required.
+.RE
+.TP
+.BI \-columns|\-width|\-w " cols"
+.RS
+Required.
+.RE
+.TP
+.BI \-bits|\-depth|\-d " bits"
+.RS
+Required.
+.RE
+.TP
+.BI \-little|\-big
+.RS
+Required if bit depth is greater than 8.
+.RE
+.TP
+.BI \-frames " frames"
+.RS
+Defaults to 1.
+.RE
+.TP
+.BI \-samples " samples"
+.RS
+Defaults to appropriate value for photometric interpretation, or 1 if none specified. Only needs to be specified for unusual photometric interpretations.
+.RE
+.TP
+.BI \-gray|\-grey|\-rgb|\-argb|\-hsv|\-cmyk
+.RS
+Recognized photometric interpretations, defaults to gray if no samples specified or samples is 1, and rgb if samples is 3.
+.RE
+.TP
+.BI \-photometric-interpretation " xxx"
+.RS
+Explicitly specify string value for photometric interpretation attribute; will need value for samples.
+.RE
+.TP
+.BI \-color-by-pixel|\-color-by-plane
+.RS
+Specifies the planar configuration. Required if samples not 1 (explicitly or deduced from photometric interpretation). No default.
+.RE
+.TP
+.BI \-imagepixelmoduleonly
+.RS
+Write only the image pixel data module and not the basic mandatory secondary capture and composite IOD modules as well
+(e.g., prior to dcmerge'ing with an existing SOP instance that has its pixel data deleted); use the -nodisclaimer switch
+to avoid generating Image Comments and the -n switch to avoid adding a meta-information header (will fail if you do not
+since there is no SOP Class UID to use in the meta-information header).
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+# Create a gray image from 16 bit big-endian ...
+.RE
+% rawtodc -rows 256 -columns 256 -bits 16 -big \\
+.RE
+          /tmp/test.big /tmp/test.dc3
+.RE
+
+.RE
+# Create a gray image from 8 bit ...
+.RE
+% rawtodc -rows 256 -columns 256 -bits 8 \\
+.RE
+          /tmp/test.byte /tmp/test.dc3
+.RE
+\ 
+.RE
+# Create an rgb color-by-pixel image from 8 bit ...
+.RE
+% rawtodc -v -rows 256 -columns 256 -bits 8 \\
+.RE
+             -rgb -color-by-pixel \\
+.RE
+          /tmp/test.byte3 /tmp/test.dc3
+.RE
+ ...
+.RE
+(0x0028,0x0002) US Samples per Pixel [0x0003] 
+.RE
+(0x0028,0x0004) CS Photometric Interpretation <RGB > 
+.RE
+(0x0028,0x0006) US Planar Configuration [0x0000] 
+.RE
+ ...
+.RE
+\ 
+.RE
+# Create a gray image from 12 bit little endian ...
+.RE
+% rawtodc -v -rows 256 -columns 256 -bits 12 -little \\
+.RE
+          /tmp/test.little /tmp/test.dc3
+.RE
+Converting ...
+.RE
+******** As read ... ********
+.RE
+(0x0008,0x0020) DA Study Date <> 
+.RE
+(0x0008,0x0030) TM Study Time <> 
+.RE
+(0x0008,0x0050) SH Accession Number <> 
+.RE
+(0x0008,0x0060) CS Modality <OT> 
+.RE
+(0x0008,0x0064) CS Conversion Type <WSD > 
+.RE
+(0x0008,0x0070) LO Manufacturer <> 
+.RE
+(0x0008,0x0090) PN Referring Physician's Name <^^^^> 
+.RE
+(0x0010,0x0010) PN Patient's Name <^^^^>
+.RE
+(0x0010,0x0020) LO Patient's ID <> 
+.RE
+(0x0010,0x0030) DA Patient's Birth Date <> 
+.RE
+(0x0010,0x0040) CS Patient's Sex <> 
+.RE
+(0x0020,0x0010) SH Study ID <> 
+.RE
+(0x0020,0x0011) IS Series Number <> 
+.RE
+(0x0020,0x0013) IS Image Number <> 
+.RE
+(0x0020,0x0020) CS Patient Orientation <> 
+.RE
+(0x0028,0x0002) US Samples per Pixel [0x0001] 
+.RE
+(0x0028,0x0004) CS Photometric Interpretation <MONOCHROME2> 
+.RE
+(0x0028,0x0008) IS Number of Frames <1 > 
+.RE
+(0x0028,0x0010) US Rows [0x0100] 
+.RE
+(0x0028,0x0011) US Columns [0x0100] 
+.RE
+(0x0028,0x0100) US Bits Allocated [0x0010] 
+.RE
+(0x0028,0x0101) US Bits Stored [0x000c] 
+.RE
+(0x0028,0x0102) US High Bit [0x000b] 
+.RE
+(0x0028,0x0103) US Pixel Representation [0x0000] 
+.RE
+(0x7fe0,0x0010) OX Pixel Data VR=<OW>   VL=<0x20000>  
+.RE
+******** As written ... ********
+.RE
+(0x0002,0x0000) UL Meta Element Group Length [0x000000a4] 
+.RE
+(0x0002,0x0001) OB File Meta Information Version \\
+.RE
+                   [0x00,0x01] 
+.RE
+(0x0002,0x0002) UI Media Storage SOP Class UID \\
+.RE
+                   <1.2.840.10008.5.1.4.1.1.7> 
+.RE
+(0x0002,0x0003) UI Media Storage SOP Instance UID \\
+.RE
+                   <0.0.0.0.1.0.0.0.830260380> 
+.RE
+(0x0002,0x0010) UI Transfer Syntax UID \\
+.RE
+                   <1.2.840.10008.1.2> 
+.RE
+(0x0002,0x0012) UI Implementation Class UID  <0.0.0.0> 
+.RE
+(0x0002,0x0013) SH Implementation Version Name \\
+.RE
+                   <NOTSPECIFIED> 
+.RE
+(0x0002,0x0016) AE Source Application Entity Title \\
+.RE
+                   <NOTSPECIFIED> 
+.RE
+(0x0008,0x0016) UI SOP Class UID \\
+.RE
+                   <1.2.840.10008.5.1.4.1.1.7> 
+.RE
+(0x0008,0x0018) UI SOP Instance UID \\
+.RE
+                   <0.0.0.0.1.0.0.0.830260380> 
+.RE
+(0x0008,0x0020) DA Study Date <> 
+.RE
+(0x0008,0x0030) TM Study Time <> 
+.RE
+(0x0008,0x0050) SH Accession Number <> 
+.RE
+(0x0008,0x0060) CS Modality <OT> 
+.RE
+(0x0008,0x0064) CS Conversion Type <WSD > 
+.RE
+(0x0008,0x0070) LO Manufacturer <> 
+.RE
+(0x0008,0x0090) PN Referring Physician's Name <^^^^> 
+.RE
+(0x0010,0x0010) PN Patient's Name 			<^^^^> 
+.RE
+(0x0010,0x0020) LO Patient's ID <> 
+.RE
+(0x0010,0x0030) DA Patient's Birth Date <> 
+.RE
+(0x0010,0x0040) CS Patient's Sex <> 
+.RE
+(0x0020,0x000d) UI Study Instance UID \\
+.RE
+                   <0.0.0.0.2.0.830260380> 
+.RE
+(0x0020,0x000e) UI Series Instance UID \\
+.RE
+                   <0.0.0.0.3.0.0.830260380> 
+.RE
+(0x0020,0x0010) SH Study ID <> 
+.RE
+(0x0020,0x0011) IS Series Number <> 
+.RE
+(0x0020,0x0013) IS Image Number <> 
+.RE
+(0x0020,0x0020) CS Patient Orientation <> 
+.RE
+(0x0028,0x0002) US Samples per Pixel [0x0001] 
+.RE
+(0x0028,0x0004) CS Photometric Interpretation <MONOCHROME2> 
+.RE
+(0x0028,0x0008) IS Number of Frames <1 > 
+.RE
+(0x0028,0x0010) US Rows [0x0100] 
+.RE
+(0x0028,0x0011) US Columns [0x0100] 
+.RE
+(0x0028,0x0100) US Bits Allocated [0x0010] 
+.RE
+(0x0028,0x0101) US Bits Stored [0x000c] 
+.RE
+(0x0028,0x0102) US High Bit [0x000b] 
+.RE
+(0x0028,0x0103) US Pixel Representation [0x0000] 
+.RE
+(0x7fe0,0x0010) OX Pixel Data VR=<OW>   VL=<0x20000>  
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR dctoraw(1) ,
+.BR pnmtodc(1) ,
+.BR dciodvfy(1) ,
+.BR dcintro(1) ,
+.BR dcmerge(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

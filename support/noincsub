@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# recursively removes paths in #include "" from source files
+
+dodirectory() {
+	echo Directory `pwd`
+	for i in $*
+	do
+		if [ -d $i ]
+		then
+			(cd $i; dodirectory *)
+		fi
+	done
+
+	for i in *.h *.hpp *.c *.cc *.C *.CC *.cp *.cpp
+	do
+		if [ -f $i ]
+		then
+			echo Updating $i
+			rm -f $i.BAK
+			mv $i $i.BAK
+			nawk <$i.BAK >$i '
+				!/^[ 	]*\#include.*\"[^\"]*\//	{ print }
+				/^[ 	]*\#include.*\"[^\"]*\//	{
+					sub("^[ 	]*\#include.*\"[^\"]*\/","#include \"")
+					print
+				}
+			'
+			if [ -f $i ] ; then rm -f $i.BAK ; fi
+		fi
+	done
+}
+
+dodirectory $*

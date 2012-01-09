@@ -1,0 +1,52 @@
+.TH PQTODC 1 "05 April 1998" "DICOM PS3" "pq to DICOM"
+.SH NAME
+pqtodc \- ACR/NEMA DICOM PS3 ... pq to DICOM
+.SH SYNOPSIS
+.HP 10
+.B pqtodc
+[
+.B \-v|verbose
+]
+.I inputfilename
+.I outputfilename
+.SH DESCRIPTION
+.LP
+.B pqtodc
+reads the named pq input file and converts it to a dicom output file.
+.LP
+.SH OPTIONS
+The verbose output goes to standard error.
+.PP
+The basic switches are described in dcintro(1).
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% pqtodc \-v test test.dc3
+.RE
+\ 
+.RE
+Converting ...
+.RE
+******** As read ... ********
+.RE
+(0x0008,0x0008) CS Image Type ...
+.RE
+******** As written ... ********
+.RE
+(0x0002,0x0001) OB File Meta Information Version ...
+.RE
+ ...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1) ,
+.BR pqdump(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

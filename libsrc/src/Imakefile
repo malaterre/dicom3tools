@@ -1,0 +1,6 @@
+#define IHaveSubdirs
+
+SUBDIRS = dcdisp dctool generic locale ourdisp dconvert
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

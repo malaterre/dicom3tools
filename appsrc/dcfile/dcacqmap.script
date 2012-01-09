@@ -1,0 +1,338 @@
+#!/bin/sh
+#
+# not tolerant of spaces in file names
+#
+
+usage() {
+	echo 1>&2 "Usage: $1 [-byacqnumber] [-byslicelocation] [-byscanoptions] [-bytemporalpositionidentifier] [-locationtolerance n] [-iconsize n] [-nodump] [-xhtml] [-isonames] [-nostyle] filenamesfile resultfolder"
+}
+
+ACQUISITIONPARAMETER=AcquisitionTime
+POSITIONPARAMETER=ImagePositionPatient
+LOCATIONTOLERANCE=""
+ICONSIZE=128
+INCLUDEREPORT="yes"
+MAKEXHTML="no"
+USEUIDFORFILENAME="yes"
+USESTYLESHEET="yes"
+SHORTAGTERMINATOR=""
+
+while [ $# -gt 2 ]
+do
+	if [ "$1" = "-byacqnumber" ]
+	then
+		ACQUISITIONPARAMETER=AcquisitionNumber
+	elif [ "$1" = "-byorientation" ]
+	then
+		# useful for series with different angulations
+		ACQUISITIONPARAMETER=ImageOrientationPatient
+	elif [ "$1" = "-byscanoptions" ]
+	then
+		# useful for Siemens Cardiac acquisitions where %RR is embedded in this attribute
+		ACQUISITIONPARAMETER=ScanOptions
+	elif [ "$1" = "-bytemporalpositionidentifier" ]
+	then
+		# useful for Philips perfusion acquisitions, within set of images all with the same AcquisitionNumber
+		ACQUISITIONPARAMETER=TemporalPositionIdentifier
+	elif [ "$1" = "-byslicelocation" ]
+	then
+		POSITIONPARAMETER=SliceLocation
+	elif [ "$1" = "-nodump" ]
+	then
+		INCLUDEREPORT="no"
+	elif [ "$1" = "-xhtml" ]
+	then
+		MAKEXHTML="yes"
+		SHORTAGTERMINATOR="/"
+	elif [ "$1" = "-isonames" ]
+	then
+		USEUIDFORFILENAME="no"
+	elif [ "$1" = "-nostyle" ]
+	then
+		USESTYLESHEET="no"
+	elif [ "$1" = "-locationtolerance" ]
+	then
+		shift
+		LOCATIONTOLERANCE="$1"
+	elif [ "$1" = "-iconsize" ]
+	then
+		shift
+		ICONSIZE="$1"
+	else
+		usage `basename $0`
+		exit 1
+	fi
+	shift
+done
+
+FILENAMESFILE="$1"
+RESULTFOLDERNAME="$2"
+
+if [ $# -ne 2 -o ! -f "${FILENAMESFILE}" ]
+then
+	usage `basename $0`
+	exit 1
+fi
+
+HTMLFILE="index.html"
+ICONSDIR="icons"
+REPORTSDIR="reports"
+STYLESHEET="style.css"
+
+mkdir -p "${RESULTFOLDERNAME}"
+
+FQHTMLFILE="${RESULTFOLDERNAME}/${HTMLFILE}"
+FQICONSDIR="${RESULTFOLDERNAME}/${ICONSDIR}"
+FQSTYLESHEET="${RESULTFOLDERNAME}/${STYLESHEET}"
+FQREPORTSDIR="${RESULTFOLDERNAME}/${REPORTSDIR}"
+
+mkdir -p "${FQICONSDIR}"
+if [ "${INCLUDEREPORT}" = "yes" ]
+then
+	mkdir -p "${FQREPORTSDIR}"
+fi
+
+TMPROOT=/tmp/`basename $0`.$$.
+
+SORTEDBYPOSITION="${TMPROOT}sortedbyposition.dat"
+POSITIONLIST="${TMPROOT}positionlist.dat"
+SUBKEYS="${TMPROOT}subkeys.dat"
+UNIQUESUBKEYS="${TMPROOT}uniquesubkeys.dat"
+PARAMETERSBYFILE="${TMPROOT}parametersbyfile.dat"
+
+CURRENTPOSITIONFILES="${TMPROOT}currentpositionfiles.dat"
+SORTEDWITHINPOSITION="${TMPROOT}sortedwithinposition.dat"
+ROWFILE="${TMPROOT}rowfile.dat"
+
+useTitle=""
+
+echo 1>&2 "Stage 1: identifying unique values of position and sorting"
+if [ -z "${LOCATIONTOLERANCE}" ]
+then
+	dcsort -index -show -k "${POSITIONPARAMETER}" `cat "${FILENAMESFILE}"` >"${SORTEDBYPOSITION}" 2>&1
+else
+	dcsort -index -show -k "${POSITIONPARAMETER}" `cat "${FILENAMESFILE}"` 2>&1 | awk -v locationtolerance="${LOCATIONTOLERANCE}" '{print $1 "\t" $2 "\t" (int($3*locationtolerance+0.5)/locationtolerance)}' >"${SORTEDBYPOSITION}"
+fi
+#cat 1>&2 "${SORTEDBYPOSITION}"
+awk < "${SORTEDBYPOSITION}" '{print $3}' | sort -u -n -r > "${POSITIONLIST}"	# -r here makes head to toe, rather than -descending in dcsort
+#cat 1>&2 "${POSITIONLIST}"
+
+echo 1>&2 "Stage 2: making icons, extracting other key values than position and identifying unique combinations of those keys"
+rm -f "${UNIQUESUBKEYS}"
+rm -f "${PARAMETERSBYFILE}"
+for i in `cat "${FILENAMESFILE}"`
+do
+	if [ -z "${useTitle}" ]
+	then
+		useTitle=`dckey -noerror -k PatientName "$i" 2>&1 | egrep -iv '(error|warning)' | head -1`
+	fi
+	
+	dckey -brief -k SliceThickness -k ConvolutionKernel -k "${ACQUISITIONPARAMETER}" -k SOPInstanceUID "$i" >"${SUBKEYS}" 2>&1
+#cat "${SUBKEYS}"
+	sopInstanceUID=`grep SOPInstanceUID "${SUBKEYS}"| sed -e 's/^SOPInstanceUID=//'`
+	if [ ! -f "${FQICONSDIR}/${sopInstanceUID}.jpg" ]
+	then
+		dctopgm8 -quiet "$i" 2>/dev/null | pamscale -xsize "${ICONSIZE}" -ysize "${ICONSIZE}" | cjpeg >"${FQICONSDIR}/${sopInstanceUID}.jpg"
+	fi
+	
+	sliceThickness=`grep SliceThickness "${SUBKEYS}"| sed -e 's/^SliceThickness=//'`
+	if [ -z "${sliceThickness}" ]; then sliceThickness="0.0"; fi
+	convolutionKernel=`grep ConvolutionKernel "${SUBKEYS}"| sed -e 's/^ConvolutionKernel=//' -e 's/[^A-Za-z0-9_]/_/g'`
+	if [ -z "${convolutionKernel}" ]; then convolutionKernel="NONE"; fi
+	acquisitionParameter=`grep "${ACQUISITIONPARAMETER}" "${SUBKEYS}"| sed -e "s/^${ACQUISITIONPARAMETER}=//" -e 's/ $//g' -e 's/^ //g' -e 's/[^0-9a-zA-Z+-]/_/g'`
+#echo "${acquisitionParameter}"
+	if [ -z "${acquisitionParameter}" ]; then acquisitionParameter="999999"; fi
+	echo "${acquisitionParameter} ${convolutionKernel} ${sliceThickness}" | awk '{print $1 " " $2 " " $3}' >>"${UNIQUESUBKEYS}"	# awk is to get spaces same as later
+	echo "${acquisitionParameter} ${convolutionKernel} ${sliceThickness} ${sopInstanceUID} $i" >>"${PARAMETERSBYFILE}"
+
+	rm -f "${SUBKEYS}"
+done
+mv "${UNIQUESUBKEYS}" "${UNIQUESUBKEYS}.bak"
+sort -u  <"${UNIQUESUBKEYS}.bak" | sort -n -k1,1 -d -k2,2 -n -k3,3 >"${UNIQUESUBKEYS}"	# why twice ? in case different alphas interpreted as same numeric
+rm -f "${UNIQUESUBKEYS}.bak"
+
+#cat 1>&2 "${PARAMETERSBYFILE}"
+#cat 1>&2 "${UNIQUESUBKEYS}"
+numberofuniquekeys=`wc -l "${UNIQUESUBKEYS}" | awk '{print $1}'`	# is the number of html columns we will need
+#echo 1>&2 "numberofuniquekeys = ${numberofuniquekeys}"
+
+echo 1>&2 "Stage 3: building HTML file"
+if [ "${MAKEXHTML}" = "yes" ]
+then
+	echo > "${FQHTMLFILE}" '<?xml version="1.0" encoding="utf-8" ?>'
+	echo >>"${FQHTMLFILE}" '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "DTD/xhtml1-strict.dtd">'
+	echo >>"${FQHTMLFILE}" '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">'
+else
+	echo >"${FQHTMLFILE}" "<html>"
+fi
+echo >>"${FQHTMLFILE}" "<head>"
+echo >>"${FQHTMLFILE}" "<title>${useTitle}</title>"
+if [ "${USESTYLESHEET}" = "yes" ]
+then
+	echo >>"${FQHTMLFILE}" "<link rel=\"stylesheet\" type=\"text/css\" href=\"${STYLESHEET}\"${SHORTAGTERMINATOR}>"
+fi
+echo >>"${FQHTMLFILE}" "</head>"
+if [ "${USESTYLESHEET}" = "yes" ]
+then
+	echo >>"${FQHTMLFILE}" "<body>"
+else
+	if [ "${MAKEXHTML}" = "yes" ]
+	then
+		echo >>"${FQHTMLFILE}" '<body style="color: lavender; background-color : black; font-family: Arial, sans-serif;">'
+	else
+		echo >>"${FQHTMLFILE}" "<body bgcolor=\"black\" text=\"lavender\">"
+		# note that the face attribute is only supported by IE (see "http://www.blooberry.com/indexdot/html/tagpages/b/basefont.htm"); size of 3 is default
+		echo >>"${FQHTMLFILE}" "<basefont size=\"3\" face=\"Arial, sans-serif\"${SHORTAGTERMINATOR}>"
+	fi
+fi
+echo >>"${FQHTMLFILE}" "<table>"
+echo >>"${FQHTMLFILE}" "<tr><th>Position</th>"
+xargs <"${UNIQUESUBKEYS}" -L1 -J% echo '<th align="center">' % '</th>' >>"${FQHTMLFILE}"
+echo >>"${FQHTMLFILE}" "</tr>"
+
+countForFileName=0
+for position in `cat "${POSITIONLIST}"`
+do
+#echo 1>&2 "Position = ${position}"
+	echo >>"${FQHTMLFILE}" "<tr><td>${position}</td>"
+	positionWithPeriodEscaped=`echo "${position}" | sed -e 's/[.]/[.]/'`
+	grepstring="[^0-9-.]${positionWithPeriodEscaped}\$"
+	egrep "${grepstring}" "${SORTEDBYPOSITION}" | awk '{print $2}' >"${CURRENTPOSITIONFILES}"
+#cat 1>&2 <"${CURRENTPOSITIONFILES}"
+	rm -f "${ROWFILE}"
+	for i in `cat "${CURRENTPOSITIONFILES}"`
+	do
+#echo 1>&2 "i = $i"
+		whichfileentry=`grep "$i" "${PARAMETERSBYFILE}" | head -1`
+#echo 1>&2 "whichfileentry = ${whichfileentry}"
+		parameters=`echo "${whichfileentry}" | awk '{print $1 " " $2 " " $3}'`	# awk is to get spaces same as in UNIQUESUBKEYS (see grep later)
+#echo 1>&2 "parameters = ${parameters}"
+		sopInstanceUID=`echo "${whichfileentry}" | awk '{print $4}'`
+#echo 1>&2 "sopInstanceUID = ${sopInstanceUID}"
+		whichuniquesubkey=`grep -n "${parameters}" "${UNIQUESUBKEYS}" | sed -e 's/:.*$//'`
+#echo 1>&2 "whichuniquesubkey = ${whichuniquesubkey}"
+		echo "${whichuniquesubkey}: ${sopInstanceUID} $i" >>"${ROWFILE}"
+	done
+	firstfile=""
+	count=1
+	while [ ${count} -le ${numberofuniquekeys} ]
+	do
+		row=`egrep "^$count: " "${ROWFILE}" | head -1 | sed -e 's/^[0-9]*:[ ]*//'`
+		if [ -z "${row}" ]
+		then
+			echo >>"${FQHTMLFILE}" "<td></td>"
+		else
+#echo 1>&2 "Got row = ${row}"
+			sopInstanceUID=`echo "${row}" | sed -e 's/^\([0-9][0-9.]*\).*$/\1/'`
+#echo 1>&2 "Got sopInstanceUID = ${sopInstanceUID}"
+			if [ "${USEUIDFORFILENAME}" = "yes" ]
+			then
+				baseForFileName="${sopInstanceUID}"
+			else
+				baseForFileName="${countForFileName}"
+				mv "${FQICONSDIR}/${sopInstanceUID}.jpg"  "${FQICONSDIR}/${baseForFileName}.jpg"
+			fi
+			if [ "${INCLUDEREPORT}" = "no" ]
+			then
+				echo "<td align=\"center\"><img src=\"${ICONSDIR}/${baseForFileName}.jpg\" alt=\"NONE\"${SHORTAGTERMINATOR}></td>" >>"${FQHTMLFILE}"
+			else
+				fileName=`echo "${row}" | sed -e 's/^[^ ]*[ ]*\(.*\)$/\1/'`
+#echo 1>&2 "Got fileName = ${fileName}"
+				report="${baseForFileName}.txt"
+				if [ -z "${firstfile}" ]
+				then
+					dcdump "$fileName" 2>&1 | grep -v 'Warning - Overriding UN With Dictionary VR' >"${FQREPORTSDIR}/${report}"
+					firstfile="$fileName"
+				else
+					dcdiff "${firstfile}" "$fileName" >"${FQREPORTSDIR}/${report}" 2>&1
+				fi
+				#echo "${whichuniquesubkey}: <td align=\"center\"><a href=\"${REPORTSDIR}/${report}\"><img src=\"${ICONSDIR}/${baseForFileName}.jpg\"${SHORTAGTERMINATOR}></a></td>" >>"${FQHTMLFILE}"
+				echo "<td align=\"center\"><a href=\"javascript:void(0)\" onclick=\"window.open('${REPORTSDIR}/${report}')\"><img src=\"${ICONSDIR}/${baseForFileName}.jpg\" alt=\"NONE\"${SHORTAGTERMINATOR}></a></td>" >>"${FQHTMLFILE}"
+			fi
+		fi
+		count=`expr ${count} + 1`
+		countForFileName=`expr ${countForFileName} + 1`
+	done
+	echo >>"${FQHTMLFILE}" "</tr>"
+	rm -f "${CURRENTPOSITIONFILES}"
+	rm -f "${ROWFILE}"
+done
+echo >>"${FQHTMLFILE}" "</table></body></html>"
+
+rm -f "${UNIQUESUBKEYS}"
+rm -f "${PARAMETERSBYFILE}"
+rm -f "${SORTEDBYPOSITION}"
+rm -f "${POSITIONLIST}"
+
+if [ "${USESTYLESHEET}" = "yes" ]
+then
+	cat <<EOF >"${FQSTYLESHEET}"
+body {
+	color: lavender;
+	background-color: #000000;
+	text-decoration:  none;
+	font-family: Arial, sans-serif;
+	font-size: 100%;
+}
+
+frame {
+	color: lavender;
+	background-color: #000000;
+	text-decoration:  none;
+	font-family: Arial, sans-serif;
+	font-size: 100%;
+}
+
+p {
+}
+
+table {
+	border: 0px solid;
+	border-color: lavender;
+}
+
+th {
+	border: 1px solid;
+	padding-left: 2px;
+	padding-right: 2px;
+	border-color: feldspar;
+}
+
+td {
+	border: 1px solid;
+	padding-left: 0px;
+	padding-right: 0px;
+	border-color: feldspar;
+}
+
+a:link {
+	/* Applies to all unvisited links */
+	text-decoration:  none;
+	color:            black;
+}
+
+a:visited {
+	/* Applies to all visited links */
+	text-decoration:  none;
+	color:            black;
+}
+
+a:hover {
+	/* Applies to links under the pointer */
+	text-decoration:  none;
+	background-color: lavender;
+	color:            dimgray;
+} 
+
+a:active  {
+	/* Applies to activated links */
+	text-decoration:  none;
+	color:            black;
+} 
+  
+.centered {
+	text-align: center;
+}
+EOF
+fi
+

@@ -1,0 +1,30 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = sompdc.cc sompconv.cc sompmpln.cc \
+		 sompmmsc.cc sompmdt.cc \
+		 sompdmp.cc sompdmpf.cc \
+		 somphdrc.cc somp.cc
+
+OBJS = 		 sompdc.o  sompconv.o  sompmpln.o  \
+		 sompmmsc.o  sompmdt.o  \
+		 sompdmp.o  sompdmpf.o  \
+		 somphdrc.o  somp.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdsomp.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(somp,dconvert)
+
+ProjectConvertTemplate(somphdrp.h,somp,convert,prefix=SOMP_ role=headerpart)
+ProjectConvertTemplate(somphdrw.h,somp,convert,prefix=SOMP_ role=wholeheader)
+ProjectConvertTemplate(somphdrc.h,somp,convert,prefix=SOMP_ role=constructheader)
+ProjectConvertTemplate(sompconv.h,somp,convert,prefix=SOMP_ role=dicom)
+ProjectConvertTemplate(sompdmpf.h,somp,convert,prefix=SOMP_ role=dump)
+
+sompdmpf.o: sompdmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) sompdmpf.cc
+
+DependCCTarget()
+

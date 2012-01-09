@@ -1,0 +1,77 @@
+.TH ANTODC 1 "11 January 1999" "DICOM PS3" "DICOM PS3 - Convert ACR-NEMA to DICOM"
+.SH NAME
+antodc \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Convert ACR-NEMA to DICOM
+.SH SYNOPSIS
+.HP 10
+.B antodc
+[
+.B \-v|verbose
+]
+.so man1/optin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B antodc
+reads the named acr-nema input file and copies the information and
+pixel data to a new dicom file, converting as many attributes as
+possible to make valid dicom information objects.
+.LP
+The input encoding of the file will be automatically determined, or can
+be explicitly specified in pathological cases using the input options
+described in dcintro(1).
+.LP
+The encoding of the file will be changed to the default or explicitly
+requested transfer syntax, as described in dcintro(1) under output
+options. This provides a means of converting between different transfer
+syntaxes, and adding or removing Part 10 style meta-information headers
+to or from "true" DICOM files, DICOM messages captured from network
+exchanges such as with the Mallinckrodt or Oldenburg central test node
+software, or converting old ACR/NEMA or SPI files.
+.LP
+During the translation, specific attributes may be deleted, added or
+replaced, class and instance unique identifiers generated or removed,
+group lengths added, or private attributes removed, as specified by
+the replacement options described in dcintro(1). This allows pre-DICOM
+ACR-NEMA or SPI files to be converted to DICOM files containing
+conforming instances of SOP classes in a semi-automated manner. If the
+SOP Class can be automatically determined, such as for CT or MR images,
+specific SOP Class instances will be created, otherwise SC will be used.
+Unique study, series and instance identifiers will be generated from a
+time stamp, but can be overridden by command line options to allow for
+shared identifiers between files of a series.
+.LP
+A special effort is made to find a useful value for Instance Number
+(formerly Image Number), by looking for private attributes (e.g. Philips
+MR). Similarly, if Series Number is absent, then StudyID is copied to
+it (Siemens MR), and the same for other series level attributes.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1),
+.BR dccp(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP
+If there are no gantry relative image orientation and position values in
+the input, antodc will try to use patient orientation and slice location
+to guess suitable values ... this works OK for orientation but very
+likely the direction of the position value will have the wrong sign.
+.LP
+Invalid enumerated values for scanning sequence may be created or left
+alone.

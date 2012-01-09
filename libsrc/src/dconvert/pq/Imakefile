@@ -1,0 +1,24 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = pqdc.cc pqconv.cc pqmpln.cc \
+		 pqmmsc.cc pqmdt.cc \
+		 pqdmp.cc pqdmpf.cc \
+		 pqhdrc.cc pq.cc
+
+OBJS = 		 pqdc.o  pqconv.o  pqmpln.o  \
+		 pqmmsc.o  pqmdt.o  \
+		 pqdmp.o  pqdmpf.o  \
+		 pqhdrc.o  pq.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdpq.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(pq,dconvert)
+
+pqdmpf.o: pqdmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) pqdmpf.cc
+
+DependCCTarget()
+

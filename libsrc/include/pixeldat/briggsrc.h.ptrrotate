@@ -1,0 +1,195 @@
+#ifndef __Header_BriggsSrc__
+#define __Header_BriggsSrc__
+
+#include "srcsink.h"
+
+// The following is the standard (unrotated) target).
+//
+// Checkerboard TLHC origin is defined relative to 0\0 origin
+//
+// Other targets are derived by rotating by 90,180,270 degrees
+// bearing in mind that the actual TLHC checker of each checkerboard
+// should be light (ie. because of even number of checkers B-80 and
+// B-90 need special attention)
+
+
+static const int bpt4_width  = 128;
+static const int bpt4_height = 256;
+static const int bpt4_checkerboards_per_target = 17;
+
+struct bpt4_parameter_entry {
+	unsigned short score;
+	unsigned short checkers_per_board;
+	unsigned short pixels_per_checker;
+	unsigned short tlhc_col;
+	unsigned short tlhc_row;
+} bpt4_parameter_table[bpt4_checkerboards_per_target] = {
+	90,	2,	1,	51,	188,
+	85,	3,	1,	38,	187,
+	80,	4,	1,	38,	200,
+	75,	5,	1,	52,	202,
+	70,	7,	1,	67,	200,
+	65,	11,	1,	63,	180,
+	60,	5,	2,	60,	160,
+	55,	7,	2,	36,	160,
+	50,	5,	3,	11,	160,
+	45,	5,	4,	8,	185,
+	40,	3,	7,	19,	215,
+	35,	3,	8,	50,	217,
+	30,	3,	10,	84,	209,
+	25,	3,	13,	84,	160,
+	20,	3,	16,	75,	102,
+	15,	3,	20,	4,	90,
+	10,	3,	25,	4,	4
+};
+
+static void
+generate_bpt4_0_degrees(Uint16 *matrix,unsigned width, unsigned height,
+			unsigned put_at_col,unsigned put_at_row,
+			Uint16 light_value,Uint16 dark_value,Uint16 surround_value)
+{
+	Assert(matrix);
+	Assert(put_at_col+bpt4_width <= width);
+	Assert(put_at_row+bpt4_height <= height);
+
+	unsigned row;
+	unsigned col;
+	for (row=put_at_row; row < put_at_row+bpt4_height; ++row) {
+		 for (col=put_at_col; col < put_at_col+bpt4_width; ++col) {
+			Assert(col<width);
+			Assert(row<height);
+			*(matrix+row*width+col)=surround_value;
+		}
+	}
+
+	unsigned checkerboard;
+	for (checkerboard=0; checkerboard<bpt4_checkerboards_per_target; ++checkerboard) {
+		unsigned ncheckers=bpt4_parameter_table[checkerboard].checkers_per_board;
+		unsigned start_row=put_at_row+bpt4_parameter_table[checkerboard].tlhc_row;
+		unsigned start_col=put_at_col+bpt4_parameter_table[checkerboard].tlhc_col;
+		unsigned checker_height=bpt4_parameter_table[checkerboard].pixels_per_checker;
+		unsigned checker_width =bpt4_parameter_table[checkerboard].pixels_per_checker;
+		bool first_checker_in_row_is_light=true;
+		unsigned row_checker_count;
+		for (row_checker_count=0; row_checker_count<ncheckers; ++row_checker_count) {
+			bool next_checker_in_row_is_light=first_checker_in_row_is_light;
+			unsigned col_checker_count;
+			for (col_checker_count=0; col_checker_count<ncheckers; ++col_checker_count) {
+				// make an entire checker ...
+				Uint16 value = next_checker_in_row_is_light ? light_value : dark_value;
+				unsigned first_row=start_row+checker_height*row_checker_count;
+				unsigned last_row=start_row+checker_height*(row_checker_count+1)-1;
+				unsigned first_col=start_col+checker_width*col_checker_count;
+				unsigned last_col=start_col+checker_width*(col_checker_count+1)-1;
+				for (row=first_row; row <= last_row; ++row) {
+		 			for (col=first_col; col <= last_col; ++col) {
+						Assert(col<width);
+						Assert(row<height);
+						*(matrix+row*width+col)=value;
+					}
+				}
+				next_checker_in_row_is_light=!next_checker_in_row_is_light;
+			}
+			first_checker_in_row_is_light=!first_checker_in_row_is_light;
+		}
+	
+	}
+}
+
+
+
+
+
+
+
+class Briggs_PixelDataSource : public SourceBase<Uint16> {
+protected:
+	Uint16 rows;
+	Uint16 columns;
+
+	Int32  minval;
+	Int32  maxval;
+
+	Uint16 row;
+	Uint16 *buffer;
+	Uint16 *bufptr;
+
+public:
+	Briggs_PixelDataSource(Uint16 r,Uint16 c,Uint16 minv,Uint16 maxv,Uint16 contrast,Uint16 surround_percent)
+			: SourceBase<Uint16>()
+		{
+cerr << "Briggs_PixelDataSource: contrast = " << dec << contrast << endl;
+cerr << "Briggs_PixelDataSource: surround_percent = " << dec << surround_percent << endl;
+
+			rows=r;
+			Assert(rows);
+			columns=c;
+			Assert(columns);
+
+			Assert(surround_percent<=100);
+
+			minval=(Uint32)minv;
+			maxval=(Uint32)maxv;
+			Assert (maxv > minv);
+			Uint32 range=maxv-minv;
+
+cerr << "Briggs_PixelDataSource: minval = " << dec << minval << endl;
+cerr << "Briggs_PixelDataSource: maxval = " << dec << maxval << endl;
+cerr << "Briggs_PixelDataSource: range = " << dec << range << endl;
+
+			Assert(contrast <= range);
+
+			unsigned short rank=8;
+			unsigned short ntargets=8;
+			Uint16 light_value= (rank-1)*(range-contrast)/(ntargets > 1 ? ntargets-1 : 1)+contrast;
+			Uint16 dark_value = (rank-1)*(range-contrast)/(ntargets > 1 ? ntargets-1 : 1);	// ie. light_value-contrast
+			Uint16 background_value = ((surround_percent*(light_value+dark_value)+(100-surround_percent)*range)/2+50)/100;
+
+cerr << "Briggs_PixelDataSource: rank = " << dec << rank << endl;
+cerr << "Briggs_PixelDataSource: ntargets = " << dec << ntargets << endl;
+cerr << "Briggs_PixelDataSource: light_value = " << dec << light_value << endl;
+cerr << "Briggs_PixelDataSource: dark_value = " << dec << dark_value << endl;
+cerr << "Briggs_PixelDataSource: background_value = " << dec << background_value << endl;
+
+			Assert(light_value >= minval);
+			Assert(light_value <= maxval);
+			Assert(dark_value >= minval);
+			Assert(dark_value <= maxval);
+			Assert(background_value >= minval);
+			Assert(background_value <= maxval);
+
+			// Allocate and buffer the entire array, not just one row ...
+
+			row=0;
+			buffer=new Uint16[c*r];
+			Assert(buffer);
+			bufptr=buffer-columns;		// position BEFORE buffer, since 1st "read" increments it
+
+			generate_bpt4_0_degrees(buffer,columns,rows,0,0,light_value,dark_value,background_value);
+		}
+
+	~Briggs_PixelDataSource()
+		{
+			if (buffer) delete[] buffer;
+		}
+
+	size_t read(void)
+		{
+			bufptr+=columns;
+			++row;
+			return columns;
+		}
+
+	const Uint16 *getBuffer(void)
+		{
+			Assert (bufptr >= buffer);	// Just in case someone calls getBuffer() without read()
+			return bufptr;
+		}
+
+	size_t getBufferCount(void) const	{ return columns; }
+
+	int good(void) const	{ return row < rows; }
+};
+
+
+#endif // __Header_BriggsSrc__

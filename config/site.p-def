@@ -1,0 +1,250 @@
+/* Put things specific to THIS site and THIS project here */
+
+/* Setup to pass imake command line choices to sub-directories */
+
+/* Started as imake -I./config -DTOP=. -DCURDIR=. ... [-DDefaultUIDRoot=0.0.0.0] [DefaultInstanceCreatorUID=0.0.0.0] [-DDefaultImplementationClassUID=0.0.0.0] [-DDefaultImplementationVersionName=NOTSPECIFIED] [-DDefaultSourceApplicationEntityTitle=NOTSPECIFIED] [-DInstallInTopDir] [-DTmpPath=/path] [-DOptimizeLevel=-On] */
+
+#ifdef AfterVendorCF
+
+/* Please DO NOT USE UseClunieID if you are not me ... */
+/* otherwise your SOP Instances will conflict with mine :( */
+
+#ifdef UseClunieID
+
+#ifndef DefaultUIDRoot
+#define DefaultUIDRoot 1.3.6.1.4.1.5962.1
+#endif
+
+#ifndef DefaultInstanceCreatorUID
+#define DefaultInstanceCreatorUID 1.3.6.1.4.1.5962.3
+#endif
+
+#ifndef DefaultImplementationClassUID
+#define DefaultImplementationClassUID 1.3.6.1.4.1.5962.2
+#endif
+
+#ifndef DefaultImplementationVersionName
+#define DefaultImplementationVersionName DCTOOL100
+#endif
+
+#ifndef DefaultSourceApplicationEntityTitle
+#define DefaultSourceApplicationEntityTitle CLUNIE1
+#endif
+
+#endif
+
+/* Please DO NOT USE UseClunieHL7ID if you are not me ... */
+/* otherwise your SOP Instances will conflict with mine :( */
+/* HL7 OID Root 2.16.840.1.113883.3.87, registration key 4319 */
+
+#ifdef UseClunieHL7ID
+
+#ifndef DefaultUIDRoot
+#define DefaultUIDRoot 2.16.840.1.113883.3.87.1
+#endif
+
+#ifndef DefaultInstanceCreatorUID
+#define DefaultInstanceCreatorUID 2.16.840.1.113883.3.87.3
+#endif
+
+#ifndef DefaultImplementationClassUID
+#define DefaultImplementationClassUID 2.16.840.1.113883.3.87.2
+#endif
+
+#ifndef DefaultImplementationVersionName
+#define DefaultImplementationVersionName DCTOOL100
+#endif
+
+#ifndef DefaultSourceApplicationEntityTitle
+#define DefaultSourceApplicationEntityTitle CLUNIE1
+#endif
+
+#endif
+
+/* Please DO NOT USE UseClunieRadPharmID if you are not RadPharm ... */
+/* otherwise your SOP Instances will conflict with mine :( */
+
+#ifdef UseClunieRadPharmID
+
+#ifndef DefaultUIDRoot
+#define DefaultUIDRoot 1.3.6.1.4.1.11144.1
+#endif
+
+#ifndef DefaultInstanceCreatorUID
+#define DefaultInstanceCreatorUID 1.3.6.1.4.1.11144.3
+#endif
+
+#ifndef DefaultImplementationClassUID
+#define DefaultImplementationClassUID 1.3.6.1.4.1.11144.2
+#endif
+
+#ifndef DefaultImplementationVersionName
+#define DefaultImplementationVersionName DCTOOL100
+#endif
+
+#ifndef DefaultSourceApplicationEntityTitle
+#define DefaultSourceApplicationEntityTitle RADPHARM
+#endif
+
+#endif
+
+/* Please DO NOT USE UseClunieGEID if you are not me at GE ... */
+/* otherwise your SOP Instances will conflict with mine :( */
+
+#ifdef UseClunieGEID
+
+#ifndef DefaultUIDRoot
+#define DefaultUIDRoot 1.2.840.113619.6.48.1
+#endif
+
+#ifndef DefaultInstanceCreatorUID
+#define DefaultInstanceCreatorUID 1.2.840.113619.6.48.3
+#endif
+
+#ifndef DefaultImplementationClassUID
+#define DefaultImplementationClassUID 1.2.840.113619.6.48.2
+#endif
+
+#ifndef DefaultImplementationVersionName
+#define DefaultImplementationVersionName DCTOOL100
+#endif
+
+#ifndef DefaultSourceApplicationEntityTitle
+#define DefaultSourceApplicationEntityTitle CLUNIE1
+#endif
+
+#endif
+
+/* Please DO NOT USE UseClunieQI2ID if you are not me at QI2 ... */
+/* otherwise your SOP Instances will conflict with mine :( */
+
+#ifdef UseClunieQI2ID
+
+#ifndef DefaultUIDRoot
+#define DefaultUIDRoot 1.2.826.0.1.3680043.2.87.2
+#endif
+
+#ifndef DefaultInstanceCreatorUID
+#define DefaultInstanceCreatorUID 1.2.826.0.1.3680043.2.87.4
+#endif
+
+#ifndef DefaultImplementationClassUID
+#define DefaultImplementationClassUID 1.2.826.0.1.3680043.2.87.3
+#endif
+
+#ifndef DefaultImplementationVersionName
+#define DefaultImplementationVersionName DCTOOL100
+#endif
+
+#ifndef DefaultSourceApplicationEntityTitle
+#define DefaultSourceApplicationEntityTitle CLUNIE1
+#endif
+
+#endif
+
+#ifndef DefineDefaultUIDRoot
+#ifdef    DefaultUIDRoot
+#define     DefineDefaultUIDRoot		-DDefaultUIDRoot=DefaultUIDRoot
+#else     /* DefaultUIDRoot */
+#define     DefineDefaultUIDRoot		/**/
+#endif    /* DefaultUIDRoot */
+#endif  /* DefineDefaultUIDRoot */
+
+#ifndef DefineDefaultInstanceCreatorUID
+#ifdef    DefaultInstanceCreatorUID
+#define     DefineDefaultInstanceCreatorUID		-DDefaultInstanceCreatorUID=DefaultInstanceCreatorUID
+#else     /* DefaultInstanceCreatorUID */
+#define     DefineDefaultInstanceCreatorUID		/**/
+#endif    /* DefaultInstanceCreatorUID */
+#endif  /* DefineDefaultInstanceCreatorUID */
+
+#ifndef DefineDefaultImplementationClassUID
+#ifdef    DefaultImplementationClassUID
+#define     DefineDefaultImplementationClassUID		-DDefaultImplementationClassUID=DefaultImplementationClassUID
+#else     /* DefaultImplementationClassUID */
+#define     DefineDefaultImplementationClassUID		/**/
+#endif    /* DefaultImplementationClassUID */
+#endif  /* DefineDefaultImplementationClassUID */
+
+#ifndef DefineDefaultImplementationVersionName
+#ifdef    DefaultImplementationVersionName
+#define     DefineDefaultImplementationVersionName		-DDefaultImplementationVersionName=DefaultImplementationVersionName
+#else     /* DefaultImplementationVersionName */
+#define     DefineDefaultImplementationVersionName		/**/
+#endif    /* DefaultImplementationVersionName */
+#endif  /* DefineDefaultImplementationVersionName */
+
+#ifndef DefineDefaultSourceApplicationEntityTitle
+#ifdef    DefaultSourceApplicationEntityTitle
+#define     DefineDefaultSourceApplicationEntityTitle		-DDefaultSourceApplicationEntityTitle=DefaultSourceApplicationEntityTitle
+#else     /* DefaultSourceApplicationEntityTitle */
+#define     DefineDefaultSourceApplicationEntityTitle		/**/
+#endif    /* DefaultSourceApplicationEntityTitle */
+#endif  /* DefineDefaultSourceApplicationEntityTitle */
+
+#ifndef DefineTmpPath
+#ifdef    TmpPath
+#define     DefineTmpPath		-DTmpPath=TmpPath
+#else     /* TmpPath */
+#define     DefineTmpPath		/**/
+#endif    /* TmpPath */
+#endif  /* DefineTmpPath */
+
+#ifndef DefineOptimizeLevel
+#ifdef    OptimizeLevel
+#define     DefineOptimizeLevel		-DOptimizeLevel=OptimizeLevel
+#else     /* OptimizeLevel */
+#define     DefineOptimizeLevel		/**/
+#endif    /* OptimizeLevel */
+#endif  /* DefineOptimizeLevel */
+
+#ifndef DefineInstallInTopDir
+#ifdef    InstallInTopDir
+#define     DefineInstallInTopDir	-DInstallInTopDir
+#else     /* InstallInTopDir */
+#define     DefineInstallInTopDir	/**/
+#endif    /* InstallInTopDir */
+#endif  /* DefineInstallInTopDir */
+
+#ifndef DefineSystemIncludeOption
+#ifdef    SystemIncludeOption
+#define     DefineSystemIncludeOption	-DSystemIncludeOption=SystemIncludeOption
+#else     /* SystemIncludeOption */
+#define     DefineSystemIncludeOption	/**/
+#endif    /* SystemIncludeOption */
+#endif  /* DefineSystemIncludeOption */
+
+/* ProjectImakeFlags will be added to ImakeFlags in Imake.tmpl */
+
+#ifndef ProjectImakeFlags
+#define ProjectImakeFlags	DefineDefaultUIDRoot DefineDefaultInstanceCreatorUID DefineDefaultImplementationClassUID DefineDefaultImplementationVersionName DefineDefaultSourceApplicationEntityTitle DefineTmpPath DefineOptimizeLevel DefineInstallInTopDir DefineSystemIncludeOption
+#endif	/* ProjectImakeFlags */
+
+/* Defaults */
+
+#ifndef OptimizeLevel
+#define OptimizeLevel -O
+#endif
+
+#ifndef DefaultUIDRoot
+#define DefaultUIDRoot 0.0.0.0
+#endif
+
+#ifndef DefaultInstanceCreatorUID
+#define DefaultInstanceCreatorUID 0.0.0.0
+#endif
+
+#ifndef DefaultImplementationClassUID
+#define DefaultImplementationClassUID 0.0.0.0
+#endif
+
+#ifndef DefaultImplementationVersionName
+#define DefaultImplementationVersionName NOTSPECIFIED
+#endif
+
+#ifndef DefaultSourceApplicationEntityTitle
+#define DefaultSourceApplicationEntityTitle NOTSPECIFIED
+#endif
+
+#endif /* AfterVendorCF */
+ 

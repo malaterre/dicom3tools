@@ -1,0 +1,654 @@
+XCOMM -------------------------------------------------------------------------
+XCOMM Imake rules for building libraries, programs, scripts, and data files
+XCOMM rules:  $XConsortium: Imake.rules,v 1.123 91/09/16 20:12:16 rws Exp $
+
+/*
+ *		   MACHINE-INDEPENDENT RULES; DO NOT MODIFY
+ *
+ * Warning, when defining rules: make sure you do not include both a trailing
+ * backslash and double ampersand backslash or else you will get an extra
+ * backslash in the Makefile.
+ * 
+ * The following macros are defined for the various templates and Imakefiles
+ * (for a list of the applicable make variables, see the template files):
+ * 
+ * RemoveTargetProgram		(program)
+ * MakeDir			(dir)
+ * NormalCProgramTarget		(program,objects,deplibs,locallibs,syslibs)
+ * NormalCCProgramTarget	(program,objects,deplibs,locallibs,syslibs)
+ * RanLibrary			(args)
+ * LibraryTarget		(libpathname,objlist)
+ * InstallLibrary		(libname,dest)
+ * InstallManPageLong		(file,destdir,dest)
+ * InstallManPage		(file,destdir)
+ * InstallManPageAliases	(file,destdir,aliases)
+ * InstallWhatis		()
+ * InstallNamedNonExec		(srcname,dstname,dest)
+ * InstallNonExecFile		(file,dest)
+ * InstallNonExec		(file,dest)
+ * InstallProgramWithFlags	(program,dest,flags)
+ * InstallProgram		(program,dest)
+ * InstallScript		(program,dest)
+ * InstallNamedProg		(srcname,dstname,dest)
+ * DependCTarget		()
+ * DependCCTarget		()
+ * CleanTarget			()
+ * BuildMakefileTarget		(notused,imakeflags)
+ * MakefileTarget		()
+ * MakeSubincludesForBuild	(step,dir,srclist)
+ * NamedTargetSubdirs		(name,dirs,verb,flags,subname)
+ * NamedMakeSubdirs		(name,dirs)
+ * MakeSubdirs			(dirs)
+ * DependSubdirs		(dirs)
+ * ForceSubdirs			(dirs)
+ * InstallSubdirs		(dirs)
+ * InstallManSubdirs		(dirs)
+ * IncludesSubdirs		(dirs)
+ * NamedCleanSubdirs		(name,dirs)
+ * CleanSubdirs			(dirs)
+ * MakeMakeSubdirs		(dirs,target)
+ * MakeNsubdirMakefiles		()
+ * MakefileSubdirs		(dirs)
+ * MakeDirectories		(step,dirs)
+ * AllTarget			(depends)
+ *
+ *
+ * The following are in Imake.tmpl:
+ *
+ * Concat			(a,b)
+ * Concat3			(a,b,c)
+ * 
+ */
+
+#define NullParameter
+
+/* if [ -d ] or [ ! -d ] causes make to fail, define this as - */
+#ifndef DirFailPrefix
+#define DirFailPrefix
+#endif
+
+#ifndef RemoveTargetProgram
+#if RemoveTargetProgramByMoving
+#define RemoveTargetProgram(program) \
+if [ -f program ]; then $(RM) Concat(program,~); $(MV) program Concat(program,~); fi
+#else
+#define RemoveTargetProgram(program) $(RM) program
+#endif
+#endif
+
+#ifndef MakeDir
+#define MakeDir(dir) DirFailPrefix@if [ -d dir ]; then set +x; \	@@\
+		else (set -x; $(MKDIRHIER) dir); fi
+#endif
+
+/*
+ * NormalCProgramTarget - generate rules to compile and link the indicated 
+ * program; since it does not use any default object files, it may be used for
+ * multiple programs in the same Imakefile.
+ */
+#ifndef NormalCProgramTarget
+#define	NormalCProgramTarget(program,objects,deplibs,locallibs,syslibs)	@@\
+program: objects deplibs						@@\
+	RemoveTargetProgram($@)						@@\
+	$(CC) -o $@ objects $(C_LDOPTIONS) locallibs \			@@\
+		$(C_LDLIBS) syslibs $(C_EXTRA_LOAD_FLAGS) 		@@\
+									@@\
+clean::									@@\
+	$(RM) program
+#endif /* NormalProgramTarget */
+
+
+/*
+ * NormalCCProgramTarget - generate rules to compile and link the indicated 
+ * program; since it does not use any default object files, it may be used for
+ * multiple programs in the same Imakefile.
+ */
+#ifndef NormalCCProgramTarget
+#define	NormalCCProgramTarget(program,objects,deplibs,locallibs,syslibs) @@\
+program: objects deplibs						 @@\
+	RemoveTargetProgram($@)						 @@\
+	$(CCC) -o $@ objects $(CPLUSPLUS_LDOPTIONS) locallibs \		 @@\
+		$(CPLUSPLUS_LDLIBS) syslibs \				 @@\
+		$(CPLUSPLUS_EXTRA_LOAD_FLAGS) 				 @@\
+	$(STRIP) $@ 							 @@\
+									 @@\
+clean::									 @@\
+	$(RM) program
+#endif /* NormalCCProgramTarget */
+
+#if DoRanlibCmd
+#define RanLibrary(args) $(RANLIB) args
+#else
+#define RanLibrary(args) /**/
+#endif
+
+/*
+ * LibraryTarget - generate rules to create a library.
+ */
+#ifndef LibraryTarget
+#define	LibraryTarget(libpathname,objlist)				@@\
+AllTarget(libpathname)							@@\
+									@@\
+libpathname: objlist							@@\
+	$(RM)  $@							@@\
+	$(AR)  $@ objlist						@@\
+	$(XAR) $@ objlist						@@\
+	RanLibrary($@)
+#endif /* LibraryTarget */
+
+/*
+ * LibraryAddTarget - generate rules to add to a library.
+ */
+#ifndef LibraryAddTarget
+#define	LibraryAddTarget(libpathname,objlist)				@@\
+AllTarget(libpathname)							@@\
+									@@\
+libpathname: objlist							@@\
+	$(AR)  $@ objlist						@@\
+	$(XAR) $@ objlist						@@\
+	RanLibrary($@)
+#endif /* LibraryAddTarget */
+
+/*
+ * InstallLibrary - generate rules to install the indicated library.
+ */
+#ifndef InstallLibrary
+#define	InstallLibrary(libname,dest)					@@\
+install:: Concat(lib,libname.a)						@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) $(INSTLIBFLAGS) Concat(lib,libname.a) $(DESTDIR)dest @@\
+	RanLibrary($(RANLIBINSTFLAGS) Concat($(DESTDIR)dest/lib,libname.a))
+#endif /* InstallLibrary */
+
+/*
+ * InstallManPageLong - generate rules to install the indicated manual page,
+ * giving it an alternate name.  This is used for installing man pages whose
+ * base name without the .man suffix would normally be longer than 8 characters
+ * (the limit for using source code control systems on files systems with 
+ * short file names).
+ */
+#ifndef InstallManPageLong
+#define	InstallManPageLong(file,destdir,dest)				@@\
+install.man:: file.man							@@\
+	MakeDir($(DESTDIR)destdir)					@@\
+	$(INSTALL) $(INSTMANFLAGS) file.man $(DESTDIR)destdir/dest.$(MANSUFFIX)
+#endif /* InstallManPageLong */
+
+
+/*
+ * InstallManPage - generate rules to install the indicated manual page.
+ */
+#ifndef InstallManPage
+#define	InstallManPage(file,destdir)					@@\
+InstallManPageLong(file,destdir,file)
+#endif /* InstallManPage */
+
+
+/*
+ * InstallManPageAliases - generate rules to install manual page aliases.
+ */
+#ifndef InstallManPageAliases
+#define	InstallManPageAliases(file,destdir,aliases)			@@\
+install.man::								@@\
+	@(TMP=/tmp/tmp.$$$$; \						@@\
+	$(RM) $${TMP}; \						@@\
+	echo .so `basename destdir`/file.$(MANSUFFIX) > $${TMP}; \	@@\
+	for i in aliases; do (set -x; \					@@\
+	$(INSTALL) $(INSTMANFLAGS) $${TMP} $(DESTDIR)destdir/$$i.$(MANSUFFIX)); \ @@\
+	done; \								@@\
+	$(RM) $${TMP})
+#endif /* InstallManPageAliases */
+
+
+/*
+ * InstallManSource - generate rules to install the indicated manual source
+ * file (a file included in a man page with the .so macro).
+ */
+#ifndef InstallManSource
+#define	InstallManSource(file,destdir)					@@\
+install.man:: file.so							@@\
+	MakeDir($(DESTDIR)destdir)					@@\
+	$(INSTALL) $(INSTMANFLAGS) file.so $(DESTDIR)destdir/file.so
+#endif /* InstallManPage */
+
+
+/*
+ * InstallWhatis - update whatis database for man pages
+ */
+#ifndef InstallWhatis
+#define	InstallWhatis(NullParameter)					@@\
+install.whatis::							@@\
+	$(WHATISMAN) -M $(INSTALLMANDIR)					
+#endif /* InstallWhatis */
+
+
+/*
+ * InstallNamedNonExec - generate rules to install a data file
+ */
+#ifndef InstallNamedNonExec
+#define	InstallNamedNonExec(srcname,dstname,dest)			@@\
+install:: srcname							@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) $(INSTDATFLAGS) srcname $(DESTDIR)dest/dstname
+#endif /* InstallNamedNonExec */
+
+
+/*
+ * InstallNonExecFile - generate rules to install a data file
+ */
+#ifndef InstallNonExecFile
+#define	InstallNonExecFile(file,dest)					@@\
+install:: file								@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) $(INSTDATFLAGS) file $(DESTDIR)dest
+#endif /* InstallNonExecFile */
+
+
+/*
+ * InstallNonExec - generate rules to install a data file, but does not
+ * try to create the destination directory (deprecated)
+ */
+#ifndef InstallNonExec
+#define	InstallNonExec(file,dest)					@@\
+install:: file								@@\
+	$(INSTALL) $(INSTDATFLAGS) file $(DESTDIR)dest
+#endif /* InstallNonExec */
+
+
+/*
+ * InstallProgramWithFlags - generate rules to install an executable program
+ * using given install flags.
+ */
+#ifndef InstallProgramWithFlags
+#define InstallProgramWithFlags(program,dest,flags)			@@\
+install:: program							@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) $(INSTPGMFLAGS) $(INSTBINFLAGS) flags program $(DESTDIR)dest
+#endif /* InstallProgramWithFlags */
+
+
+/*
+ * InstallProgram - generate rules to install an executable program using any
+ * special install flags set in $(INSTALLFLAGS).
+ */
+#ifndef InstallProgram
+#define	InstallProgram(program,dest)					@@\
+InstallProgramWithFlags(program,dest,NullParameter)
+#endif /* InstallProgram */
+
+
+
+/*
+ * InstallScript - install a shell script.
+ */
+#ifndef InstallScript
+#define	InstallScript(program,dest)					@@\
+install:: program.script						@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) $(INSTBINFLAGS) program.script $(DESTDIR)dest/program
+#endif /* InstallScript */
+
+
+/*
+ * InstallNamedProg - install a program with renaming and no stripping.
+ */
+#ifndef InstallNamedProg
+#define	InstallNamedProg(srcname,dstname,dest)				@@\
+install:: srcname							@@\
+	MakeDir($(DESTDIR)dest)						@@\
+	$(INSTALL) $(INSTBINFLAGS) srcname $(DESTDIR)dest/dstname
+#endif /* InstallNamedProg */
+
+
+/*
+ * DependTargetFromFlagsAndFiles - generate rules to compute 
+ * dependencies for all sources listed using specified flags and defines
+ */
+#ifndef DependTargetFromFlagsDefinesSources
+#define	DependTargetFromFlagsDefinesSources(flags,defines,sources)	@@\
+depend::								@@\
+	$(DEPEND) flags  -s "# DO NOT DELETE"  -- defines -- sources
+#endif /* DependTarget */
+
+
+/*
+ * DependCTarget - generate rules to compute dependencies for all files listed
+ * in $(C_SRCS).
+ */
+#ifndef DependCTarget
+#define	DependCTarget() 			\
+	DependTargetFromFlagsDefinesSources( 	\
+		$(C_DEPENDFLAGS), 		\
+		$(C_ALLDEFINES), 		\
+		$(C_SRCS))
+#endif /* DependCTarget */
+
+/*
+ * AddDependCTarget - generate rules to add dependencies for all files listed
+ * in $(C_SRCS).
+ */
+#ifndef AddDependCTarget
+#define	AddDependCTarget() 			\
+	DependTargetFromFlagsDefinesSources( 	\
+		-a $(C_DEPENDFLAGS), 		\
+		$(C_ALLDEFINES), 		\
+		$(C_SRCS))
+#endif /* AddDependCTarget */
+
+
+/*
+ * DependCCTarget - generate rules to compute dependencies for all files listed
+ * in $(CPLUSPLUS_SRCS).
+ */
+#ifndef DependCCTarget
+#define	DependCCTarget() 			\
+	DependTargetFromFlagsDefinesSources( 	\
+		$(CPLUSPLUS_DEPENDFLAGS), 	\
+		$(CPLUSPLUS_ALLDEFINES), 	\
+		$(CPLUSPLUS_SRCS))
+#endif /* DependCCTarget */
+
+/*
+ * AddDependCCTarget - generate rules to add dependencies for all files listed
+ * in $(CPLUSPLUS_SRCS).
+ */
+#ifndef AddDependCCTarget
+#define	AddDependCCTarget() 			\
+	DependTargetFromFlagsDefinesSources( 	\
+		-a $(CPLUSPLUS_DEPENDFLAGS), 	\
+		$(CPLUSPLUS_ALLDEFINES), 	\
+		$(CPLUSPLUS_SRCS))
+#endif /* AddDependCCTarget */
+
+/*
+ * CleanTarget - generate rules to remove any garbage files; the #* is here
+ * instead of in the definition of RM_CMD because System V will treat the 
+ * pound sign in the RM_CMD variable as a comment.
+ */
+#ifndef CleanTarget
+#define	CleanTarget()							@@\
+clean::									@@\
+	$(RM_CMD) "#"*
+#endif /* CleanTarget */
+
+
+/*
+ * BuildMakefileTarget - generate rules to build a Makefile from an Imakefile
+ * and any special imake flags.  This is generally done automatically by the
+ * template or by any special Imakefiles.  The first argument exists just
+ * because imakeflags is usually empty and some preprocessors will complain
+ * if an empty argument is passed as the sole argument to a macro.
+ */
+#ifndef BuildMakefileTarget
+#define	BuildMakefileTarget(notused,imakeflags)				@@\
+Makefile:: 								@@\
+	-@if [ -f Makefile ]; then set -x; \				@@\
+		$(RM) Makefile.bak; $(MV) Makefile Makefile.bak; \	@@\
+	else exit 0; fi							@@\
+	$(IMAKE_CMD) -DTOPDIR=$(TOP) -DCURDIR=$(CURRENT_DIR) imakeflags
+
+#endif /* BuildMakefileTarget */
+
+
+/*
+ * MakefileTarget - generate rules to build a normal Makefile.
+ *
+ * Our own version with same name is necessary to pass on Imakeflags
+ *
+ * Can't use IHaveSpecialMakefileTarget for Imake.tmpl because too late
+ * (ie. after #include INCLUDE_IMAKEFILE)
+ *
+ */
+#ifndef MakefileTarget
+#define MakefileTarget()						@@\
+BuildMakefileTarget(Imakefile,ImakeFlags)
+#endif /* MakefileTarget */
+
+#ifndef MakeSubincludesForBuild
+#define MakeSubincludesForBuild(step,dir,srclist)			@@\
+step::  dir srclist							@@\
+	@-(list=`echo srclist | sed -e 's/[^ ]*\///g'`; \		@@\
+		set -x; cd dir; $(RM) $$list)				@@\
+	@for i in srclist; do \						@@\
+		(set -x; cd dir; $(LN) ../$$i .); \			@@\
+	done								@@\
+									@@\
+dir::									@@\
+	$(MKDIRHIER) dir						@@\
+									@@\
+clean::									@@\
+	@-(if [ -d dir ]; then \					@@\
+		list=`echo srclist | sed -e 's/[^ ]*\///g'`; \		@@\
+		set -x; cd dir; $(RM) $$list; else exit 0; fi)
+#endif
+
+
+/*
+ * NamedTargetSubdirs - recursively make a series of steps
+ */
+#ifndef NamedTargetSubdirs
+#define NamedTargetSubdirs(name,dirs,verb,flags,subname)		@@\
+name::									@@\
+	@case '${MFLAGS}' in *[ik]*) set +e;; esac; \			@@\
+	for i in dirs ;\						@@\
+	do \								@@\
+		(cd $$i ; echo verb "in $(CURRENT_DIR)/$$i..."; \	@@\
+			$(MAKE) $(MFLAGS) flags subname); \		@@\
+	done
+#endif
+
+
+/*
+ * NamedMakeSubdirs - generate rules to do makes in the given subdirectories.
+ * If you want CDEBUGFLAGS passed along to subdirectories, provide a line like
+ * the following in the appropriate Imakefile
+ * 
+ *         #define PassCDebugFlags 'CDEBUGFLAGS=$(CDEBUGFLAGS)'
+ */
+#ifndef NamedMakeSubdirs
+#define NamedMakeSubdirs(name,dirs) \
+NamedTargetSubdirs(name,dirs,"making" name,PassCDebugFlags,all)
+#endif /* NamedMakeSubdirs */
+
+#ifndef MakeSubdirs
+#define MakeSubdirs(dirs)						@@\
+NamedMakeSubdirs(all,dirs)
+#endif /* MakeSubdirs */
+
+
+/*
+ * DependSubdirs - generate rules to recursively compute dependencies as
+ * part of the make depend step.
+ */
+#ifndef DependSubdirs
+#define DependSubdirs(dirs) \
+NamedTargetSubdirs(depend,dirs,"depending",NullParameter,depend)
+#endif /* DependSubdirs */
+
+
+/*
+ * ForceSubdirs - force make to build subdirectories
+ */
+#ifndef ForceSubdirs
+#define ForceSubdirs(dirs)						@@\
+dirs: FRC								@@\
+	@cd $@ ; echo "making all in $(CURRENT_DIR)/$@..."; \		@@\
+	$(MAKE) $(MFLAGS) PassCDebugFlags all				@@\
+									@@\
+FRC:
+#endif /* ForceSubdirs */
+
+/*
+ * TestSubdirs - generate rules to recursively test.
+ */
+#ifndef TestSubdirs
+#define TestSubdirs(dirs) \
+NamedTargetSubdirs(test,dirs,"testing",DESTDIR='$(DESTDIR)',test)
+#endif /* TestSubdirs */
+
+
+/*
+ * TestCreateSubdirs - generate rules to recursively create tests.
+ */
+#ifndef TestCreateSubdirs
+#define TestCreateSubdirs(dirs) \
+NamedTargetSubdirs(test.create,dirs,"creating tests",DESTDIR='$(DESTDIR)',test.create)
+#endif /* TestCreateSubdirs */
+
+
+/*
+ * InstallSubdirs - generate rules to recursively install programs and files.
+ */
+#ifndef InstallSubdirs
+#define InstallSubdirs(dirs) \
+NamedTargetSubdirs(install,dirs,"installing",DESTDIR='$(DESTDIR)',install)
+#endif /* InstallSubdirs */
+
+
+/*
+ * InstallManSubdirs - generate rules to recursively install manual pages.
+ */
+#ifndef InstallManSubdirs
+#define InstallManSubdirs(dirs) \
+NamedTargetSubdirs(install.man,dirs,"installing man pages",DESTDIR='$(DESTDIR)',install.man)
+#endif /* InstallManSubdirs */
+
+/*
+ * IncludesSubdirs - generate rules to recursively put include files in build
+ */
+#ifndef IncludesSubdirs
+#define IncludesSubdirs(dirs) \
+NamedTargetSubdirs(includes,dirs,including,NullParameter,includes)
+#endif
+
+
+/*
+ * CleanSubdirs - generate rules to recursively clean out garbage files.
+ */
+#ifndef NamedCleanSubdirs
+#define NamedCleanSubdirs(name,dirs) \
+NamedTargetSubdirs(name,dirs,"cleaning",RM_CMD='$(RM_CMD)',clean)
+#endif /* NamedCleanSubdirs */
+
+#ifndef CleanSubdirs
+#define CleanSubdirs(dirs) \
+NamedCleanSubdirs(clean,dirs)
+#endif
+
+
+/*
+ * MakeMakeSubdirs - generate rules to recursively recreate Makefiles as part
+ * of the specified step in the build.  If $(TOP) is set to an absolute path, 
+ * do not prepend the ../ prefix.  This makes running things outside of the 
+ * source tree to be much easier.
+ */
+#ifndef MakeMakeSubdirs
+#define MakeMakeSubdirs(dirs,target)					@@\
+target::								@@\
+	@case '${MFLAGS}' in *[ik]*) set +e;; esac; \			@@\
+	for i in dirs ;\						@@\
+	do \								@@\
+		echo "making Makefiles in $(CURRENT_DIR)/$$i..."; \	@@\
+		case "$$i" in \						@@\
+		./?*/?*/?*/?*) newtop=../../../../ sub=subsubsubsub;; \	@@\
+		./?*/?*/?*) newtop=../../../ sub=subsubsub;; \		@@\
+		./?*/?*)    newtop=../../ sub=subsub;; \		@@\
+		./?*)       newtop=../ sub=sub;; \			@@\
+		*/?*/?*/?*)    newtop=../../../../ sub=subsubsubsub;; \	@@\
+		*/?*/?*)    newtop=../../../ sub=subsubsub;; \		@@\
+		*/?*)       newtop=../../ sub=subsub;; \		@@\
+		*)	    newtop=../ sub=sub;; \			@@\
+		esac; \							@@\
+		case "$(TOP)" in \					@@\
+		/?*) newtop=  upprefix=  ;; \				@@\
+		*) upprefix=../ ;; \					@@\
+		esac; \							@@\
+		$(MAKE) $${sub}dirMakefiles UPPREFIX=$$upprefix NEWTOP=$$newtop \		@@\
+		MAKEFILE_SUBDIR=$$i NEW_CURRENT_DIR=$(CURRENT_DIR)/$$i;\ @@\
+	done
+#endif /* MakeMakeSubdirs */
+
+
+/*
+ * MakeNsubdirMakefiles - generate rules to create sub Makefiles.
+ *
+ * Our own version with same name is necessary to pass on Imakeflags
+ *
+ */
+#ifndef MakeNsubdirMakefiles
+#define MakeNsubdirMakefiles()						@@\
+subdirMakefiles:							@@\
+	$(RM) $(MAKEFILE_SUBDIR)/Makefile.bak				@@\
+	-@if [ -f $(MAKEFILE_SUBDIR)/Makefile ]; then set -x; \		@@\
+	$(MV) $(MAKEFILE_SUBDIR)/Makefile $(MAKEFILE_SUBDIR)/Makefile.bak; \ @@\
+	else exit 0; fi							@@\
+	cd $(MAKEFILE_SUBDIR); $(IMAKE_CMD) -DTOPDIR=$(UPPREFIX)$(TOP) -DCURDIR=$(NEW_CURRENT_DIR) ImakeFlags; \	@@\
+	$(MAKE) $(MFLAGS) Makefiles 					@@\
+									@@\
+subsubdirMakefiles:							@@\
+	$(RM) $(MAKEFILE_SUBDIR)/Makefile.bak				@@\
+	-@if [ -f $(MAKEFILE_SUBDIR)/Makefile ]; then set -x; \		@@\
+	$(MV) $(MAKEFILE_SUBDIR)/Makefile $(MAKEFILE_SUBDIR)/Makefile.bak; \ @@\
+	else exit 0; fi							@@\
+	cd $(MAKEFILE_SUBDIR); $(IMAKE_CMD) -DTOPDIR=$(UPPREFIX)$(UPPREFIX)$(TOP) -DCURDIR=$(NEW_CURRENT_DIR) ImakeFlags; \	@@\
+	$(MAKE) $(MFLAGS) Makefiles 					@@\
+									@@\
+subsubsubdirMakefiles:							@@\
+	$(RM) $(MAKEFILE_SUBDIR)/Makefile.bak				@@\
+	-@if [ -f $(MAKEFILE_SUBDIR)/Makefile ]; then set -x; \		@@\
+	$(MV) $(MAKEFILE_SUBDIR)/Makefile $(MAKEFILE_SUBDIR)/Makefile.bak; \ @@\
+	else exit 0; fi @@\
+	cd $(MAKEFILE_SUBDIR); $(IMAKE_CMD) -DTOPDIR=$(UPPREFIX)$(UPPREFIX)$(UPPREFIX)$(TOP) -DCURDIR=$(NEW_CURRENT_DIR) ImakeFlags; \	@@\
+	$(MAKE) $(MFLAGS) Makefiles 					@@\
+									@@\
+subsubsubsubdirMakefiles:						@@\
+	$(RM) $(MAKEFILE_SUBDIR)/Makefile.bak				@@\
+	-@if [ -f $(MAKEFILE_SUBDIR)/Makefile ]; then set -x; \		@@\
+	$(MV) $(MAKEFILE_SUBDIR)/Makefile $(MAKEFILE_SUBDIR)/Makefile.bak; \ @@\
+	else exit 0; fi 						@@\
+	cd $(MAKEFILE_SUBDIR); $(IMAKE_CMD) -DTOPDIR=$(UPPREFIX)$(UPPREFIX)$(UPPREFIX)$(UPPREFIX)$(TOP) -DCURDIR=$(NEW_CURRENT_DIR) ImakeFlags; \	@@\
+	$(MAKE) $(MFLAGS) Makefiles
+#endif /* MakeNsubdirMakefiles */
+
+
+/*
+ * MakefileSubdirs - generate rules to create Makefiles.
+ */
+#ifndef MakefileSubdirs
+#define MakefileSubdirs(dirs)						@@\
+MakeMakeSubdirs(dirs,Makefiles)						@@\
+									@@\
+MakeNsubdirMakefiles()
+#endif /* MakefileSubdirs */
+
+/*
+ * Translate XCOMM into pound sign with sed, rather than passing -DXCOMM=XCOMM
+ * to cpp, because that trick does not work on all ANSI C preprocessors.
+ * Also delete line numbers from the cpp output (-P is not portable, I guess).
+ */
+#ifndef CppSedMagic
+#define CppSedMagic sed -e '/^#  *[0-9][0-9]*  *.*$$/d' \
+		    -e '/^XCOMM$$/s//#/' \
+		    -e '/^XCOMM[^a-zA-Z0-9_]/s/^XCOMM/#/'
+#endif /* CppSedMagic */
+
+/*
+ * MakeDirectories - generate rules to create a hierarchy of directories.
+ */
+#ifndef MakeDirectories
+#define MakeDirectories(step,dirs)					@@\
+step::									@@\
+	@case '${MFLAGS}' in *[i]*) set +e;; esac;			@@\
+	DirFailPrefix@for i in dirs; do if [ -d $(DESTDIR)$$i ]; then \	@@\
+		set +x; else (set -x; $(MKDIRHIER) $(DESTDIR)$$i); fi \	@@\
+	done
+#endif /* MakeDirectories */
+
+
+/*
+ * AllTarget - generate rules to build necessary things during make all.
+ */
+#ifndef AllTarget
+#define AllTarget(depends)						@@\
+all:: depends
+#endif /* AllTarget */

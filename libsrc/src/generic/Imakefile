@@ -1,0 +1,16 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBGENERICEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = getoptns.cc datetype.cc \
+                 bnopti.cc bnopto.cc ioopti.cc ioopto.cc \
+		 txstream.cc
+
+OBJS =           getoptns.o  datetype.o  \
+                 bnopti.o  bnopto.o  ioopti.o  ioopto.o \
+		 txstream.o
+
+
+LibraryTarget($(PROJECTLIBDIR)/lib$(PROJECTGENERICLIBNAME).a,$(OBJS))
+
+DependCCTarget()

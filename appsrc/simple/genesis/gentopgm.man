@@ -1,0 +1,37 @@
+.TH GENTOPGM 1 "05 April 1998" "DICOM PS3" "DICOM PS3 - Genesis image to PGM file"
+.SH NAME
+gentopgm \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Genesis ximg file to PGM file
+.SH SYNOPSIS
+.HP 10
+.B gentopgm
+.B < " infile"
+.B > " outfile"
+.SH DESCRIPTION
+.LP
+.B gentopgm
+reads the Genesis ximg CT or MR input file and copies the decompressed image
+pixel data to a PGM file after adding a PGM header.
+.SH OPTIONS
+The PGM output goes to standard out.
+Any error messages go to standard error.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR dctopnm(1) ,
+.BR pnmtodc(1) ,
+.BR rawtodc(1) ,
+.BR dctoraw(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+Only handles ximg format headers, not DAT or OD, and not AW
+(sun4) word alignment headers.

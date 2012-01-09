@@ -1,0 +1,75 @@
+.TH DCLUTDMP 1 "6 March 2007" "DICOM PS3" "DICOM PS3 - dump LUT contents"
+.SH NAME
+dclutdmp \- ACR/NEMA DICOM PS3 ... DICOM PS3 - dump LUT contents
+.SH SYNOPSIS
+.HP 10
+.B dclutdmp
+[
+.B \-ancreate
+]
+[
+.B \-min value
+]
+[
+.B \-max value
+]
+[
+.B \-v|verbose
+]
+[
+.B \-filename
+]
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B dclutdmp
+reads the named dicom input file and dumps the contents of any VOI LUT
+present (as decimal values).
+.SH OPTIONS
+The descriptive attributes go to standard error.
+.PP
+The tab delimited input vs. output value list goes to stdout.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-ancreate
+.RS
+Display item, end item and end sequence delimiter tags in a form suitable to feed into ancreate.
+.RE
+.TP
+.B \-min value
+.TP
+.B \-max value
+.RS
+Specify the first and last input values to dump ... if these are greater than
+the specified input range of the actual LUT, then the first and last output
+values are replicated as per the standard. The values may also be less than
+the actual LUT range. This option makes it easier to
+concatenate two LUTs specified over different input values for the purposes
+of comparison.
+.RE
+.TP
+.B \-verbose
+.RS
+Dump the complete list of DICOM attributes present in the input to stderr.
+.RE
+.TP
+.B \-filename
+.RS
+Show the name of the file supplied in the arguments; a hyphen will be reported if no filename was supplied.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR ancreate(1) ,
+.BR andump(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

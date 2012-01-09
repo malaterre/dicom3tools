@@ -1,0 +1,6 @@
+#define IHaveSubdirs
+
+SUBDIRS = dcdisp dconvert dctool generic locale ourdisp pixeldat
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

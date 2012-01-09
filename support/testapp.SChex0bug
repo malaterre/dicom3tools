@@ -1,0 +1,182 @@
+#!/bin/sh
+
+# Usage: $0 testlist appname options imagedir testlogdir create|compare cp|todc|dump
+
+TMPROOT="/tmp/`basename $0`.$$"
+
+bad="false"
+
+if [ "$#" != 7 ]
+then
+	bad="true"
+else
+	testlist="$1"	# eg. "testlist"
+	appname="$2"	# eg. ./dcdump or ./dccp or ./xxxxdump or ./xxxxtodc
+	options="$3"	# eg. "" or "-v -stamp 9999"
+	imagedir="$4"	# eg. $(TOPDIR)/images/dicom
+	testlogdir="$5"	# eg. $(TOPDIR)/test/$(CURRENT_DIR)
+	mode="$6"	# eg. create|compare
+	role="$7"	# eg. dump|cp|todc
+
+	if [ "$mode" != "create" -a "$mode" != "compare" ]
+	then
+		echo "$0: mode not create or compare" 1>&2
+		bad="true"
+	# ... allow any role ...
+	#elif [ "$role" != "cp" -a "$role" != "todc" -a "$role" != "dump" ]
+	#then
+	#	echo "$0: role not copy or dump" 1>&2
+	#	bad="true"
+	elif [ ! -d "$testlogdir" -a "$mode" = "compare" ]
+	then
+		echo "$0: no such test log directory as \"$testlogdir\"" 1>&2
+		bad="true"
+	elif [ ! -d "$imagedir" ]
+	then
+		echo "$0: no such image directory as \"$imagedir\"" 1>&2
+		bad="true"
+	elif [ ! -f "$imagedir/$testlist" ]
+	then
+			echo "$0: no testlist \"$testlist\" in \"$imagedir\"" 1>&2
+	bad="true"
+	fi
+fi
+
+if [ "$bad" = "true" ]
+then
+	echo "Usage: $0 testlist appname options imagedir testlogdir create|compare cp|todc|dump" 1>&2
+	exit 1
+fi
+
+if [ "$mode" = "create" ]
+then
+	if [ ! -d "$testlogdir" ]
+	then
+		mkdirhier "$testlogdir"
+	fi
+fi
+
+baseappname=`basename $appname`
+
+for filename in `cat $imagedir/$testlist`
+do
+	logname=`echo "$filename" | sed 's:/:.:g'`
+	tmpname="/tmp/`basename $0`.`basename $filename`.$$"
+	usefullname="$imagedir/$filename"
+	rmusefullname="no"
+	if [ ! -f "$usefullname" ]
+	then
+		if [ -f "$usefullname.z" ]
+		then
+			echo "$baseappname: decompressing $usefullname.z ..."
+			zcat $usefullname.z >$tmpname
+			usefullname=$tmpname
+			rmusefullname="yes"
+		elif [ -f "$usefullname.gz" ]
+		then
+			echo "$baseappname: decompressing $usefullname.gz ..."
+			zcat $usefullname.gz >$tmpname
+			usefullname=$tmpname
+			rmusefullname="yes"
+		elif [ -f "$usefullname.Z" ]
+		then
+			echo "$baseappname: decompressing $usefullname.Z ..."
+			zcat $usefullname.Z >$tmpname
+			usefullname=$tmpname
+			rmusefullname="yes"
+		else
+			echo "No such file as $usefullname or compressed variants" 1>&2
+			exit 1
+		fi
+	fi
+
+	if [ -f "$usefullname" ]
+	then
+		if [ "$mode" = "create" ]
+		then
+			stdout="$testlogdir/$logname.$role.stdout"
+			stderr="$testlogdir/$logname.$role.stderr"
+			outfile="$testlogdir/$logname.$role.outfile"
+		else
+			stdout="$TMPROOT.stdout"
+			stderr="$TMPROOT.stderr"
+			outfile="$TMPROOT.outfile"
+		fi
+
+		if [ "$role" = "cp" -o "$role" = "todc" ]
+		then
+			outused="$outfile"
+		else
+			outused=""
+		fi
+
+		echo "$baseappname: $usefullname ..."
+		if $appname $options $usefullname $outused >$stdout 2>$stderr
+		then
+			echo "$baseappname:   succeeded"
+			success="true"
+		else
+			echo "$baseappname:   failed ****************************************************"
+			success="false"
+		fi
+		if [ "$mode" = "compare" ]
+		then
+			if [ "$role" = "cp" -o "$role" = "todc" ]
+			then
+				if [ -f $testlogdir/$logname.$role.outfile ]
+				then
+					echo "$baseappname:   comparing outfile"
+					if cmp -s $outfile $testlogdir/$logname.$role.outfile
+					then
+						true
+					else
+						echo "$baseappname:     different ****************************************************"
+					fi
+				else
+					echo "$baseappname:     nothing stored  to compare ($outfile)"
+				fi
+			fi
+			if [ -f $testlogdir/$logname.$role.stdout ]
+			then
+				echo "$baseappname:   comparing stdout"
+				if diff $stdout $testlogdir/$logname.$role.stdout
+				then
+					true
+				else
+					echo "$baseappname:     different ****************************************************"
+				fi
+			else
+				echo "$baseappname:     nothing stored  to compare (stdout)"
+			fi
+			if [ -f $testlogdir/$logname.$role.stderr ]
+			then
+				echo "$baseappname:   comparing stderr"
+				mv $stderr $stderr.bak
+				sed <$stderr.bak >$stderr -e 's/VL=<00/VL=<0x/g' -e 's/\[00/\[0x/g' -e 's/[(]00/(0x/g' -e 's/,00/,0x/g'
+				rm -f $stderr.bak
+				if diff $stderr $testlogdir/$logname.$role.stderr
+				then
+					true
+				else
+					echo "$baseappname:     different ****************************************************"
+				fi
+			else
+				echo "$baseappname:     nothing stored  to compare (stderr)"
+				if [ "$success" = false ]
+				then
+					echo "$baseappname:     stderr was ..."
+					cat $stderr
+				fi
+			fi
+		fi
+		rm -f $TMPROOT.stdout $TMPROOT.stderr $TMPROOT.outfile
+	else
+		echo "No such file as $usefullname" 1>&2
+		exit 1
+	fi
+
+	if [ $rmusefullname = "yes" -a -f $usefullname ]
+	then
+		rm $usefullname
+	fi
+done

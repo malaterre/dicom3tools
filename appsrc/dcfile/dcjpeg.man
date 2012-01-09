@@ -1,0 +1,63 @@
+.TH DCJPEG 1 "19 April 2009" "DICOM PS3" "DICOM PS3 - Create JPEG DICOM file"
+.SH NAME
+dcjpeg \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Create JPEG DICOM file
+.SH SYNOPSIS
+.HP 10
+.B dcjpeg "infile" "outfile" "transfersyntax" jpegoptions
+.SH DESCRIPTION
+.LP
+.B dcjpeg
+reads the named dicom input file and copies the information and
+pixel data to a new dicom file, with the dataset compressed using the specified
+JPEG compression options and transfer syntax, and with a meta information header prepended.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+There are no options other than thosed passed through to the Stanford PVRG jpeg codec.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+# Create a lossless compressed image with predictor 1
+.RE
+% dcjpeg in.dcm out.dcm 1.2.840.10008.1.2.4.70 -k 1
+.RE
+\ 
+.RE
+# Create a lossy compressed 8 bit image with high quality
+.RE
+% dcjpeg in.dcm out.dcm 1.2.840.10008.1.2.4.50 -q 1
+.RE
+\ 
+.RE
+# Create a lossy compressed 12 bit image with high quality
+.RE
+% dcjpeg in.dcm out.dcm 1.2.840.10008.1.2.4.51 -ql 1
+.RE
+% ls -sk1 in.dcm out.dcm
+ 520 in.dcm
+ 184 out.dcm
+.RE
+\ 
+.RE
+# Create a lossy compressed 12 bit image with moderate quality
+.RE
+% dcjpeg in.dcm out.dcm 1.2.840.10008.1.2.4.51 -ql 200
+.RE
+% ls -sk1 in.dcm out.dcm
+ 520 in.dcm
+  32 out.dcm
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcunjpeg(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+Only single frame images are supported.

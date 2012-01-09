@@ -1,0 +1,88 @@
+#!/bin/sh
+
+# usage: dcunrgb infile outfile
+#
+
+TMPROOT=/tmp/`basename $0`.$$
+
+ANCREATE=ancreate
+DC=dc
+DCCP=dccp
+DCDUMP=dcdump
+DCTOPNM=dctopnm
+DCKEY=dckey
+PNMTORAW=pnmtoraw
+PPMTOPGM=ppmtopgm
+
+dccpoptions=" -nodisclaimer -noadddicom -ignorereaderrors -ignoreoutofordertags"
+
+if [ ! -f "$1" ]
+then
+	echo 1>&2 "Input file does not exist - $1"
+	exit 1
+fi
+
+transfersyntaxuid=`"$DCKEY" -noerror -ignorereaderrors -ignoreoutofordertags -k TransferSyntaxUID "$1" 2>&1 | egrep -v 'Error|Warning'`
+
+if [ "$transfersyntaxuid" != "1.2.840.10008.1.2" -a "$transfersyntaxuid" != "1.2.840.10008.1.2.1" -a "$transfersyntaxuid" != "1.2.840.10008.1.2.2" ]
+then
+	echo 1>&2 "Only uncompressed RGB 8 bit per pixel input supported"
+	exit 1
+fi
+
+bits=`"$DCKEY" -noerror -ignorereaderrors -ignoreoutofordertags -decimal -k BitsAllocated "$1" 2>&1 | egrep -v 'Error|Warning'`
+
+if [ $bits -ne 8 ]
+then
+	echo 1>&2 "Only uncompressed RGB 8 bit per pixel input supported"
+	exit 1
+fi
+
+samplesperpixel=`"$DCKEY" -noerror -ignorereaderrors -ignoreoutofordertags -decimal -k SamplesPerPixel "$1" 2>&1 | egrep -v 'Error|Warning'`
+
+if [ $samplesperpixel -ne 3 ]
+then
+	echo 1>&2 "Only uncompressed RGB 8 bit per pixel input supported"
+	exit 1
+fi
+
+rows=`"$DCKEY" -noerror -ignorereaderrors -ignoreoutofordertags -decimal -k Rows "$1" 2>&1 | egrep -v 'Error|Warning'`
+columns=`"$DCKEY" -noerror -ignorereaderrors -ignoreoutofordertags -decimal -k Columns "$1" 2>&1 | egrep -v 'Error|Warning'`
+frames=`"$DCKEY" -noerror -ignorereaderrors -ignoreoutofordertags -decimal -k NumberOfFrames "$1" 2>&1 | egrep -v 'Error|Warning'`
+if [ -z "$frames" ]; then frames=1; fi
+
+#echo 1>&2 "rows=$rows"
+#echo 1>&2 "columns=$columns"
+#echo 1>&2 "frames=$frames"
+
+vl=`$DC <<EOF
+16
+o
+$rows
+$columns
+$frames
+*
+*
+p
+EOF`
+#echo 1>&2 "vl(hex)=$vl"
+
+echo "(0x7fe0,0x0010) OX Pixel Data 	 VR=<OB>   VL=<0x$vl> []" | "$ANCREATE" -e > "$TMPROOT.pixelhead"
+ 
+"$DCTOPNM" -quiet "$1" "$TMPROOT.ppm" 2>/dev/null
+
+# Note that ppmtopgm is documented (“http://netpbm.sourceforge.net/doc/ppmtopgm.html”) to use “gray = .299 r + .587 g + .114 b” as the conversion formula
+# (NTSC luminance weighting “http://www.poynton.com/notes/colour_and_gamma/ColorFAQ.html#RTFToC11”), but the net effect
+# is to produce the same value of gray when r, g and b are the same value
+
+"$PPMTOPGM" "$TMPROOT.ppm" > "$TMPROOT.pgm"
+rm "$TMPROOT.ppm"
+"$PNMTORAW" "$TMPROOT.pgm" > "$TMPROOT.raw"
+rm "$TMPROOT.pgm"
+
+"$DCCP" "$1" "$TMPROOT.nopixels" -d PixelData -d DataSetTrailingPadding -d DigitalSignaturesSequence $dccpoptions -r PhotometricInterpretation MONOCHROME2 -r SamplesPerPixel 1 -d PlanarConfiguration
+cat "$TMPROOT.nopixels" "$TMPROOT.pixelhead" "$TMPROOT.raw" > "$2"
+
+rm "$TMPROOT.nopixels" "$TMPROOT.pixelhead" "$TMPROOT.raw"
+
+exit 0

@@ -1,0 +1,65 @@
+000715.0001	open	ancreate	clunie	a-f in group or element without 0x causes death
+
+000220.0001	open	binpatch	clunie	fails on little endian architectures
+
+980519.0001	resolved	Configure	clunie	imake/cpp unprotected substitutions for host/os
+
+	The DependIncludePath's are not protcted by quotes so when imake calls
+	cpp to expnd them, macro substitutaion using pre-defined names like
+	"sun" and "sparc" get replaced by "1".
+
+	980519 Resolved for gcc/g++ case by having Configure quote with double-quotes
+
+980405.0001	open	dcdisp	clunie	"Signed 12 bit images don't sign extend"
+
+	dcsmpte -bits 12 -minval ' -1024' -maxval 3071 /tmp/crap -signed
+
+	dchist -h /tmp/crap
+	[0xcc]	2500	p=0.00953674	e=0.0640134	cum=0.0640134
+	[0x266]	2454	p=0.00936127	e=0.0630863	cum=0.1271
+	[0x3ad]	9893	p=0.0377388	e=0.178422	cum=0.305521
+	[0x3ff]	127210	p=0.485268	e=0.506206	cum=0.811727
+	[0x428]	10198	p=0.0389023	e=0.182218	cum=0.993946
+	[0x47a]	5085	p=0.0193977	e=0.110334	cum=1.10428
+	[0x599]	2453	p=0.00935745	e=0.0630661	cum=1.16735
+	[0x732]	2500	p=0.00953674	e=0.0640134	cum=1.23136
+	[0x7ff]	14442	p=0.0550919	e=0.230395	cum=1.46175
+	[0x8cc]	2500	p=0.00953674	e=0.0640134	cum=1.52577
+	[0xa65]	2500	p=0.00953674	e=0.0640134	cum=1.58978
+	[0xb32]	17426	p=0.0664749	e=0.259986	cum=1.84977
+	[0xbff]	20590	p=0.0785446	e=0.288286	cum=2.13805
+	[0xc00]	19958	p=0.0761337	e=0.282861	cum=2.42091
+	[0xccc]	17435	p=0.0665092	e=0.260071	cum=2.68099
+	[0xd99]	2500	p=0.00953674	e=0.0640134	cum=2.745
+	[0xf33]	2500	p=0.00953674	e=0.0640134	cum=2.80901
+
+	dcdisp /tmp/crap
+	...
+	usegray.cc:146: failed assertion `bottom<=top'
+
+
+980301.0001	open	dcdisp	clunie	"Some large color RGB images skewed"
+
+	Some large RGB images appear skewed eg. VL4 (looks
+	fine in Osiris and Photoshop (dual TIFF))
+
+	Can duplicate with:
+
+	pgmramp -lr 2226 100 | pnmdepth 255 > ramp.pgm
+	rgb3toppm ramp.pgm ramp.pgm ramp.pgm > ramprgb.ppm
+	pnmtodc ramprgb.ppm ramprgb.dc3
+	dcdisp ramprgb.dc3
+
+	Does NOT occur with 2224 or 2228 columns :( !!!
+
+	This is probably related to the odd length buffer problem,
+	since in this case the number of samples is 3.
+
+980301.0002	open	dcdisp	clunie	"RGB images with <8 bits stored appear black"
+
+	VL6 needed to have BitsStored manually set to 8 else was black - this
+	came from a Targa file and tgatoppm probably sets a low maxval.
+
+980920.0001	dcdisp fails when 12 bit signed (rather than 16)
+
+	usegray.cc:144: failed assertion `bottom<=top'

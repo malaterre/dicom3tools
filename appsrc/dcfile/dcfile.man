@@ -1,0 +1,133 @@
+.TH DCFILE 1 "6 March 2007" "DICOM PS3" "DICOM PS3 - Describe DICOM file content"
+.SH NAME
+dcfile \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Describe DICOM file content
+.SH SYNOPSIS
+.HP 10
+.B dcfile
+[
+.B \-b|brief
+]
+[
+.B \-filename
+]
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B dcfile
+reads the named dicom or acr-nema input file and describes the encoding
+method of the file, ie. what transfer syntax is in use, and whether or
+not a Part 10 style meta-information header is present.
+.SH OPTIONS
+The description goes to standard error.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-b|brief
+.RS
+Display a single line brief summary.
+.RE
+.TP
+.B \-filename
+.RS
+Show the name of the file supplied in the arguments; a hyphen will be reported if no filename was supplied.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcfile dicomdir.
+.RE
+Meta: UID               1.2.840.10008.1.2.1
+.RE
+Meta: Description       "Explicit VR Little Endian"
+.RE
+Meta: ByteOrder Little
+.RE
+Meta: VR                Explicit
+.RE
+Meta: Encapsulated      No
+.RE
+Data: UID               1.2.840.10008.1.2.1
+.RE
+Data: Description       "Explicit VR Little Endian"
+.RE
+Data: ByteOrder Little
+.RE
+Data: VR                Explicit
+.RE
+Data: Encapsulated      No
+.RE
+\ 
+.RE
+% dcfile expmeta.dc3
+.RE
+Meta: UID               1.2.840.10008.1.2.1
+.RE
+Meta: Description       "Explicit VR Little Endian"
+.RE
+Meta: ByteOrder Little
+.RE
+Meta: VR                Explicit
+.RE
+Meta: Encapsulated      No
+.RE
+Data: UID               1.2.840.10008.1.2
+.RE
+Data: Description       "Implicit VR Little Endian"
+.RE
+Data: ByteOrder Little
+.RE
+Data: VR                Implicit
+.RE
+Data: Encapsulated      No
+.RE
+\ 
+.RE
+% dcfile NM.1
+.RE
+Data: UID               1.2.840.10008.1.2
+.RE
+Data: Description       "Implicit VR Little Endian"
+.RE
+Data: ByteOrder Little
+.RE
+Data: VR                Implicit
+.RE
+Data: Encapsulated      No
+.RE
+\ 
+.RE
+% dcfile test.spi
+.RE
+Data: ByteOrder Big
+.RE
+Data: VR                Implicit
+.RE
+Data: Encapsulated      No
+.RE
+\ 
+.RE
+% dcfile -b evrlewm.dcm
+.RE
+DICOM file, with metaheader, Explicit VR Little Endian
+.RE
+\ 
+.RE
+% dcfile -b evrlenom.dcm
+.RE
+DICOM file, no metaheader, Explicit VR Little Endian
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR file(1) ,
+.BR dcdump(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

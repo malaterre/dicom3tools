@@ -1,0 +1,207 @@
+.TH DCDISP 1 "23 April 1999" "DICOM PS3" "DICOM PS3 - Display file on X window"
+.SH NAME
+dcdisp \- ACR/NEMA DICOM PS3 ... Display file on X window
+.SH SYNOPSIS
+.HP 10
+.B dcdisp
+[
+.B \-v|verbose
+]
+[
+.B \-h|help
+]
+[
+.B \-showwithhelp
+]
+[
+.B \-noattributes
+]
+[
+.B \-nodisplayloop
+]
+[
+.BI \-windowwidth " n"
+.BI \-windowlevel " n"
+]
+[
+.B \-ignorewindow
+]
+[
+.B \-invertedgray
+]
+[
+.B \-[signed|unsigned]
+]
+[
+.B \-ignorepadvalue
+]
+[
+.B \-showoverlays
+]
+[
+.B \-writeimage " >pgmfile"
+]
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B dcdisp
+reads the named dicom input file and displays its contents, using the barest minimum of X Windows features. Does its best to guess missing image pixel modules attributes in order to support older ACR/NEMA or SPI images.
+.LP
+Once displayed, for those photometric interpretations supporting window level and width (ie. 9-16 bit monochrome), the left/right/up/down arrow keys, or the dragging the mouse with the left button depressed, can be used to alter the window width and level. The unit of change is 1 normally, 10 if the shift key is simultaneously depressed, 100 if the control key is simultaneously depressed, and 1000 if both are depressed.
+.LP
+Typing q, Q, x, X, Return or Escape quits.
+.SH OPTIONS
+The attribute and verbose output goes to standard error.
+.PP
+The basic switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-h|\-help
+.RS
+Display help information on standard error, without displaying image.
+.RE
+.TP
+.B \-showwithhelp
+.RS
+Display help information on standard error, as well as displaying image
+(useful when called as an external application from a browser)
+.RE
+.TP
+.B \-noattributes
+.RS
+Suppress the default description of important image attributes.
+.RE
+.TP
+.B \-nodisplayloop
+.RS
+Parse the input, map the display, but don't hang around, automatically exits, useful only for automated testing.
+.RE
+.TP
+.B \-windowwidth " n" \-windowlevel " n"
+.RS
+Use the specified values, rather than trying to guess them from the image statistics or using the attributes in the dataset. Values are specified in so-called displayed values (ie. after rescaling with rescale intercept and rescale slope and taking into account the unsigned or signed pixel representation) rather than stored values.
+.RE
+.TP
+.B \-ignorewindow
+.RS
+Ignore any window level/width attributes in the image object and instead
+try to guess them from the image statistics. Useful if the values in the
+object are wrong or screwy. Implied if window level and width are explicitly
+specified on the command line.
+.RE
+.TP
+.B \-invertedgray
+.RS
+Invert the image grayscale.
+.RE
+.TP
+.B \-[signed|unsigned]
+.RS
+Force the pixel representation to be signed or unsigned.
+.RE
+.TP
+.B \-ignorepadvalue
+.RS
+Ignore the Pixel Padding Value, i.e. don't exclude it when computing
+image statistics for automatic window center and width.
+.RE
+.TP
+.B \-showoverlays
+.RS
+Display any overlays present in the image object by default (may be toggled
+on and off with the "o" or "O" keys. regardless of whether or not this command
+line option is specified).
+.RE
+.TP
+.B \-writeimage
+.RS
+On exit, write an 8 bit version of the displayed image with the last window
+level/width used, as a raw 8 bit PGM file to stdout. The range of grayscale
+used in the 8 bits will depend on the colormap used to display the image, and
+may be less than expected on wierd hardware or if some other application has
+been hogging the colormap. Color images will be written as 8 bit index values,
+not RGB PPM files. Multiframe images will be really long and thin.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.TP
+\ 
+.RE
+% dcdisp test.dc3
+.RE
+Read ...
+.RE
+ Rows = 512
+.RE
+ Columns = 512
+.RE
+ NumberOfFrames = 0
+.RE
+ PhotometricInterpretation = MONOCHROME2
+.RE
+ SamplesPerPixel = 1
+.RE
+ BitsAllocated = 16
+.RE
+ BitsStored = 16
+.RE
+ HighBit = 15
+.RE
+ PixelRepresentation = 1
+.RE
+ PlanarConfiguration = 0x0
+.RE
+ RescaleIntercept = 0
+.RE
+ RescaleSlope = 1
+.RE
+ PixelData Value Length = 0x80000
+.RE
+Using ...
+.RE
+ Rows = 512
+.RE
+ Columns = 512
+.RE
+ NumberOfFrames = 1
+.RE
+ PhotometricInterpretation = MONOCHROME2
+.RE
+ SamplesPerPixel = 1
+.RE
+ BitsAllocated = 16
+.RE
+ BitsStored = 16
+.RE
+ HighBit = 15
+.RE
+ PixelRepresentation = 1
+.RE
+ PlanarConfiguration = 0x0
+.RE
+ RescaleIntercept = 0
+.RE
+ RescaleSlope = 1
+.RE
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+Only handles 8-16 bit monochrome, palette color, and rgb photometric interpretations (with color-by-pixel planar configuration) only.
+.LP
+Multiple frames are handled in the sense that one big (long) image is built, which may exceed available memory, and is certainly hard to pull around the screen.
+.LP
+If necessary resorts to a private color map which makes for terrible flashing. Even when using the default color map, if invoked twice, the same colors are not shared.
+.LP
+Window level/width support involves remapping the entire pixel array which is a little (sic) slow. Palette animation for previewing is not yet implemented.
+.LP
+Overlay display is restricted to the (60xx,3000) group, and may fail under
+various circumstances.
+.LP
+VOI LUT currently ignores Rescale Slope/Intercept :(.

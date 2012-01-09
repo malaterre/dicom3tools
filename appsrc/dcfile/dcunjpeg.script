@@ -1,0 +1,146 @@
+#!/bin/sh
+
+# usage: dcunjpeg infile outfile
+#
+
+TMPROOT=/tmp/`basename $0`.$$
+
+ANCREATE=ancreate
+DCCP=dccp
+DCDUMP=dcdump
+DCTORAW=dctoraw
+DCKEY=dckey
+PNMTORAW=pnmtoraw
+JPEG=jpeg
+DJPEG=djpeg
+KDUEXPAND=kdu_expand
+
+dccpoptions=" -nodisclaimer -ignorereaderrors -ignoreoutofordertags"
+
+if [ ! -f "$1" ]
+then
+	echo 1>&2 "Input file does not exist - $1"
+	exit 1
+fi
+
+transfersyntaxuid=`"$DCKEY" -noerror -ignorereaderrors -ignoreoutofordertags -k TransferSyntaxUID "$1" 2>&1 | egrep -v 'Error|Warning'`
+
+bits=`"$DCKEY" -noerror -ignorereaderrors -ignoreoutofordertags -decimal -k BitsAllocated "$1" 2>&1 | egrep -v 'Error|Warning'`
+#echo "bits=$bits"
+if [ -z "$bits" ]; then bits=16; fi
+
+samplesperpixel=`"$DCKEY" -noerror -ignorereaderrors -ignoreoutofordertags -decimal -k SamplesPerPixel "$1" 2>&1 | egrep -v 'Error|Warning'`
+#echo "samplesperpixel=$samplesperpixel"
+if [ -z "$samplesperpixel" ]; then samplesperpixel=1; fi
+
+if [ "$transfersyntaxuid" = "1.2.840.10008.1.2.4.90" -o "$transfersyntaxuid" = "1.2.840.10008.1.2.4.91" ]
+then
+	usecodec="KDU"
+elif [ "$transfersyntaxuid" = "1.2.840.10008.1.2.4.50" ]
+then
+	if [ $samplesperpixel -gt 1 -a $bits = 8 ]
+	then
+		# we need to use the IJG codec because the PVRG codec does not undo the YCrBr color space transform and chrominance downsampling
+		usecodec="IJG"
+	else
+		usecodec="PVRG"
+	fi
+else
+	usecodec="PVRG"
+fi
+
+if [ $samplesperpixel -eq 3 ]
+then
+	# regardless of whether JPEG or JPEG 2000
+	dccpoptions="$dccpoptions -r PhotometricInterpretation RGB"
+fi
+
+# note that we used dcdump and not andump to make $TMPROOT.pixelhead, because it computes the right VL !!
+# take care to grep out only the main dataset pixel data (and not that in any icon image sequence, which will be indented by dcdump
+if [ $bits = 8 ]
+then
+	# leave pixel data as OB
+	"$DCDUMP" -ignoreoutofordertags "$1" 2>&1 | grep '^(0x7fe0,0x0010) OX Pixel Data' | sed -e 's/$/ []/' | "$ANCREATE" -e > "$TMPROOT.pixelhead"
+else
+	# make pixel data OW
+	"$DCDUMP" -ignoreoutofordertags "$1" 2>&1 | grep '^(0x7fe0,0x0010) OX Pixel Data' | sed -e 's/$/ []/' -e 's/VR=<OB>/VR=<OW>/' | "$ANCREATE" -e > "$TMPROOT.pixelhead"
+fi
+ 
+"$DCTORAW" -quiet "$1" "$TMPROOT.jpg" 2>/dev/null
+
+if [ "$usecodec" = "PVRG" ]
+then
+	#echo 1>&2 "Decompressing lossless color or any grayscale using PVRG codec"
+
+	# The JPEG codec produces a file with a name based on the component
+	# and lists that on a line flagged ">>" with the component indicated by "C:n" and a field "N:name" ...
+
+	"$JPEG" -d "$TMPROOT" | grep '>>[ ]*C:' | awk '{print $3;}' | sed 's/N://' | sort >"$TMPROOT.stdout"
+	#ls -l $TMPROOT.*
+	rm "$TMPROOT.jpg"
+	
+	rm -f "$TMPROOT.rawl"
+
+	# the component naming can be wierd, and may start from 0 or 1, and increment by 1, or increment in odd ways ... we have already sorted it in case not encoded in component number order
+	filefornextcomponent=`head -1 "$TMPROOT.stdout"`
+	while [ ! -z  "${filefornextcomponent}" ]
+	do
+		mv "${TMPROOT}.stdout" "${TMPROOT}.bak"
+		sed '1d' <"${TMPROOT}.bak" >"${TMPROOT}.stdout"
+		rm "${TMPROOT}.bak"
+		
+		if [ $bits = 8 ]
+		then
+			cat "${filefornextcomponent}" >>"$TMPROOT.rawl"
+		else
+			dd if="${filefornextcomponent}" of="$TMPROOT.rawl.$component" conv=swab 2>/dev/null
+			cat "$TMPROOT.rawl.$component" >>"$TMPROOT.rawl"
+			rm "$TMPROOT.rawl.$component"
+		fi
+	
+		rm "${filefornextcomponent}"
+		filefornextcomponent=`head -1 "$TMPROOT.stdout"`
+	done
+
+	rm "$TMPROOT.stdout"
+
+	# components are concatenated successively rather than interleaved
+	if [ $samplesperpixel -gt 1 ]; then dccpoptions="$dccpoptions -r PlanarConfiguration 1"; fi
+elif [ "$usecodec" = "IJG" ]
+then
+	#echo 1>&2 "Decompressing lossy color 8 bit using IJG codec"
+	
+	"$DJPEG" "$TMPROOT.jpg" >"$TMPROOT.pnm"
+	rm "$TMPROOT.jpg"
+	"$PNMTORAW" "$TMPROOT.pnm" "$TMPROOT.rawl"
+	rm "$TMPROOT.pnm"
+	
+	# pnmtoraw interleaves components
+	if [ $samplesperpixel -gt 1 ]; then dccpoptions="$dccpoptions -r PlanarConfiguration 0"; fi
+elif [ "$usecodec" = "KDU" ]
+then
+	if [ $samplesperpixel -gt 1 -a $bits = 8 ]
+	then
+		#echo 1>&2 "Decompressing JPEG 2000 using J2K codec for multicomponent 8 bit"
+		"$KDUEXPAND" -quiet -i "$TMPROOT.jpg" -o "$TMPROOT.ppm"			# does not mind ".jpg" extension on input
+		"$PNMTORAW" "$TMPROOT.ppm"  "$TMPROOT.rawl"
+		rm "$TMPROOT.ppm"
+		# pnmtoraw interleaves components
+		dccpoptions="$dccpoptions -r PlanarConfiguration 0"
+	else
+		#echo 1>&2 "Decompressing JPEG 2000 using J2K codec"
+		"$KDUEXPAND" -quiet -i "$TMPROOT.jpg" -o "$TMPROOT.rawl"		# output extension ".rawl" requests little endian output; does not mind ".jpg" extension on input
+	fi
+	rm "$TMPROOT.jpg"
+fi
+
+if [ -f "$TMPROOT.rawl" ]
+then
+	"$DCCP" "$1" "$TMPROOT.nopixels" -d PixelData -d DataSetTrailingPadding -d DigitalSignaturesSequence $dccpoptions
+	cat "$TMPROOT.nopixels" "$TMPROOT.pixelhead" "$TMPROOT.rawl" > "$2"
+	rm "$TMPROOT.nopixels" "$TMPROOT.pixelhead" "$TMPROOT.rawl"
+	exit 0
+else
+	echo 1>&2 "Could not find suitable codec or codec failed for Transfer Syntax $transfersyntaxuid"
+	exit 1
+fi

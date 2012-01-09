@@ -1,0 +1,8 @@
+all::	modtype.txt
+
+modtype.txt:	../standard/module.tpl ../support/modtype.awk
+	$(AWK) -f ../support/modtype.awk <../standard/module.tpl \
+		| $(SORT) -b +1 -2 +0 -1 >modtype.txt
+
+clean::
+	$(RM) modtype.txt

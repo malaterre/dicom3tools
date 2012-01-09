@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# usage: dcunjls infile outfile
+#
+
+TMPROOT=/tmp/`basename $0`.$$
+
+ANCREATE=ancreate
+DCCP=dccp
+DCDUMP=dcdump
+DCTORAW=dctoraw
+DCKEY=dckey
+JLS=rawnjl2
+
+infile="$1"
+shift
+outfile="$1"
+shift
+
+dccpoptions=" -nodisclaimer"
+
+transfersyntaxuid=`"$DCKEY" -k TransferSyntaxUID "$infile" 2>&1 | egrep -v 'Error|Warning'`
+
+bits=`"$DCKEY" -decimal -k BitsAllocated "$infile" 2>&1 | egrep -v 'Error|Warning'`
+#echo "bits=$bits"
+
+# note that we used dcdump and not andump to make $TMPROOT.pixelhead, because it computes the right VL !!
+if [ $bits = 8 ]
+then
+	# leave pixel data as OB
+	"$DCDUMP" "$infile" 2>&1 | grep '10) OX Pixel Data' | sed -e 's/$/ []/' | "$ANCREATE" -e > "$TMPROOT.pixelhead"
+else
+	# make pixel data OW
+	"$DCDUMP" "$infile" 2>&1 | grep '10) OX Pixel Data' | sed -e 's/$/ []/' -e 's/VR=<OB>/VR=<OW>/' | "$ANCREATE" -e > "$TMPROOT.pixelhead"
+fi
+ 
+"$DCTORAW" -quiet "$infile" "$TMPROOT.jls" 2>/dev/null
+
+"$JLS" -d -output-endian little "$TMPROOT.jls" "$TMPROOT.raw.littleendian"
+rm "$TMPROOT.jls"
+
+"$DCCP" "$infile" "$TMPROOT.nopixels" -d PixelData $dccpoptions 2>&1 | egrep -v 'Error|Warning'
+cat "$TMPROOT.nopixels" "$TMPROOT.pixelhead" "$TMPROOT.raw.littleendian" > "$outfile"
+rm "$TMPROOT.nopixels" "$TMPROOT.pixelhead" "$TMPROOT.raw.littleendian"
+
+exit 0

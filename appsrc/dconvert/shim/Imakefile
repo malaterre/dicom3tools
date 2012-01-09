@@ -1,0 +1,33 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTAPPDCONVERTEXTRAINCLUDES)
+
+SRCSTODC = shimtodc.cc
+OBJSTODC = shimtodc.o
+
+SRCSDUMP = shimdump.cc
+OBJSDUMP = shimdump.o
+
+CPLUSPLUS_SRCS = $(SRCSDUMP) $(SRCSTODC)
+OBJS = $(OBJSDUMP) $(OBJSTODC)
+
+AllTarget(shimtodc)
+NormalCCProgramTarget(shimtodc,$(OBJSTODC),$(TOP)/libsrc/lib/libdshim.a $(PROJECTDCONVERTDEPLIBS),-ldshim $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(shimtodc,$(INSTALLBINDIR))
+InstallManPage(shimtodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(shimdump)
+NormalCCProgramTarget(shimdump,$(OBJSDUMP),$(TOP)/libsrc/lib/libdshim.a $(PROJECTDCONVERTDEPLIBS),-ldshim $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(shimdump,$(INSTALLBINDIR))
+InstallManPage(shimdump,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./shimdump "" $(TOP)/images/shimadzu $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./shimtodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/shimadzu $(TOP)/test/$(CURRENT_DIR) compare todc
+
+test.create::
+	@$(TOP)/support/testapp testlist ./shimdump "" $(TOP)/images/shimadzu $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./shimtodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/shimadzu $(TOP)/test/$(CURRENT_DIR) create todc
+

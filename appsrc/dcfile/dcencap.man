@@ -1,0 +1,81 @@
+.TH DCENCAP 1 "19 April 2009" "DICOM PS3" "DICOM PS3 - Encapsulate in DICOM file"
+.SH NAME
+dcencap \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Encapsulate compressed stream in a DICOM file
+.SH SYNOPSIS
+.HP 10
+.B dcencap
+.B dicomheader rawpixeldata
+.B \-transfersyntax " uid"
+[
+.B \-itemsize " nbytes"
+|
+.B \-singleitem
+]
+[
+.B \-v|verbose|vv|veryverbose
+]
+.so man1/optin.so
+.so man1/optin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcencap
+reads the named dicom header input file and raw pixel data bitstream input file
+and copies the information and pixel data into a new dicom file with the
+pixel data encapsulated and the specified transfer syntax.
+.LP
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1), though the input
+filenames must be explicitly specified, ie. they cannot be redirected from standard input. The transfer syntax
+must be explicitly specifed for the DICOM output file using the usual \-ts option, and it obviously has to
+be one of the encapsulated transfer syntaxes. Options specific to this program are:
+.TP
+.B \-singleitem
+.RS
+Only a single encapsulated item is written, regardless of the number of frames (e.g., for MPEG).
+.RE
+.TP
+.B \-itemsize " nbytes"
+.RS
+The number of bytes to include in each encapsulated item. Defaults to number of rows times number of columns times bytes per pixel in a single frame, unless it exceeds the size of what will fit in a 32 bit length field; obviously this calculation has no meaning if the data stream
+is compressed.
+.RE
+.TP
+.B \-verbose
+.RS
+Describe fragmentation process and number of bytes processed.
+.RE
+.TP
+.B \-veryverbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+% dcencap -v -singleitem video_002.src video_002.mpg -of video_002.dcm -ts 1.2.840.10008.1.2.4.100
+.RE
+Using frameSize 304128
+.RE
+Using itemSize 136857600
+.RE
+Doing single item 
+.RE
+Wrote total of 9072492
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+Cannot add further attributes after the encapsulated Pixel Data attribute.
+.LP
+Cannot separate concatenated multi-frame compressed data bitsream into separate fragments (e.g., to build a multi-frame JPEG encapsulated encoding).
+

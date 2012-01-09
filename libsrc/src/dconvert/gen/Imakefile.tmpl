@@ -1,0 +1,31 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = gendc.cc genconv.cc genmpln.cc \
+		 genmmsc.cc genmdt.cc \
+		 gendmp.cc gendmpf.cc \
+		 genhdrc.cc gen.cc
+
+OBJS = 		 gendc.o  genconv.o  genmpln.o  \
+		 genmmsc.o  genmdt.o  \
+		 gendmp.o  gendmpf.o  \
+		 genhdrc.o  gen.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdgen.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(gen,dconvert)
+ProjectInstallOnMakeUpdatedLibraryHeader(geninfo,dconvert)
+
+ProjectConvertTemplate(genhdrp.h,gen,convert,prefix=GEN_ role=headerpart offsetwarning=off)
+ProjectConvertTemplate(genhdrw.h,gen,convert,prefix=GEN_ role=wholeheader headerclassparameters=",GEN_FileStructureInformation &fileinfo")
+ProjectConvertTemplate(genhdrc.h,gen,convert,prefix=GEN_ role=constructheader headerclassparameters=",GEN_FileStructureInformation &fileinfo")
+ProjectConvertTemplate(genconv.h,gen,convert,prefix=GEN_ role=dicom)
+ProjectConvertTemplate(gendmpf.h,gen,convert,prefix=GEN_ role=dump)
+
+gendmpf.o: gendmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) gendmpf.cc
+
+DependCCTarget()
+

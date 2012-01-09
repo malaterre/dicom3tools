@@ -1,0 +1,601 @@
+/*
+ * generic imake template
+ */
+
+#ifndef XCOMM
+#define XCOMM #
+#endif
+XCOMM -------------------------------------------------------------------------
+XCOMM Makefile generated from IMAKE_TEMPLATE and INCLUDE_IMAKEFILE
+XCOMM
+XCOMM Platform-specific parameters may be set in the appropriate <vendor>.cf
+XCOMM configuration files.  Site-specific parameters should be set in the file
+XCOMM site.def.  Full rebuilds are recommended if any parameters are changed.
+XCOMM
+
+#define	YES	1
+#define NO	0
+
+
+/* Started as imake -I./config -DTOP=. -DCURDIR=. SiteImakeFlags ProjectImakeFlags */
+
+#ifndef MacroIncludeFile
+#define ProjectMacroIncludeFile 	<generic.p-cf>
+#define MacroIncludeFile		<generic.cf>
+#endif
+
+/*****************************************************************************
+ *                                                                           *
+ *                       DO NOT MODIFY BELOW THIS LINE                       *
+ *                                                                           *
+ *****************************************************************************/
+
+
+XCOMM -------------------------------------------------------------------------
+XCOMM site-specific configuration parameters that need to come before
+XCOMM the platform-specific parameters - edit site.def to change
+#define BeforeVendorCF
+#include <site.p-def>
+#include <site.def>
+#undef BeforeVendorCF
+
+XCOMM -------------------------------------------------------------------------
+XCOMM platform-specific configuration parameters - edit MacroFile to change
+#include ProjectMacroIncludeFile
+#include MacroIncludeFile
+
+/* It is a kludge to put these two macros here,
+ * but Project.tmpl needs them and it is not clear there is a better place.
+ */
+
+/*
+ * Concat - concatenates two strings.
+ */
+#ifndef Concat
+#if __STDC__ && !defined(UnixCpp)
+#define Concat(a,b)a##b
+#else
+#define Concat(a,b)a/**/b
+#endif
+#endif
+
+/*
+ * Concat3 - concatenates three strings.
+ */
+#ifndef Concat3
+#if __STDC__ && !defined(UnixCpp)
+#define Concat3(a,b,c)a##b##c
+#else
+#define Concat3(a,b,c)a/**/b/**/c
+#endif
+#endif
+
+XCOMM -------------------------------------------------------------------------
+XCOMM site-specific configuration parameters that go after
+XCOMM the platform-specific parameters - edit site.def to change
+#define AfterVendorCF
+#include <site.p-def>
+#include <site.def>
+#undef AfterVendorCF
+
+/*
+ * defaults for various generic parameters; set in site.def if needed
+ */
+
+#ifndef OSName
+#define OSName            Unknown Operating System
+#endif
+#ifndef OSMajorVersion
+#define OSMajorVersion          0
+#endif
+#ifndef OSMinorVersion
+#define OSMinorVersion          0
+#endif
+#ifndef OSTeenyVersion
+#define OSTeenyVersion          0
+#endif
+
+#ifndef X11LibraryPath
+#define X11LibraryPath /usr/lib/X11
+#endif
+#ifndef X11IncludePath
+#define X11IncludePath /usr/include/X11
+#endif
+
+#ifndef PassCDebugFlags
+#define PassCDebugFlags 'C_DEBUGFLAGS=$(C_DEBUGFLAGS)' 'CPLUSPLUS_DEBUGFLAGS=$(CPLUSPLUS_DEBUGFLAGS)'
+#endif
+
+#ifndef AnsiCUnoptimizedDebugFlags
+#define AnsiCUnoptimizedDebugFlags -O
+#endif
+#ifndef AnsiCOptimizedDebugFlags
+#define AnsiCOptimizedDebugFlags -O
+#endif
+#ifndef AnsiCDebuggableDebugFlags
+#define AnsiCDebuggableDebugFlags -g
+#endif
+#ifndef AnsiCNoOpDebugFlags
+#define AnsiCNoOpDebugFlags
+#endif
+#ifndef AnsiCDefaultDebugFlags
+#define AnsiCDefaultDebugFlags AnsiCOptimizedDebugFlags
+#endif
+#ifndef AnsiCDefaultOptions
+#define AnsiCDefaultOptions
+#endif
+
+#ifndef AnsiCStandardIncludes
+#define AnsiCStandardIncludes			/* for platform-specifics */
+#endif
+#ifndef AnsiCStandardDefines
+#define AnsiCStandardDefines
+#endif
+#ifndef AnsiCExtraLibraries
+#define AnsiCExtraLibraries
+#endif
+#ifndef AnsiCExtraLoadFlags
+#define AnsiCExtraLoadFlags
+#endif
+#ifndef AnsiCDependIncludePath
+#define AnsiCDependIncludePath
+#endif
+#ifndef AnsiCDependFlags
+#define AnsiCDependFlags AnsiCDependIncludePath
+#endif
+
+#ifndef CPlusPlusUnoptimizedDebugFlags
+#define CPlusPlusUnoptimizedDebugFlags -O
+#endif
+#ifndef CPlusPlusOptimizedDebugFlags
+#define CPlusPlusOptimizedDebugFlags -O
+#endif
+#ifndef CPlusPlusDebuggableDebugFlags
+#define CPlusPlusDebuggableDebugFlags -g
+#endif
+#ifndef CPlusPlusNoOpDebugFlags
+#define CPlusPlusNoOpDebugFlags
+#endif
+#ifndef CPlusPlusDefaultDebugFlags
+#define CPlusPlusDefaultDebugFlags CPlusPlusOptimizedDebugFlags
+#endif
+#ifndef CPlusPlusDefaultOptions
+#define CPlusPlusDefaultOptions
+#endif
+
+#ifndef CPlusPlusStandardIncludes
+#define CPlusPlusStandardIncludes		/* for platform-specifics */
+#endif
+#ifndef CPlusPlusStandardDefines
+#define CPlusPlusStandardDefines
+#endif
+#ifndef CPlusPlusExtraLibraries
+#define CPlusPlusExtraLibraries
+#endif
+#ifndef CPlusPlusExtraLoadFlags
+#define CPlusPlusExtraLoadFlags
+#endif
+#ifndef CPlusPlusDependIncludePath
+#define CPlusPlusDependIncludePath
+#endif
+#ifndef CPlusPlusDependFlags
+#define CPlusPlusDependFlags CPlusPlusDependIncludePath
+#endif
+
+#ifndef DisplayIncludeFlags
+#define DisplayIncludeFlags Concat(-I,$(X11INCLUDEPATH)) 
+#endif
+#ifndef DisplayLoadFlags
+#define DisplayLoadFlags Concat(-L,$(X11LIBRARYPATH)) -lX11 -lXext
+#endif
+#ifndef DisplayDependFlags
+#define DisplayDependFlags Concat($(X11LIBRARYPATH),/libX11.a) Concat($(X11LIBRARYPATH),/libXext.a)
+#endif
+#ifndef NetworkLoadFlags
+#define NetworkLoadFlags
+#endif
+
+#ifndef AnsiCCmd
+#define AnsiCCmd	cc
+#endif
+#ifndef CPlusPlusCmd
+#define CPlusPlusCmd	CC
+#endif
+
+#ifndef InstPgmFlags
+#define InstPgmFlags -s
+#endif
+#ifndef InstBinFlags
+#define InstBinFlags -m 0755
+#endif
+#ifndef InstUidFlags
+#define InstUidFlags -m 4755
+#endif
+#ifndef InstLibFlags
+#define InstLibFlags -m 0644
+#endif
+#ifndef InstIncFlags
+#define InstIncFlags -m 0444
+#endif
+#ifndef InstManFlags
+#define InstManFlags -m 0444
+#endif
+#ifndef InstDatFlags
+#define InstDatFlags -m 0444
+#endif
+
+#ifndef BourneShell
+#define BourneShell /bin/sh
+#endif
+
+#ifndef ArCmd
+#define ArCmd ar rcv
+#endif
+#ifndef XarCmd
+#define XarCmd true
+#endif
+#ifndef AsCmd
+#define AsCmd as
+#endif
+#ifndef AwkCmd
+#define AwkCmd awk
+#endif
+#ifndef CompressCmd
+#define CompressCmd compress
+#endif
+#ifndef UnCompressCmd
+#define UnCompressCmd compress -d
+#endif
+#ifndef CompressExtension
+#define CompressExtension Z
+#endif
+#ifndef TarCmd
+#define TarCmd tar
+#endif
+#ifndef TarExtension
+#define TarExtension tar
+#endif
+
+#ifndef InstallCmd
+#define InstallCmd install -c
+#endif
+#ifndef StripCmd
+#define StripCmd strip
+#endif
+#ifndef LdCmd
+#define LdCmd ld
+#endif
+#ifndef CpCmd
+#define CpCmd cp
+#endif
+#ifndef LnCmd
+#define LnCmd ln -s
+#endif
+#ifndef MakeCmd
+#define MakeCmd make
+#endif
+#ifndef MvCmd
+#define MvCmd mv
+#endif
+#ifndef DoRanlibCmd
+#define DoRanlibCmd 1
+#endif
+#ifndef RanlibCmd
+#define RanlibCmd ranlib
+#endif
+#ifndef RanlibInstFlags
+#define RanlibInstFlags /**/
+#endif
+#ifndef RmCmd
+#define RmCmd rm -rf
+#endif
+#ifndef SortCmd
+#define SortCmd _POSIX2_VERSION=199209 sort
+#endif
+#ifndef WhatismanCmd
+#define WhatismanCmd catman -w
+#endif
+
+#ifndef ImakeCmd
+#define ImakeCmd imake
+#endif
+#ifndef MakedependCmd
+#define MakedependCmd makedepend
+#endif
+#ifndef MkdirhierCmd
+#define MkdirhierCmd mkdirhier
+#endif
+#ifndef MkdirCmd
+#define MkdirCmd MkdirhierCmd
+#endif
+
+#ifndef YaccCmd
+#define YaccCmd yacc
+#endif
+#ifndef YaccLib
+#define YaccLib -ly
+#endif
+#ifndef LexCmd
+#define LexCmd lex
+#endif
+#ifndef LexLib
+#define LexLib -ll
+#endif
+
+#ifndef DoxygenCmd
+#define DoxygenCmd doxygen
+#endif
+
+#ifndef ExecutableSuffix
+#define ExecutableSuffix
+#endif
+
+#ifndef TOPDIR
+#define TOPDIR .
+#endif
+#ifndef CURDIR
+#define CURDIR .
+#endif
+#ifndef ExtraFilesToClean
+#define ExtraFilesToClean /**/
+#endif
+#ifndef FilesToClean
+#define FilesToClean *.CKP *.ln *.BAK *.bak *.o core errs ,* *~ *.a .emacs_* tags TAGS make.log MakeOut a.out .sb ii_files Templates.DB mon.out gmon.out
+#endif
+
+            SHELL = BourneShell
+
+              TOP = TOPDIR
+      CURRENT_DIR = CURDIR
+     EXECUTABLESUFFIX = ExecutableSuffix
+
+               AR = ArCmd
+              XAR = XarCmd
+               AS = AsCmd
+              AWK = AwkCmd
+               CC = AnsiCCmd
+              CCC = CPlusPlusCmd
+         COMPRESS = CompressCmd
+       UNCOMPRESS = UnCompressCmd
+      COMPRESSEXT = CompressExtension
+              TAR = TarCmd
+           TAREXT = TarExtension
+          INSTALL = InstallCmd
+            STRIP = StripCmd
+               LD = LdCmd
+               LN = LnCmd
+             MAKE = MakeCmd
+               MV = MvCmd
+               CP = CpCmd
+#if DoRanlibCmd
+           RANLIB = RanlibCmd
+  RANLIBINSTFLAGS = RanlibInstFlags
+#endif
+               RM = RmCmd
+             SORT = SortCmd
+        WHATISMAN = WhatismanCmd
+
+            IMAKE = ImakeCmd
+           DEPEND = MakedependCmd
+        MKDIRHIER = MkdirhierCmd
+            MKDIR = MkdirCmd
+
+             YACC = YaccCmd
+          YACCLIB = YaccLib
+              LEX = LexCmd
+           LEXLIB = LexLib
+
+          DOXYGEN = DoxygenCmd
+
+
+     INSTPGMFLAGS = InstPgmFlags	/* install flags for programs */
+     INSTBINFLAGS = InstBinFlags	/* install flags for executables */
+     INSTUIDFLAGS = InstUidFlags	/* install flags for setuid programs */
+     INSTLIBFLAGS = InstLibFlags	/* install flags for libraries */
+     INSTINCFLAGS = InstIncFlags	/* install flags for headers */
+     INSTMANFLAGS = InstManFlags	/* install flags for man pages */
+     INSTDATFLAGS = InstDatFlags	/* install flags for data files */
+
+#ifdef ProjectRoot
+      PROJECTROOT = ProjectRoot
+#endif
+
+             C_STD_INCLUDES = AnsiCStandardIncludes
+              C_STD_DEFINES = AnsiCStandardDefines
+         C_EXTRA_LOAD_FLAGS = AnsiCExtraLoadFlags
+          C_EXTRA_LIBRARIES = AnsiCExtraLibraries
+           C_OPTIMIZEDFLAGS = AnsiCOptimizedDebugFlags
+         C_UNOPTIMIZEDFLAGS = AnsiCUnoptimizedDebugFlags
+               C_DEBUGFLAGS = AnsiCDefaultDebugFlags
+                  C_OPTIONS = AnsiCDefaultOptions
+
+     CPLUSPLUS_STD_INCLUDES = CPlusPlusStandardIncludes
+      CPLUSPLUS_STD_DEFINES = CPlusPlusStandardDefines
+ CPLUSPLUS_EXTRA_LOAD_FLAGS = CPlusPlusExtraLoadFlags
+  CPLUSPLUS_EXTRA_LIBRARIES = CPlusPlusExtraLibraries
+   CPLUSPLUS_OPTIMIZEDFLAGS = CPlusPlusOptimizedDebugFlags
+ CPLUSPLUS_UNOPTIMIZEDFLAGS = CPlusPlusUnoptimizedDebugFlags
+       CPLUSPLUS_DEBUGFLAGS = CPlusPlusDefaultDebugFlags
+          CPLUSPLUS_OPTIONS = CPlusPlusDefaultOptions
+
+            DISP_LOAD_FLAGS = DisplayLoadFlags
+            DISP_INCL_FLAGS = DisplayIncludeFlags
+             NET_LOAD_FLAGS = NetworkLoadFlags
+
+#ifdef HasStdNameSpaceForStreamPos
+     C_DEFINES_HASSTDNAMESPACEFORSTREAMPOS = -DHASSTDNAMESPACEFORSTREAMPOS=HasStdNameSpaceForStreamPos
+#endif
+
+#ifdef HasGetHostID
+     C_DEFINES_HASGETHOSTID = -DHASGETHOSTID=HasGetHostID
+#endif
+
+#ifdef HasGetHostIDPrototype
+     C_DEFINES_HASGETHOSTIDPROTOTYPE = -DHASGETHOSTIDPROTOTYPE=HasGetHostIDPrototype
+#endif
+
+#ifdef PowIntegerExponentType
+     C_DEFINES_POWINTEGEREXPONENTTYPE = -DPOWINTEGEREXPONENTTYPE=PowIntegerExponentType
+#endif
+
+#ifdef UseDumbInfinityAndNAN
+     C_DEFINES_USEDUMBINFINITYANDNAN = -DUSEDUMBINFINITYANDNAN=UseDumbInfinityAndNAN
+#endif
+
+#ifdef UseGlibcTimezone
+     C_DEFINES_USEGLIBCTIMEZONE = -DUSEGLIBCTIMEZONE=UseGlibcTimezone
+#endif
+
+#ifdef UseXMitShmExtension
+     C_DEFINES_USEXMITSHMEXTENSION = -DUSEXMITSHMEXTENSION=UseXMitShmExtension
+#endif
+
+#ifdef DefaultGuessedDateOrder
+     C_DEFINES_DEFAULTGUESSEDDATEORDER = -DDEFAULTGUESSEDDATEORDER=DefaultGuessedDateOrder
+#endif
+
+#ifdef DefineBinaryIOFlags
+     C_DEFINES_BINARYIOFLAGS = -DUSEBINARYFLAGFORINPUTOPENMODE -DUSEBINARYFLAGFOROUTPUTOPENMODE
+#endif
+
+/*
+ * STD_INCLUDES contains system-specific includes
+ * EXTRA_INCLUDES contains project-specific includes set in project incfiles
+ * INCLUDES contains client-specific includes set in Imakefile
+ * LOCAL_LDFLAGS contains client-specific ld flags flags set in Imakefile
+ */
+            C_ALLINCLUDES = $(C_INCLUDES) $(C_EXTRA_INCLUDES) \
+                            $(C_TOP_INCLUDES) $(C_STD_INCLUDES)
+             C_ALLDEFINES = $(C_ALLINCLUDES) $(C_STD_DEFINES) \
+                            $(C_EXTRA_DEFINES) $(C_PROTO_DEFINES) \
+                            $(C_DEFINES) \
+                            $(C_DEFINES_POWINTEGEREXPONENTTYPE) \
+							$(C_DEFINES_USEGLIBCTIMEZONE) \
+                            $(C_DEFINES_USEDUMBINFINITYANDNAN) \
+							$(C_DEFINES_HASSTDNAMESPACEFORSTREAMPOS) \
+                            $(C_DEFINES_HASGETHOSTID) \
+                            $(C_DEFINES_HASGETHOSTIDPROTOTYPE) \
+                            $(C_DEFINES_USEXMITSHMEXTENSION) \
+                            $(C_DEFINES_DEFAULTGUESSEDDATEORDER) \
+                            $(C_DEFINES_BINARYIOFLAGS)
+                   CFLAGS = $(C_DEBUGFLAGS) $(C_OPTIONS) $(C_ALLDEFINES) \
+				    $(C_UNOPTIMIZEDFLAGS)
+                 C_LDLIBS = $(C_SYS_LIBRARIES) $(C_EXTRA_LIBRARIES)
+              C_LDOPTIONS = $(C_DEBUGFLAGS) $(C_OPTIONS) $(C_LOCAL_LDFLAGS)
+            C_DEPENDFLAGS = AnsiCDependFlags
+
+    CPLUSPLUS_ALLINCLUDES = $(CPLUSPLUS_INCLUDES) $(CPLUSPLUS_EXTRA_INCLUDES) \
+                            $(CPLUSPLUS_TOP_INCLUDES) $(CPLUSPLUS_STD_INCLUDES)
+     CPLUSPLUS_ALLDEFINES = $(CPLUSPLUS_ALLINCLUDES) $(CPLUSPLUS_STD_DEFINES) \
+                            $(CPLUSPLUS_EXTRA_DEFINES) \
+                            $(CPLUSPLUS_PROTO_DEFINES) $(CPLUSPLUS_DEFINES) \
+                            $(C_DEFINES_POWINTEGEREXPONENTTYPE) \
+							$(C_DEFINES_USEGLIBCTIMEZONE) \
+                            $(C_DEFINES_USEDUMBINFINITYANDNAN) \
+							$(C_DEFINES_HASSTDNAMESPACEFORSTREAMPOS) \
+                            $(C_DEFINES_HASGETHOSTID) \
+                            $(C_DEFINES_HASGETHOSTIDPROTOTYPE) \
+                            $(C_DEFINES_USEXMITSHMEXTENSION) \
+                            $(C_DEFINES_DEFAULTGUESSEDDATEORDER) \
+                            $(C_DEFINES_BINARYIOFLAGS)
+          CPLUSPLUS_FLAGS = $(CPLUSPLUS_DEBUGFLAGS) $(CPLUSPLUS_OPTIONS) \
+				    $(CPLUSPLUS_UNOPTIMIZEDFLAGS) \
+                            $(CPLUSPLUS_ALLDEFINES)
+         CPLUSPLUS_LDLIBS = $(CPLUSPLUS_SYS_LIBRARIES) \
+                            $(CPLUSPLUS_EXTRA_LIBRARIES)
+      CPLUSPLUS_LDOPTIONS = $(CPLUSPLUS_DEBUGFLAGS) $(CPLUSPLUS_OPTIONS) \
+                            $(CPLUSPLUS_LOCAL_LDFLAGS)
+    CPLUSPLUS_DEPENDFLAGS = CPlusPlusDependFlags
+
+                   RM_CMD = $(RM) FilesToClean ExtraFilesToClean
+  
+            IMAKE_DEFINES = /* leave blank, for command line use only */
+                IMAKE_CMD = $(IMAKE) \
+			-I$(NEWTOP)$(PRIVCONFIGDIR) \
+			$(IMAKE_DEFINES)
+
+           X11LIBRARYPATH = X11LibraryPath
+           X11INCLUDEPATH = X11IncludePath
+
+/* NB. Note the use of the traditional CFLAGS rather more consistent C_FLAGS */
+
+.SUFFIXES:	.c
+.c.o:	; $(CC) -c $(CFLAGS) $*.c
+
+.SUFFIXES:	.cc
+.cc.o:	; $(CCC) -c $(CPLUSPLUS_FLAGS) $*.cc
+
+/*
+ * get project-specific configuration and rules
+ */
+
+/* ImakeFlags is used in our replacement version of MakefileTarget() */
+
+#ifndef ImakeFlags
+#define ImakeFlags	SiteImakeFlags ProjectImakeFlags
+#endif
+
+#include <Project.p-tmpl>
+#include <Project.tmpl>
+
+#include <Imake.p-rules>
+#include <Imake.rules>
+
+XCOMM -------------------------------------------------------------------------
+XCOMM start of Imakefile
+#include INCLUDE_IMAKEFILE
+
+XCOMM -------------------------------------------------------------------------
+XCOMM common rules for all Makefiles - do not edit
+/*
+ * These need to be here so that rules in Imakefile occur first;  the blank
+ * all is to make sure that an empty Imakefile does not default to make clean.
+ */
+emptyrule::
+
+CleanTarget()
+
+#ifndef IHaveSpecialMakefileTarget
+MakefileTarget()
+#endif
+
+#ifdef IHaveSubdirs
+XCOMM -------------------------------------------------------------------------
+XCOMM rules for building in SUBDIRS - do not edit
+
+TestSubdirs($(SUBDIRS))
+TestCreateSubdirs($(SUBDIRS))
+InstallSubdirs($(SUBDIRS))
+InstallManSubdirs($(SUBDIRS))
+CleanSubdirs($(SUBDIRS))
+MakefileSubdirs($(SUBDIRS))
+IncludesSubdirs($(SUBDIRS))
+
+#else
+XCOMM -------------------------------------------------------------------------
+XCOMM empty rules for directories that do not have SUBDIRS - do not edit
+
+test::
+	@echo "test in $(CURRENT_DIR) done"
+
+test.create::
+	@echo "test.create in $(CURRENT_DIR) done"
+
+install::
+	@echo "install in $(CURRENT_DIR) done"
+
+install.man::
+	@echo "install.man in $(CURRENT_DIR) done"
+
+Makefiles::
+
+includes::
+
+depend::
+
+all::
+
+#endif /* if subdirectory rules are needed */
+
+XCOMM -------------------------------------------------------------------------
+XCOMM dependencies generated by makedepend

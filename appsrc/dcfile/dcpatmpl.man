@@ -1,0 +1,32 @@
+.TH dcpatmpl 1 "10 November 2007" "DICOM PS3" "Apply patient and study template"
+.SH NAME
+dcpatmpl \- ACR/NEMA DICOM PS3 ... Apply patient and study template
+.SH SYNOPSIS
+.HP 10
+.B dcpatmpl
+.B templatefile srcdir dstdir
+.SH DESCRIPTION
+.LP
+.B dcpatmpl
+reads a single DICOM file as a template, extracts from it the patient and study module attributes,
+and applies them to the DICOM files found in the source directory, copying them to the
+destination directory.
+.LP
+.SH OPTIONS
+.LP
+\ 
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP

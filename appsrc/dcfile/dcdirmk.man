@@ -1,0 +1,204 @@
+.TH DCDIRMK 1 "9 August 2007" "DICOM PS3" "DICOM PS3 - Create DICOMDIR"
+.SH NAME
+dcdirmk \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Create DICOMDIR
+.SH SYNOPSIS
+.HP 10
+.B dcdirmk
+" inputfile1 [ inputfile2 ... ]"
+[
+.B \-v|verbose|vv|veryverbose
+]
+[
+.B \-l
+]
+[
+.B \-noicons
+]
+[
+.B \-position
+]
+[
+.B \-novalidatename
+]
+[
+.B \-noinstancechildoffset
+]
+[
+.B \-descriptor|-readme " filename"
+]
+[
+.B \-identifier|-id " filesetid"
+]
+[
+.B \-dirrecorder " pcs|psc|scp|spc|csp|cps"
+]
+[
+.B \-input-nometa
+]
+[
+.B \-input-ts " uid"
+]
+[
+.B \-input-default
+]
+[
+.B \-input-byteorder|-input-endian " big|little"
+]
+[
+.B \-input-vr " implicit|explicit"
+]
+[
+.B \-f|-filelist " filename"
+]
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcdirmk
+reads the named dicom input files (and/or the files listed in the specified
+file), extracts patient, study, series and image
+information, and creates a DICOMDIR file as output.
+.LP
+Note that it is the user's responsibility to ensure that the filenames of
+the input files, which will be written to the output DICOMDIR, comply
+with the limitations specified in PS 3.10, specifically all upper case
+or numbers or underscore, 8 characters per component, and no more than
+8 components.
+.LP
+The input encoding of the file will be automatically determined, or can
+be explicitly specified in pathological cases using the input options
+described in dcintro(1).
+.LP
+The output encoding of the file be the default for the DICOMDIR but can
+be overridden, though this is very unlikely to be useful.
+.LP
+Icon images are derived from the image pixel data.
+.LP
+Since some attributes are mandatory in the directory records that may be
+zero-length in image objects, a meagre effort is made to fill them with
+defaults. Specifically, 19000101 will be used for the Study Date if missing, 000000
+will be used for the Study Time if missing, the Study Date (or 19000101) will
+be used for the Study ID if missing, the value 0 will be used for Series Number if missing, the
+value NOPATIENTID will be used for Patient ID if missing and the value Nobody^ will be used for
+Patient Name if missing.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-v|verbose
+.RS
+Display all attributes in each directory record, once the directory is built.
+.RE
+.TP
+.B \-vv|veryverbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading and once read, and various intermediate data structures,
+and calculations as the directory is built.
+.RE
+.TP
+.B \-l
+.RS
+List filenames as they are read.
+.RE
+.TP
+.B \-descriptor|readme filename
+.RS
+Insert a reference to the specified file as the File-set Descriptor File ID.
+.RE
+.TP
+.B \-identifier|id filesetid
+.RS
+Specify a value for the File-set ID which otherwise defaults to null.
+.RE
+.TP
+.B \-noicons
+.RS
+Don't insert icon images. The default is to insert them.
+.RE
+.TP
+.B \-position
+.RS
+Add positioning and referenced image attributes to image directory record
+to facilitate posting of localizer from the directory only.
+.RE
+.TP
+.B \-novalidatename
+.RS
+Don't validate image filenames. The default is to validate them.
+.RE
+.TP
+.B \-noinstancechildoffset
+.RS
+Do not include the Offset of Referenced Lower-Level Directory Entity (0004,1420) for
+instance-level records (which have no children). Use of this option will create illegal
+DICOMDIR files that are useful for testing the defensiveness of DICOMDIR readers in
+this regard. The default is to include the attribute with a value of 0, as the standard
+requires.
+.RE
+.TP
+.B \-dirrecorder pcs|psc|scp|spc|csp|cps
+.RS
+Order directory records in a particular way. Argument is abbreviation for "parent", 
+"child" and "sibling" order. Used for creating DICOMDIRs to exercise various parser's
+implict assumptions about order of offset pointers.
+.RE
+.TP
+.B \-f|filelist filename
+.RS
+A file containing a list of DICOM input files (one filename per line).
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcdirmk IMAGES/[0-9]* >DICOMDIR
+.RE
+% dcdirdmp DICOMDIR
+.RE
+PATIENT Patient 3 000003
+.RE
+ STUDY 000003  19940517 112213 BRAIN
+.RE
+  SERIES 3 MR
+.RE
+   IMAGE 3
+.RE
+   -> IMAGES\3333 
+.RE
+   IMAGE 2
+.RE
+   -> IMAGES\3332 
+.RE
+   IMAGE 1
+.RE
+   -> IMAGES\3331 
+.RE
+  SERIES 2 MR
+.RE
+ ...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1), 
+.BR dcdirdmp(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP
+The approach to making the icon image is make everything 8 bit, and
+use the first "plane" as is regardless of whether it is color or indexed
+(or even worse, interleaved). This will work really well for
+MONOCHROME2 images where BitsStored is not much bigger than the real
+maximum and the PixelRepresentaion is unsigned !
+.LP
+Output of icon images in implicit VR will fail.
+.LP
+
+
+
+

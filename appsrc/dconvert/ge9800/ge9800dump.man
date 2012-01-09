@@ -1,0 +1,42 @@
+.TH GE9800DUMP 1 "02 May 2010" "DICOM PS3" "ge9800 dump"
+.SH NAME
+ge9800dump \- ACR/NEMA DICOM PS3 ... ge9800 dump contents
+.SH SYNOPSIS
+.HP 10
+.B ge9800dump
+.I inputfilename
+.SH DESCRIPTION
+.LP
+.B ge9800dump
+reads the named GE CT 9800 input file and dumps its contents.
+.LP
+.SH OPTIONS
+The dump output goes to standard error.
+.PP
+The basic switches are described in dcintro(1).
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% ge9800dump test
+.RE
+\ 
+.RE
+[block:offset] Description        <value>
+.RE
+\ 
+.RE
+ ...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1) ,
+.BR ge9800todc(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

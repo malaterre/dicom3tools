@@ -1,0 +1,46 @@
+.TH GE98ID 1 "05 April 1998" "DICOM PS3" "DICOM PS3 - GE 9800 dump identifiers"
+.SH NAME
+ge98id \- ACR/NEMA DICOM PS3 ... DICOM PS3 - GE 9800 dump identifiers
+.SH SYNOPSIS
+.HP 10
+.B ge98id
+.B < " infile"
+.SH DESCRIPTION
+.LP
+.B ge98id
+reads the GE 9800 CT input file and dumps identifying attributes.
+.SH OPTIONS
+The descriptions of the identifiers go to standard out.
+Any error messages go to standard error.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.RE
+% ge98id <test.YP
+.RE
+StudyID="8541"
+.RE
+PatientID="12345678"
+.RE
+PatientName="CITIZEN DOE"
+.RE
+InstitutionName="ST. ELSEWHERE"
+.RE
+StudyDescription="THIS IS A NON-STUDY DESCRIPTION"
+.RE
+SeriesNumber="1"
+.RE
+AcquisitionNumber="6"
+.RE
+ImageNumber="6"
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR ge98topgm(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

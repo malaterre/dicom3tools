@@ -1,0 +1,133 @@
+.TH ANDUMP 1 "6 March 2007" "DICOM PS3" "DICOM PS3 - Describe ACR-NEMA file content"
+.SH NAME
+andump \- ACR/NEMA DICOM PS3 ... Describe ACR-NEMA file content
+.SH SYNOPSIS
+.HP 10
+.B andump
+[
+.B \-ancreate
+]
+[
+.B \-extractCSA
+]
+[
+.B \-showoffset|-showoffset-hex
+|-showoffset-octal|-showoffset-oct
+|-showoffset-decimal|-showoffset-dec
+]
+[
+.B \-filename
+]
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B andump
+reads the named acr-nema input file and describes the information contained, without attempting to interpret the structure of the message (cf. dcdump).
+.LP
+The group and element number, dictionary and explicit value representation, description of tag, value length and value of the element are displayed, 
+optionally with an offset byte count from the start of the file.
+.SH OPTIONS
+The attribute values, description and verbose output go to standard error.
+.LP
+Binary attributes are written in hexadecimal with a preceding
+"0x". Numeric string attributes are written in decimal. Attribute values
+are displayed in hexadecimal or string format as determined by the value representation.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-ancreate
+.RS
+Display item, end item and end sequence delimiter tags in a form suitable to feed into ancreate.
+.RE
+.TP
+.B \-extractCSA
+.RS
+Extract the DICOM-like attributes buried within the Siemens private CSA header OB value.
+.RE
+.TP
+.B \-showoffset|-showoffset-hex
+.RS
+Display byte offset from file start in hexadecimal.
+.RE
+.TP
+.B \-showoffset-octal|-showoffset-oct
+.RS
+Display byte offset from file start in octal.
+.RE
+.TP
+.B \-showoffset-decimal|-showoffset-dec
+.RS
+Display byte offset from file start in decimal.
+.RE
+.TP
+.B \-filename
+.RS
+Show the name of the file supplied in the arguments; a hyphen will be reported if no filename was supplied.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% andump NM.dc3
+.RE
+(0x0008,0x0000) UL Group Length  VR=<UL> VL=<0x0004> [0x08] 
+.RE
+(0x0008,0x0008) CS Image Type    VR=<CS> VL=<0x0024> <...> 
+.RE
+...
+.RE
+(0x0054,0x0013) SQ ... Sequence  VR=<SQ> VL=<0xffffffff> []
+.RE
+(0xfffe,0xe000) NONE Item        VR=<> VL=<0xffffffff> []
+.RE
+(0x0054,0x0014) DS Energy Win LL VR=<DS> VL=<0x0006> <1.0 > 
+.RE
+(0x0054,0x0015) DS Energy Win UL VR=<DS> VL=<0x0006> <9.0 > 
+.RE
+(0xfffe,0xe00d) NONE Item Del .. VR=<> VL=<0x0000> []
+.RE
+(0xfffe,0xe0dd) NONE Seq Del ..  VR=<> VL=<0x0000> []
+.RE
+...
+.RE
+\ 
+.RE
+\ 
+.RE
+% andump -ancreate NM.dc3
+.RE
+(0x0008,0x0000) UL Group Length  VR=<UL> VL=<0x0004> [0x08] 
+.RE
+(0x0008,0x0008) CS Image Type    VR=<CS> VL=<0x0024> <...> 
+.RE
+...
+.RE
+(0x0054,0x0013) SQ ... Sequence  VR=<SQ> VL=<0xffffffff> []
+.RE
+%item
+.RE
+(0x0054,0x0014) DS Energy Win LL VR=<DS> VL=<0x0006> <1.0 > 
+.RE
+(0x0054,0x0015) DS Energy Win UL VR=<DS> VL=<0x0006> <9.0 > 
+.RE
+%enditem
+.RE
+%endseq
+.RE
+...
+.RE
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR ancreate(1) ,
+.BR dcdump(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

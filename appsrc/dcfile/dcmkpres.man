@@ -1,0 +1,100 @@
+.TH DCMKPRES 1 "2 December 2004" "DICOM PS3" "DICOM PS3 - Create DICOM presentation state"
+.SH NAME
+dcmkpres \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Create DICOM presentation state
+.SH SYNOPSIS
+.HP 10
+.B dcmkpres
+[
+.B \-addlinearmodalitylut " nentries 1stvaluemapped inbits outbits 1stlutentry lutentryincr"
+]
+[
+.B \-addlinearpresentationlut " nentries 1stvaluemapped inbits outbits 1stlutentry lutentryincr"
+]
+[
+.B \-addsoftcopylinearvoilut " nentries 1stvaluemapped inbits outbits 1stlutentry lutentryincr"
+]
+[
+.B \-addsoftcopywindowcenterwidth " center width explanation"
+]
+[
+.B \-presentationlutshape " IDENTITY|INVERSE"
+]
+[
+.B \-image
+]
+[
+.B \-addlinearvoilut " nentries 1stvaluemapped inbits outbits 1stlutentry lutentryincr"
+]
+[
+.B \-v|verbose
+]
+.so man1/optin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcmkpres
+reads the named dicom or acr-nema input image file and creates either a grayscale softcopy presentation state that is part of the same study and references
+the input image, or a modified image with any additional lookup tables added.
+.LP
+Lookup tables may be added containing linear ramps, with the parameters being the number of LUT entries, the first input value mapped, the number of bits in the input values, the number of bits in the LUT entries, the first LUT entry value (before shifting based on the difference between the input and output bits) and the LUT entry increment value (before shifting based on the difference between the input and output bits, i.e. should usually have a value of 1 or -1). Note that when the output bits are greater than the input bits, the generated LUT entry values are shifted left by difference and filled from the least significant bit with the old most signficant bits. This trick correctly distributes the values over the full 0 to (2^outputbits)-1 output range.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-ow
+.RS
+Use an OW, rather than US, value representation for the LUT Data. US VR attributes are limited to
+only 65536 bytes (32768 LUT entries) in an explicit VR encoding, and hence are deprecated, though
+permitted for historical reasons. The use of this flag is strongly advised, but the default
+behavior is the deprecated behavior for historical reasons.
+.RE
+.TP
+.B \-addlinearmodalitylut " nentries 1stvaluemapped inbits outbits 1stlutentry lutentryincr"
+.RS
+Add a linear Modality LUT with the specified parameters.
+.RE
+.TP
+.B \-addlinearpresentationlut " nentries 1stvaluemapped inbits outbits 1stlutentry lutentryincr"
+.RS
+Add a linear Softcopy Presentation LUT with the specified parameters.
+.RE
+.TP
+.B \-addsoftcopylinearvoilut " nentries 1stvaluemapped inbits outbits 1stlutentry lutentryincr"
+.RS
+Add a linear Softcopy VOI LUT with the specified parameters.
+.RE
+.TP
+.B \-addsoftcopywindowcenterwidth " center width explanation"
+.RS
+Add window center and width attributes within the Softcopy VOI LUT Sequence.
+.RE
+.TP
+.B \-image
+.RS
+Leave the input as an image, rather than turning it into a presentation state.
+.RE
+.TP
+.B \-addlinearvoilut " nentries 1stvaluemapped inbits outbits 1stlutentry lutentryincr"
+.RS
+Add a linear VOI LUT with the specified parameters (for images not presentation states).
+.RE
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+It would be nice to generate other than linear ramps.

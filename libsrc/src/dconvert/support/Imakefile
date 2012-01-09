@@ -1,0 +1,11 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = planea.cc plane.cc dateconv.cc
+
+OBJS =           planea.o  plane.o  dateconv.o
+
+LibraryTarget($(PROJECTLIBDIR)/lib$(PROJECTDCONVERTLIBNAME).a,$(OBJS))
+
+DependCCTarget()

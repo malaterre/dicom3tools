@@ -1,0 +1,17 @@
+/* Put things specific to THIS site and common to ALL projects here */
+
+/* Setup to pass imake command line choices to sub-directories */
+
+/* Started as imake -I./config -DTOP=. -DCURDIR=.  ... [SiteImakeFlags] ... */
+
+#ifdef BeforeVendorCF
+
+#ifndef SiteImakeFlags
+#define SiteImakeFlags
+#endif	/* SiteImakeFlags */
+
+#endif /* BeforeVendorCF */
+
+#ifdef AfterVendorCF
+
+#endif /* AfterVendorCF */

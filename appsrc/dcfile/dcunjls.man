@@ -1,0 +1,31 @@
+.TH DCUNJLS 1 "10 August 2006" "DICOM PS3" "DICOM PS3 - Decompress JPEG-LS DICOM file"
+.SH NAME
+dcunjls \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Decompress JPEG-LS DICOM file
+.SH SYNOPSIS
+.HP 10
+.B dcunjls "infile" "outfile"
+.SH DESCRIPTION
+.LP
+.B dcunjls
+reads the named dicom input file that is compressed using a lossless or near-lossless JPEG-LS (14495-1)
+transfer syntax, and copies the information and pixel data to a new dicom file,
+in the explicit VR little endian uncompressed transfer syntax with a meta information
+header prepended.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+There are no options.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcjls(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Usage: dcunjpeg.all dirname
+#
+# where dirname is the directory name where images are
+#
+# decompresses files in place and adds .dcm extension
+#
+
+DCMSUFFIX="dcm"
+
+STAMP=`date +%Y%m%d%H%M%S`.$$
+
+DCUNJPEG="dcunjpeg"
+
+if [ ! $# = 1 ]
+then
+	echo 1>&2 "Usage: `basename $0` dirname"
+	exit 1
+fi
+
+for i in `find "$1" -type f -print`
+do
+	if [ -f "$i" ]
+	then
+		echo "Converting $i to $i.$DCMSUFFIX"
+
+		$DCUNJPEG "$i" "$i.$DCMSUFFIX"
+	fi
+done
+
+exit 0

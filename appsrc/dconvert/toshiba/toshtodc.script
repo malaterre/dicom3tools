@@ -1,0 +1,68 @@
+#!/bin/sh
+#
+# Usage: toshtodc imagefilenames
+
+#TMPFILE="/tmp/`basename $0`.$$.tmp"
+STAMP=`date +%Y%m%d%H%M%S`.$$
+
+for i in $*
+do
+	#basefilename=`basename "${i}" "${rawpixeldataextension}"`
+	basefilename=`echo "${i}" | sed -e 's/[.][Ii][Mm][Gg]$//'`
+	rawpixeldatafile="${i}"
+	acrnemaheaderfile="${basefilename}.zlc"
+	dicomfile="${basefilename}.dcm"
+
+	if [ ! -f "${rawpixeldatafile}" ]
+	then
+		echo 1>&2 "Error: cannot find filename ${rawpixeldatafile}"
+		exit 1
+	fi
+
+	if [ ! -f "${acrnemaheaderfile}" ]
+	then
+		echo 1>&2 "Error: cannot find filename ${acrnemaheaderfile}"
+		exit 1
+	fi
+
+	rawfilelength=`ls -l "${i}" | awk '{print $5}'`
+	#echo "rawfilelength=${rawfilelength}"
+	
+	# need to removeprivate, since some of them (7ff1) come after 7fe0 and not worth the effort to split and re-merge them
+	# definitely need to delete CommandLengthToEnd, since it is group 0x0000, which is illegal
+	# delete RevolutionTime since it comes out as 0
+	# delete others that are retired or not part of the CT IOD
+	# insert ImageType since none is present and default is ugly
+
+	antodc "${acrnemaheaderfile}" "${dicomfile}" \
+		-stamp "$STAMP" \
+		-d CommandLengthToEnd \
+		-d RecognitionCode \
+		-d OldDataSetType \
+		-d OldDataSetSubtype \
+		-d AcquisitionComments \
+		-d Location \
+		-d SmallestValidPixelValue \
+		-d LargestValidPixelValue \
+		-d ScanningSequence \
+		-d RevolutionTime \
+		-d PatientOrientation \
+		-d ImagePosition \
+		-d ImageOrientation \
+		-r ImageType "ORIGINAL\PRIMARY" \
+		-removeprivate \
+		-nodisclaimer
+	
+	echo "(0x7fe0,0x0010) OW Pixel Data VR=<OW> VL=<${rawfilelength}> []" | ancreate -e >>"${dicomfile}"
+	
+	# need to swab the bytes, since want little endian for dicom but raw image file is big endian
+	
+	dd if="${rawpixeldatafile}" conv=swab >>"${dicomfile}" 2>/dev/null
+	
+	#ls -l "${dicomfile}"
+	#echo "Validating ${dicomfile}"
+	#dciodvfy "${dicomfile}"
+	
+	#echo "Comparing ${acrnemaheaderfile} with ${dicomfile}"
+	#andiff "${acrnemaheaderfile}" "${dicomfile}"
+done

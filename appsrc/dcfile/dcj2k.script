@@ -1,0 +1,79 @@
+#!/bin/sh
+#
+# usage: dcj2k infile outfile j2koptions
+#
+# e.g. no arguments or "Creversible=yes" is lossless
+# e.g. "-rate 1.0" is lossy (without rate argument, default is lossy at default rate)
+#
+
+TMPROOT=/tmp/`basename $0`.$$
+
+DCCP=dccp
+DCTORAW=dctoraw
+DCKEY=dckey
+DCENCAP=dcencap
+J2KCOMPRESS=kdu_compress
+
+infile="$1"
+shift
+outfile="$1"
+shift
+j2koptions="$*"
+
+if [ -z "${j2koptions}" ]
+then
+	transfersyntax="1.2.840.10008.1.2.4.90"
+else
+	reversible=`echo "${j2koptions}" | grep "reversible=yes"`
+	if [ -z "${reversible}" ]
+	then
+		transfersyntax="1.2.840.10008.1.2.4.91"
+		compressionattributes="-r LossyImageCompression 01 -r LossyImageCompressionMethod ISO_15444_1"
+		addcompressionratio="yes"
+	else
+		transfersyntax="1.2.840.10008.1.2.4.90"
+	fi
+fi
+
+components=`$DCKEY -noerror -d -k SamplesPerPixel "${infile}" 2>&1 | grep -iv '(warning|error)'`
+if [ "${components}" != 1 ]
+then
+	echo 1>&2 "Only grayscale images supported"
+	exit 1
+fi
+
+precision=`$DCKEY -noerror -d -k BitsStored "${infile}" 2>&1 | grep -iv '(warning|error)'`
+signed=`$DCKEY -noerror -d -k PixelRepresentation "${infile}" 2>&1 | grep -iv '(warning|error)'`
+if [ -z "${signed}" ]
+then
+	signed="no"
+elif [ ${signed} = 0 ]
+then
+	signed="no"
+else
+	signed="yes"
+fi
+
+width=`$DCKEY -noerror -d -k Columns "${infile}" 2>&1 | grep -iv '(warning|error)'`
+height=`$DCKEY -noerror -d -k Rows "${infile}" 2>&1 | grep -iv '(warning|error)'`
+
+$DCCP -d PixelData "${infile}" "${TMPROOT}.header" -nodisclaimer -noadddicom
+$DCCP "${infile}" "${TMPROOT}.big.dcm" -endian big -vr explicit
+$DCTORAW -quiet "${TMPROOT}.big.dcm" "${TMPROOT}.big.raw"
+rm "${TMPROOT}.big.dcm"
+$J2KCOMPRESS -i "${TMPROOT}.big.raw" -o "${TMPROOT}.j2c" Sdims=\{"${height}","${width}"\} Sprecision="${precision}" Ssigned="${signed}" $* 	# creates $TMPROOT.big.raw.jpg
+if [ "${addcompressionratio}" = "yes" ]
+then
+	uncompressedfilesize=`ls -l "${TMPROOT}.big.raw" | awk '{print $5}'`
+	#echo 1>&2 "============== uncompressedfilesize = ${uncompressedfilesize}"
+	compressedfilesize=`ls -l "${TMPROOT}.j2c" | awk '{print $5}'`
+	#echo 1>&2 "============== compressedfilesize = ${compressedfilesize}"
+	compressionratio=`echo "scale=2; ${uncompressedfilesize}/${compressedfilesize}" | bc -l`
+	#echo 1>&2 "============== compressionratio = ${compressionratio}"
+	compressionattributes="${compressionattributes} -r LossyImageCompressionRatio ${compressionratio}"
+fi
+rm "${TMPROOT}.big.raw"
+$DCENCAP "${TMPROOT}.header" "${TMPROOT}.j2c" -ts "${transfersyntax}" -of "${outfile}" ${compressionattributes} -nodisclaimer -noadddicom
+rm "${TMPROOT}.header" "${TMPROOT}.j2c"
+
+exit 0

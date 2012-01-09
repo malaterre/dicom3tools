@@ -1,0 +1,240 @@
+Questions:
+
+	direction of table tilt and slew ??
+
+	sign of in-out and up-down ??
+
+
+
+C100 seems to be RT11 based
+
+Imatron files contain multiple images.
+
+Images are specified by numeric "level" and "time".
+
+Blocks are 
+
+Start with Image Block 0 ... array of 14 shorts (28 bytes long):
+
+  UINT16 *HeadTablePtr = &Ib0[0]; /* Pts to first block in file header table*/
+  UINT16 *HeadEntries = &Ib0[1];	/* number of header entries */
+  UINT16 *HeadDataPtr = &Ib0[2];	/* Points to where header data is */
+  UINT16 *SliceTablePtr = &Ib0[3];	/* Points to slice header table */
+  UINT16 *SliceEntries = &Ib0[4];      /* num of entires in the slice header */
+  UINT16 *SliceHPosTable = &Ib0[5]; /* points to slice header pos table */
+  UINT16 *HEntrySize = &Ib0[6];		/* slice header table size */
+  UINT16 *Version = &Ib0[7];		/* version number of this file */
+  UINT16 *ndoff = &Ib0[8];		/* N of blocks of detector offsets */
+  UINT16 *nfhtab = &Ib0[9];	/* N of rt11 blocks in file header table */
+  UINT16 *nfhdat = &Ib0[10];	/* N of rt11 blocks in file header data */
+  UINT16 *nshtab = &Ib0[11];	/* N of rt11 blocks in slice header table */
+  UINT16 *nshptr = &Ib0[12];	/* N of rt11 blocks in slice header pos tabl */
+  UINT16 *nshdat = &Ib0[13];	/* N of rt11 blocks in slice header data */
+
+
+
+Slice stuff
+
+	slice header table (nshtab blocks located at SliceTablePtr) (Fh->SHTable)
+	slice header data (nshdat blocks)
+
+	slice position table (nshptr blocks at SliceHPosTable) (SLPosTable)
+		contains Nslice by Uint32_L block ptrs (->Fh->SHPositions as byte)
+		at that location read 1 Uint16_L -> Fh->SliceTable[i]
+
+	the slice header table is the same for all images
+	the data it indexes is different for each slice, starts at Fh->SliceTable[i]
+	the size of each data group is Fh->SliceHDataSize == *nshdat * C100_BLOCK
+
+	offsets for each slice in slice position table ?
+
+#define C100_BLOCK    512       /* Number of bytes in C-100's disk block */
+
+
+
+./extractim
+Enter level (0 for all) [1]:0
+Enter input file name:testfile
+File Name          : 000795.1VM 
+Date               : 09-JAN-92  
+Time               : 34:53:14 
+Patient ID         :              
+Patient Name       : WATER TEST 6MM                 
+Comments           :  
+Pixel Length       : 0.683594 mm 
+Number of slices   : 1
+Number of levels   : 1
+N times per level  : 1
+Anatomical Ref.    :   
+Study Type         : 5: volume
+Contrast Type      :                     
+Contrast Dose      : 0.000000 CC
+Injection Site     :                     
+Stress Type        :                     
+Referring Doctor   :               
+Radiologist        :               
+Technician Initials:    
+Kernel Type        : 6: is kernel code
+Birth Date         :          
+Trigger Type       : 2: timed
+Patient Size       : 2: medium
+Diagnostic Comments:                                         
+Scanner Name       : ** SCANNER 99 **  
+Scanner Mode       : 6: single-slice mode
+Slice Thickness    : 6.000000 mm
+Bolus Time         : 0.000000 sec
+Contrast Density   : 5000.000000 units
+
+
+Enter output file name:testfile.out
+Extracting all 1 levels at time 1
+Extracting from testfile level 1 time 1 to testfile.out
+Data Location      : 8704 bytes
+Slice Size         : 524288 bytes
+Mu Water           : 0.000000 
+Scan Direction Flag: 1 
+Scan Voltage       : 130451.781250 V
+Scan Current       : 0.612000 A
+Detector 1         : 0
+Detector 2         : 1
+Hires Detector     : 0
+Target             : C
+N Rows             : 512
+N Columns          : 512
+N averaged         : 8
+Picture Radius     : 350.000000 mm
+X origin           : 0.000000 mm
+Y origin           : 0.000000
+Zoom Factor        : 0.000000
+Elapsed Time       : 0.131000 sec
+Table Position     : -452.000000 mm
+Table Height       : 157.000000 mm
+Table Tilt         : 0.000000 degrees
+Table Slew         : 0.000000 degrees
+R-R Interval       : 0.000000 % of cardiac phase
+Heart Beat No.     : 0
+Heart Rate         : 0.000000 bpm
+Patient Orientation: 1: supine head first
+britt{root}% 
+
+britt{dclunie}% dd if=images/imatron/testfile ibs=512 skip=16 count=1 | dumpwhat -p -2 -l -d | more
+[     0]               17
+[     2]            16204
+[     4]              257
+[     6]                1
+[     8]            17410
+[    10]                0
+[    12]            17410
+[    14]            29608
+[    16]              612
+[    18]            16888
+[    20]                0
+[    22]                0
+[    24]                0
+[    26]                0
+[    28]                0
+[    30]                2
+[    32]               67
+[    34]                8
+[    36]            17583
+[    38]                0
+[    40]                0
+[    42]                0
+[    44]                0
+[    46]                0
+[    48]                0
+[    50]                0
+[    52]              512
+[    54]              512
+[    56]            18815
+[    58]            61440
+[    60]                0
+[    62]                0
+[    64]                0
+[    66]                0
+[    68]                0
+[    70]                0
+[    72]                2
+[    74]            16134
+[    76]             9437
+[    78]                5
+[    80]            32767
+[    82]                0
+[    84]            61016
+[    86]              157
+[    88]                0
+[    90]                0
+[    92]                0
+[    94]                0
+[    96]                0
+[    98]                0
+[   100]                1
+[   102]                0
+[   104]                0
+[   106]                0
+[   108]                0
+[   110]                0
+[   112]                0
+[   114]               12
+[   115] to [   511] zeroes (   397)
+
+britt{dclunie}% dd if=images/imatron/testfile ibs=512 skip=16 count=1 | dumpwhat -p -2 -l -x | more
+[     0]         0x0011	ISDATP itemtype=I wordoffset=1 itemsize=1
+[     2]         0x3f4c	R1MU itemtype=F wordoffset=2 itemsize=1
+[     4]         0x0101	
+[     6]         0x0001	IROTA itemtype=I wordoffset=4 itemsize=1
+[     8]         0x4402	HVDES itemtype=F wordoffset=5 itemsize=1
+[    10]         0x0000	
+[    12]         0x4402	HVACT itemtype=F wordoffset=7 itemsize=1
+[    14]         0x73a8	
+[    16]         0x0264	ICURNT itemtype=I wordoffset=9 itemsize=1
+[    18]         0x41f8	FVDES itemtype=F wordoffset=10 itemsize=1
+[    20]         0x0000	
+[    22]         0x0000	FVACT itemtype=F wordoffset=12 itemsize=1
+[    24]         0x0000	
+[    26]         0x0000	FCACT itemtype=F wordoffset=14 itemsize=1
+[    28]         0x0000	
+[    30]         0x0002	IRING itemtype=I wordoffset=16 itemsize=1
+[    32]         0x0043	ITARGT itemtype=I wordoffset=17 itemsize=1
+[    34]         0x0008	NSLAVG itemtype=I wordoffset=18 itemsize=1
+[    36]         0x44af	PICRAD itemtype=F wordoffset=19 itemsize=1
+[    38]         0x0000	
+[    40]         0x0000	
+[    42]         0x0000	
+[    44]         0x0000	
+[    46]         0x0000	
+[    48]         0x0000	
+[    50]         0x0000	
+[    52]         0x0200	
+[    54]         0x0200	
+[    56]         0x497f	VALMAX itemtype=F wordoffset=29 itemsize=1
+[    58]         0xf000	
+[    60]         0x0000	VALMIN itemtype=F wordoffset=31 itemsize=1
+[    62]         0x0000	
+[    64]         0x0000	
+[    66]         0x0000	
+[    68]         0x0000	
+[    70]         0x0000	
+[    72]         0x0002	
+[    74]         0x3f06	
+[    76]         0x24dd	
+[    78]         0x0005	LEVELN itemtype=I wordoffset=40 itemsize=1
+[    80]         0x7fff	ISTAGE itemtype=I wordoffset=41 itemsize=2 ****
+[    82]         0x0000	
+[    84]         0xee58	INOUT itemtype=I wordoffset=43 itemsize=1
+[    86]         0x009d	IHITE itemtype=I wordoffset=44 itemsize=1
+[    88]         0x0000	
+[    90]         0x0000	
+[    92]         0x0000	
+[    94]         0x0000	
+[    96]         0x0000	
+[    98]         0x0000	
+[   100]         0x0001	IPATOR itemtype=I wordoffset=51 itemsize=1
+[   102]         0x0000	
+[   104]         0x0000	
+[   106]         0x0000	
+[   108]         0x0000	
+[   110]         0x0000	
+[   112]         0x0000	
+[   114]         0x000c	
+[   115] to [   511] zeroes (   397)

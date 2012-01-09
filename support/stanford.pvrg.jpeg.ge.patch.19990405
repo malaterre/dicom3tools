@@ -1,0 +1,144 @@
+diff -r -c jpegdir/huffman.c jpegdir.ge/huffman.c
+*** jpegdir/huffman.c	Wed Mar  1 20:57:22 1995
+--- jpegdir.ge/huffman.c	Mon Jan  4 14:10:44 1999
+***************
+*** 57,62 ****
+--- 57,63 ----
+  extern void MakeDhuff();
+  extern void UseACHuffman();
+  extern void UseDCHuffman();
++ extern void UseDCHuffmanCheckingGEMSBug();
+  extern void SetACHuffman();
+  extern void SetDCHuffman();
+  extern void PrintHuffman();
+***************
+*** 678,684 ****
+--- 679,721 ----
+       int index;
+  {
+    BEGIN("UseDCHuffman");
++ index = 0;
++   Xhuff = CImage->DCXhuff[index];
++   Dhuff = CImage->DCDhuff[index];
++   Ehuff = CImage->DCEhuff[index];
++   if (!Dhuff && !Ehuff)
++     {
++       WHEREAMI();
++       printf("Reference to nonexistent table %d.\n",index);
++     }
++ }
+  
++ /*BFUNC
++ 
++ UseDCHuffmanCheckingGEMSBug() installs the DC Huffman structure from the CImage
++ structure.
++ 
++ EFUNC*/
++ 
++ void UseDCHuffmanCheckingGEMSBug(index,detected_gems_predictor_bug)
++      int index;
++      int *detected_gems_predictor_bug;
++ {
++   BEGIN("UseDCHuffmanCheckingGEMSBug");
++ 
++   if (index == 1
++    && !CImage->DCDhuff[index] && !CImage->DCEhuff[index]
++    && CImage->DCDhuff[0] && !CImage->DCEhuff[0])
++     {
++       index = 0;
++       *detected_gems_predictor_bug = 1;
++       printf("GE table selection bug detected - assuming predictor bug also\n",index);
++     }
++   else
++     {
++       *detected_gems_predictor_bug = 0;
++     }
++ 
+    Xhuff = CImage->DCXhuff[index];
+    Dhuff = CImage->DCDhuff[index];
+    Ehuff = CImage->DCEhuff[index];
+diff -r -c jpegdir/jpeg.c jpegdir.ge/jpeg.c
+*** jpegdir/jpeg.c	Wed Mar  1 20:57:21 1995
+--- jpegdir.ge/jpeg.c	Mon Jan  4 16:59:32 1999
+***************
+*** 1358,1363 ****
+--- 1358,1365 ----
+    int MaxElem,CurrentElem,NumberElem;
+    int StartofLine=1,UseType=1;              /* Start with type 1 coding */
+    int *input;
++   int last_pixel;				/* should initialize this sometime */
++   int detected_gems_predictor_bug;
+  
+    PointTransform=CScan->SAL;
+    for(j=0;j<CScan->NumberComponents;j++)    /* Important to rewind to start */
+***************
+*** 1379,1385 ****
+  	}
+      }
+    InstallIob(0);
+!   UseDCHuffman(CScan->td[0]);          /* Install DC table */
+    if (CScan->NumberComponents==1)
+      height=horfreq=1;
+    else
+--- 1381,1387 ----
+  	}
+      }
+    InstallIob(0);
+!   UseDCHuffmanCheckingGEMSBug(CScan->td[0],&detected_gems_predictor_bug);          /* Install DC table */
+    if (CScan->NumberComponents==1)
+      height=horfreq=1;
+    else
+***************
+*** 1466,1472 ****
+  	      px = input[width];
+  	      break;
+  	    case 2:
+! 	      px = input[1];
+  	      break;
+  	    case 3:
+  	      px = input[0];
+--- 1468,1475 ----
+  	      px = input[width];
+  	      break;
+  	    case 2:
+! 	    /*px = input[1];*/
+! 	      px = detected_gems_predictor_bug ? last_pixel : input[1];
+  	      break;
+  	    case 3:
+  	      px = input[0];
+***************
+*** 1493,1499 ****
+  	  else
+  	    {
+  	      value = LosslessDecodeDC();
+! 	      input[width+1] = (value+px)&0xffff;
+  	      if (Loud > MUTE)
+  		{
+  		  printf("OUT=%d  PX=%d  VAL: %d\n",
+--- 1496,1508 ----
+  	  else
+  	    {
+  	      value = LosslessDecodeDC();
+! 	      if (detected_gems_predictor_bug) {
+! 	        input[width+1] = (px-value)&0xffff;
+! 	        last_pixel = (px-value)&0xffff;
+! 	      }
+! 	      else {
+! 	        input[width+1] = (value+px)&0xffff;
+! 	      }
+  	      if (Loud > MUTE)
+  		{
+  		  printf("OUT=%d  PX=%d  VAL: %d\n",
+diff -r -c jpegdir/prototypes.h jpegdir.ge/prototypes.h
+*** jpegdir/prototypes.h	Wed Mar  1 20:57:18 1995
+--- jpegdir.ge/prototypes.h	Mon Jan  4 14:09:13 1999
+***************
+*** 85,90 ****
+--- 85,91 ----
+  extern void MakeDhuff();
+  extern void UseACHuffman();
+  extern void UseDCHuffman();
++ extern void UseDCHuffmanCheckingGEMSBug();
+  extern void SetACHuffman();
+  extern void SetDCHuffman();
+  extern void PrintHuffman();

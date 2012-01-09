@@ -1,0 +1,58 @@
+#!/bin/sh
+#
+# usage: dcjls infile outfile [nearlosslessvalue]
+#
+#
+
+TMPROOT=/tmp/`basename $0`.$$
+
+DCCP=dccp
+DCTORAW=dctoraw
+DCKEY=dckey
+DCENCAP=dcencap
+JLS=rawnjl2
+
+infile="$1"
+shift
+outfile="$1"
+shift
+nearlosslessvalue="$1"
+shift
+
+if [ -z "$nearlosslessvalue" ]
+then
+	transfersyntax="1.2.840.10008.1.2.4.80"
+	jlsoptions=""
+else
+	transfersyntax="1.2.840.10008.1.2.4.81"
+	jlsoptions="-near $nearlosslessvalue"
+fi
+
+components=`$DCKEY -d -k SamplesPerPixel "$infile"  2>&1 | egrep -v 'Error|Warning'`
+if [ "$components" != 1 ]
+then
+	echo 1>&2 "Only grayscale images supported"
+	exit 1
+fi
+
+precision=`$DCKEY -d -k BitsStored "$infile"  2>&1 | egrep -v 'Error|Warning'`
+if [ $precision -gt 16 ]
+then
+	echo 1>&2 "Only up to 16 bits supported"
+	exit 1
+fi
+
+width=`$DCKEY -d -k Columns "$infile"  2>&1 | egrep -v 'Error|Warning'`
+height=`$DCKEY -d -k Rows "$infile"  2>&1 | egrep -v 'Error|Warning'`
+
+$DCCP -d PixelData "$infile" "$TMPROOT.header"
+$DCCP "$infile" "$TMPROOT.little.dcm" -endian little -vr explicit
+$DCTORAW -quiet "$TMPROOT.little.dcm" "$TMPROOT.little.raw"
+rm "$TMPROOT.little.dcm"
+$JLS -h "$height" -w "$width" -bits "$precision" -input-endian little $jlsoptions "$TMPROOT.little.raw" "$TMPROOT.little.raw.jls"
+
+rm "$TMPROOT.little.raw"
+$DCENCAP "$TMPROOT.header" "$TMPROOT.little.raw.jls" -ts "$transfersyntax" -of "$outfile"
+rm "$TMPROOT.header" "$TMPROOT.little.raw.jls"
+
+exit 0

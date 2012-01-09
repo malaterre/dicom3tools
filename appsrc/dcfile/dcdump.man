@@ -1,0 +1,73 @@
+.TH DCDUMP 1 "6 March 2007" "DICOM PS3" "DICOM PS3 - Describe DICOM file content"
+.SH NAME
+dcdump \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Describe DICOM file content
+.SH SYNOPSIS
+.HP 10
+.B dcdump
+[
+.B \-v|verbose
+]
+[
+.B \-filename
+]
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B dcdump
+reads the named dicom or acr-nema input file and describes the information contained, attempting to interpret the structure of the message, including nested sequences (cf. andump).
+.LP
+The group and element number, dictionary and explicit value representation, description of tag, value length and value of the element are displayed, 
+optionally with an offset byte count from the start of the file.
+.SH OPTIONS
+The attribute values, description and verbose output go to standard error.
+.LP
+Binary attributes are written in hexadecimal with a preceding
+"0x". Numeric string attributes are written in decimal. Attribute values
+are displayed in hexadecimal or string format as determined by the value representation.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading and once read.
+.RE
+.TP
+.B \-filename
+.RS
+Show the name of the file supplied in the arguments; a hyphen will be reported if no filename was supplied.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcdump NM.dc3
+.RE
+(0x0008,0x0000) UL Group Length  VR=<UL> VL=<0x0004> [0x08] 
+.RE
+(0x0008,0x0008) CS Image Type    VR=<CS> VL=<0x0024> <...> 
+.RE
+ ...
+.RE
+(0x0054,0x0013) SQ ... Sequence  VR=<SQ> VL=<0xffffffff> []
+.RE
+----:
+.RE
+>(0x0054,0x0014) DS Energy Win LL VR=<DS> VL=<0x0006> <1.0> 
+.RE
+>(0x0054,0x0015) DS Energy Win UL VR=<DS> VL=<0x0006> <9.0> 
+.RE
+ ...
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR andump(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

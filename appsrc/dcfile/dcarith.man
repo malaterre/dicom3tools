@@ -1,0 +1,112 @@
+.TH DCARITH 1 "18 April 2008" "DICOM PS3" "DICOM PS3 - Arithmetic on DICOM pixels"
+.SH NAME
+dcarith \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Arithmetic on DICOM pixels
+.SH SYNOPSIS
+.HP 10
+.B dcarith
+[
+.B \-v|verbose
+]
+[
+.B \-ignorereaderrors
+]
+[
+.B \-maskhighbits bits
+]
+[
+.B \-addvalueoffset offset
+]
+[
+.B \-zerovalue value
+]
+[
+.B \-replacevalue startvalue endvalue newvalue
+]
+[
+.B \-scale scalefactor
+]
+[
+.B \-makeidentityrescale
+]
+.so man1/optin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcarith
+reads the named dicom or acr-nema input file and copies the information and
+pixel data to a new dicom file, performing the same arithmetic computation on
+all of the pixel data values (i.e., a point operation).
+.LP
+Note that the command only changes the stored pixel values in PixelData, and does not
+affect any other attributes, including PixelPaddingValue, except as described
+below for specific options. This means that other attributes that describe the
+pixel data may need to be changed manually (using, for example, the \-r option).
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.TP
+.B \-ignorereaderrors
+.RS
+Normally dccp stops if read errors are encountered, but if this option is
+turned on, it will try to write what it can. This may be useful to remove
+trailing garbage after a valid dicom set that has been padded past the
+pixel data (e.g. to a blocksize) or similar.
+.RE
+.TP
+.B \-pixelpaddingvalue
+.RS
+Apply the same operation to PixelPaddingValue as well as the stored pixel values. Implied by \-makeidentityrescale.
+.RE
+.TP
+.B \-maskhighbits bits
+.RS
+Set to zero all bits above (to the left of) the specified bit.
+.RE
+.TP
+.B \-addvalueoffset offset
+.RS
+Add a fixed offset value to all pixels.
+.RE
+.TP
+.B \-zerovalue value
+.RS
+Sets all stored pixel values with the specified value to a new value of zero.
+.RE
+.TP
+.B \-replacevalue startvalue endvalue newvalue
+.RS
+Sets all stored pixel values greater than or equal to the start value and less than or equal to the end value to the specified new value.
+.RE
+.TP
+.B \-scale scalefactor
+.RS
+Multiply all stored pixel values by the specified scale factor (which may be a floating point value).
+.RE
+.TP
+.B \-makeidentityrescale
+.RS
+Determine from the existing RescaleSlope and RescaleIntercept values what computation to apply to the stored
+pixel values to make RescaleSlope 1 and RescaleIntercept 0, and apply that
+computation to the stored pixel values, setting PixelRepresentation to 1 (signed) and BitsStored to 16, regardless of their previous
+values. Also applies the same computation to PixelPaddingValue (i.e., implies \-pixelpaddingvalue).
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

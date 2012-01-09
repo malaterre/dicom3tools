@@ -1,0 +1,36 @@
+.TH dcckovly 1 "26 October 2010" "DICOM PS3" "DICOM PS3 - Check for overlays, curves, graphics"
+.SH NAME
+dcckovly \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Check for overlays, curves and graphic annotations
+.SH SYNOPSIS
+.HP 10
+.B dcckovly "infile"
+.SH DESCRIPTION
+.LP
+.B dcckovly
+reads the named dicom and looks for evidence of overlays, curves or graphic annotation sequences (which,
+though non-standard in images, some vendors add as standard extended sop classes, as well as
+some known private annotation elements
+checking the high bits above Bits Stored for non-zero values (since these might be remnants
+of overlays), and checking the Overlay Data for non-zero or only zero bits.
+The output consists of a dump of related attributes if present, a specific message if
+non-zero high bits, and a specific message if non-zero overlay data bits are found,
+and a warning if the file is encapuslated.
+.SH OPTIONS
+.LP
+There are no options.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.LP
+\ 
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+Cannot detect non-zero high bits in encapsulated images.

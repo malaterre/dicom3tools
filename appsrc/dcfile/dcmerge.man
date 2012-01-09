@@ -1,0 +1,156 @@
+.TH DCMERGE 1 "19 May 1998" "DICOM PS3" "DICOM PS3 - Merge DICOM files"
+.SH NAME
+dcmerge \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Merge DICOM files
+.SH SYNOPSIS
+.HP 10
+.B dcmerge
+[
+.B \-v|verbose
+]
+.so man1/optin.so
+.so man1/optin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcmerge
+reads the named dicom or acr-nema input filea and copies the information and
+pixel data (if any) from both into a new dicom file.
+.LP
+The input encoding of the file will be automatically determined, or can
+be explicitly specified in pathological cases using the input options
+described in dcintro(1).
+.LP
+The encoding of the file will be changed to the default or explicitly
+requested transfer syntax, as described in dcintro(1) under output
+options. This provides a means of converting between different transfer
+syntaxes, and adding or removing Part 10 style meta-information headers
+to or from "true" DICOM files, DICOM messages captured from network
+exchanges such as with the Mallinckrodt or Oldenburg central test node
+software, or converting old ACR/NEMA or SPI files.
+.LP
+During the translation, specific attributes may be deleted, added or
+replaced, class and instance unique identifiers generated or removed,
+group lengths added, or private attributes removed, as specified by
+the replacement options described in dcintro(1). This allows pre-DICOM
+ACR-NEMA or SPI files to be converted to DICOM files containing
+conforming instances of SOP classes in a semi-automated manner. If the
+SOP Class can be automatically determined, such as for CT or MR images,
+specific SOP Class instances will be created, otherwise SC will be used.
+Unique study, series and instance identifiers will be generated from a
+time stamp, but can be overridden by command line options to allow for
+shared identifiers between files of a series.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1), though the input
+filenames must be explicitly specified, ie. they cannot be redirected from standard input. Options specific to this program are:
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% echo Adds meta-information header by default
+.RE
+% dcmerge -v NM.dc3 NM2.dc3
+.RE
+******** While reading ... ********
+.RE
+@0x00000000,0x00000000 of 0xffffffff: (0x0008,0x0000) ...
+.RE
+...
+.RE
+******** As read ... ********
+.RE
+(0x0008,0x0000) UL Group Length VR=<UL> ...
+.RE
+...
+.RE
+******** As written ... ********
+.RE
+(0x0002,0x0000) UL Meta Element Group Length ...
+.RE
+(0x0002,0x0001) OB File Meta Information Version ...
+.RE
+...
+.RE
+(0x0008,0x0008) CS Image Type VR=<CS> VL=<24> <...>
+.RE
+...
+.RE
+\ 
+.RE
+% echo Make explicit big endian, with stamp & replacement,
+.RE
+       and removal of private attributes
+.RE
+\ 
+.RE
+% dcmerge \-v \-ts 1.2.840.10008.1.2.2 \-stamp "9999" 
+.RE
+       \-r PatientSex F \-removeprivate
+.RE
+       test.dc3 test.big
+.RE
+******** While reading ... ********
+.RE
+@0x00000000,0x00000000 of 0xffffffff: (0x0008,0x0000) ...
+.RE
+...
+.RE
+******** As read ... ********
+.RE
+...
+.RE
+(0x0010,0x0040) CS PatientSex VR=<CS> VL=<2> <M > 
+.RE
+...
+.RE
+(0x0028,0x0010) US Rows       VR=<US> VL=<2> [100]
+.RE
+...
+.RE
+(0x0029,0x0010) LO Private Creator ... [ACME CO ]
+.RE
+(0x0029,0x1010) DS Zoom       VR=<DS> VL=<0> <>
+.RE
+...
+.RE
+******** After replace before... ********
+.RE
+...
+.RE
+(0x0010,0x0040) CS PatientSex VR=<CS> VL=<2> <F> 
+.RE
+...
+.RE
+******** As written ... ********
+.RE
+(0x0002,0x0000) UL Meta Element Group Length ...
+.RE
+(0x0002,0x0001) OB File Meta Information Version ...
+.RE
+...
+.RE
+(0x0010,0x0040) CS PatientSex VR=<CS> VL=<2> <F> 
+.RE
+...
+.RE
+(0x0028,0x0010) US Rows       VR=<US> VL=<2> [100]
+.RE
+...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

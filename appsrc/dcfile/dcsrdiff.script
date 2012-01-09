@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# compare the dumps of two dicom SR files
+
+if [ $# = 3 ]
+then
+	option="$1"
+	shift
+elif [ $# != 2 ]
+then
+	echo "usage: `basename $0` [-identifier] file1 file2"
+	exit 1
+fi
+
+TMPFILE1=/tmp/`basename $0`.$$.tmp1
+TMPFILE2=/tmp/`basename $0`.$$.tmp2
+
+dcsrdump ${option} "$1" >"$TMPFILE1" 2>&1
+dcsrdump ${option} "$2" >"$TMPFILE2" 2>&1
+diff "$TMPFILE1" "$TMPFILE2"
+
+rm "$TMPFILE1" "$TMPFILE2"
+
+exit 0

@@ -1,0 +1,18 @@
+[
+.B \-if|\-input-file|< " name"
+]
+[
+.B \-input-byteorder|-input-endian " big|little"
+]
+[
+.B \-input-nolengthtoend
+]
+[
+.B \-input-nometa
+]
+[
+.B \-ignoreoutofordertags
+]
+[
+.B \-input-ts|\-input-transfersyntax " uid"|-input-default
+]

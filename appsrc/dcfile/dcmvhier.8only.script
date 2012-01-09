@@ -1,0 +1,90 @@
+#!/bin/sh
+#
+# usage: dcmvhier.8only "file"
+#
+# this script moves a single dicom file into a patient/study/series/image
+# hierarchy of the form:
+#
+#	PatientID/StudyDate/ModalitySeriesNumber/$$
+#
+# with only 8 character A-Z0-9_ component names
+#
+# Typically used as
+#
+#	find . -type f -exec dcmvhier.8only '{}' ';'
+#
+
+DCMSUFFIX=".dcm"
+
+DCKEY="dckey -ignoreoutofordertags"
+MV="mv"
+MKDIRHIER="mkdir -p"
+CMP="cmp"
+RM="rm"
+
+srcfile="$*"
+	#echo "$srcfile"
+
+	patientid=`$DCKEY -k PatientID "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^A-Z0-9_]//g'`
+	patientlabel="$patientid"
+	if [ -z "$patientlabel" ]; then patientlabel="NONAME"; fi
+	patientlabel=`echo "$patientlabel" | sed 's/^\([A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_]\).*$/\1/'`
+
+	studydate=`$DCKEY -k StudyDate "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9]//g'`
+	if [ -z "$studydate" ]
+	then
+		studyid=`$DCKEY -k StudyID "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^A-Z0-9_]//g'`
+		studylabel="$studyid"
+	else
+		studylabel="$studydate"
+	fi
+	if [ -z "$studylabel" ]; then studylabel="NOSTUDY"; fi
+	studylabel=`echo "$studylabel" | sed 's/^\([A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_]\).*$/\1/'`
+
+	seriesnum=`$DCKEY -k SeriesNumber "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9]//g'`
+	modality=`$DCKEY -k Modality "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^A-Z0-9_]//g'`
+	serieslabel="$modality$seriesnum"
+	if [ -z "$serieslabel" ]; then serieslabel="NOSERIES"; fi
+	serieslabel=`echo "$serieslabel" | sed 's/^\([A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_]\).*$/\1/'`
+
+	#instancenum=`$DCKEY -k InstanceNumber "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9]//g'`
+	#if [ -z "$instancenum" ]
+	#then
+	#	acqnum=`$DCKEY -k AcquisitionNumber "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9]//g'`
+	#	instancelabel="$acqnum"
+	#else
+	#	instancelabel="$instancenum"
+	#fi
+	if [ -z "$instancelabel" ]; then instancelabel="$$"; fi
+	instancelabel=`echo "$instancelabel" | sed 's/^\([A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_][A-Z0-9_]\).*$/\1/'`
+	
+	if [ ! -z "$patientlabel" -a ! -z "$studylabel" -a ! -z "$serieslabel" -a ! -z "$instancelabel" ]
+	then
+		newdir="$patientlabel/$studylabel/$serieslabel"
+		if [ ! -d "$newdir" ]
+		then
+			#echo $MKDIRHIER "$newdir"
+			$MKDIRHIER "$newdir"
+		fi
+		newfile="$newdir/$instancelabel"
+		if [ ! -f "$newfile" ]
+		then
+			echo $MV "$srcfile" "$newfile"
+			$MV "$srcfile" "$newfile"
+		else
+			if [ `ls -i "$srcfile" | awk '{print $1}'` = `ls -i "$newfile" | awk '{print $1}'` ]
+			then
+				echo "$srcfile: Same file (inode) as $newfile" 1>&2
+				# move anyway, in case we want to rename it
+				$MV "$srcfile" "$newfile"
+			else
+				if $CMP "$srcfile" "$newfile"
+				then
+					echo "$srcfile: removing, same content as existing $newfile" 1>&2
+					$RM "$srcfile"
+				else
+					echo "$srcfile: leaving, not overwriting different $newfile" 1>&2
+				fi
+			fi
+		fi
+	fi

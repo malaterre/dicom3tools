@@ -1,0 +1,140 @@
+.TH dcacqmap 1 "18 May 2010" "DICOM PS3" "Create visual map of acquisition pattern"
+.SH NAME
+dcacqmap \- ACR/NEMA DICOM PS3 ... Create visual map of acquisition pattern
+.SH SYNOPSIS
+.HP 10
+.B dcacqmap
+[
+.B \-byacqnumber
+]
+[
+.B \-byslicelocation
+]
+[
+.B \-byscanoptions
+]
+[
+.B \-byorientation
+]
+[
+.B \-locationtolerance n
+]
+[
+.B \-iconsize n
+]
+[
+.B \-nodump
+]
+[
+.B \-xhtml
+]
+[
+.B \-isonames
+]
+[
+.B \-nostyle
+]
+.B filenamesfile resultfolder
+.SH DESCRIPTION
+.LP
+.B dcacqmap
+reads a list of DICOM filenames from a file, and creates an HTML page containing
+icon images (and optionally reports) that visualize the pattern of acquisition in terms of dimensions
+of space and time and other potential dimensions.
+.LP
+Position is derived from Image Position (Patient) and sorted along the normal to
+the Image Orientation (Patient). It is assumed (but not checked) that all the images
+have the same orientation (unless separated by using -byorientation) and the same Frame of Reference UID.
+.LP
+After partitioning by position, the Acqusition Time (or Number or Scan Options), Convolution Kernel and Slice Thickness
+are then used to distinguish images acquired at the same spatial position.
+.LP
+An index.html will be created in the result folder, which will also contain sub-folders for
+iconic representations of the DICOM image files and reports. Within the html page each image
+icon may be hyperlinked to either a dump of the DICOM contents for the first file for each
+position or the difference between dumps for subsequent files.
+.SH OPTIONS
+.LP
+.TP
+.B \-byacqnumber
+.RS
+Use the Acquisition Number rather than the Acquisition Time to separate blocks of slices acquired
+at the same time; may be useful when every slice has its own different acquisition time.
+.RE
+.TP
+.B \-byslicelocation
+.RS
+Use the Slice Location for position and sorting, rather than deriving distance along the normal
+to Image Orientation (Patient) from Image Position (Patient).
+.RE
+.TP
+.B \-byscanoption
+.RS
+Use the Scan Option value rather than the Acquisition Time to separate blocks of slices acquired
+at the same time; may be useful when cardiac % RR interval is encoded in this attribute.
+.RE
+.TP
+.B \-byorientation
+.RS
+Use the ImageOrientation (Patient) rather than the Acquisition Time to separate blocks of slices; may be useful if
+there are different angulation in the same series.
+.RE
+.TP
+.B \-locationtolerance n
+.RS
+Since calculated or specified positions may differ only by a small distance, even though they
+are perhaps intended to be at the saem location, allow a fudge factor by specify rounding to
+the nearest whole millimeter (1), tenth (10), hundredth (100), etc.
+.RE
+.TP
+.B \-iconsize n
+.RS
+Specify a different size for icons from the default 128x128 pixels.
+.RE
+.TP
+.B \-nodump
+.RS
+Supress the default inclusion of dump or diff files hyperlinked from icons.
+.RE
+.TP
+.B \-xhtml
+.RS
+Create XHTML rather than HTML output.
+.RE
+.TP
+.B \-nostyle
+.RS
+Do not use a CSS stylesheet, but embed style information in the HTML output, either in an HTML or XHTML form depending on whether the -xhtml flag is set.
+.RE
+.TP
+.B \-isonames
+.RS
+Use short names without special characters for all files created, e.g., for recording on ISO 9660 Level 1 compliant media.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcsort(1) ,
+.BR dctable(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP
+Currently only single-frame CT images have been tested. A different set of sub-keys below position would
+be needed for other modalities.
+.LP
+When Acquisition Time is encoded by the vendor as a single value for all slices in an
+acquisition step, then the strategy adopted for display works well to group steps into
+columns; however, then each slice has a different acquisition time, a (very) large
+number of columns may result, with the slices staggered diagonally as one would
+expect. It is not clear where to look other than Acquisition Time for a single value
+that spans slices in a step in such cases.
+.LP
+The script is intolerant of spaces in file name paths.

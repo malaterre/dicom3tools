@@ -1,0 +1,43 @@
+.TH DCJLS 1 "09 August 2006" "DICOM PS3" "DICOM PS3 - Create JPEG-LS DICOM file"
+.SH NAME
+dcjls \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Create JPEG-LS DICOM file
+.SH SYNOPSIS
+.HP 10
+.B dcjls "infile" "outfile" "transfersyntax" [nearlosslessvalue]
+.SH DESCRIPTION
+.LP
+.B dcjls
+reads the named dicom input file and copies the information and
+pixel data to a new dicom file, with the dataset compressed with the 
+lossless or near-lossless JPEG-LS (14495-1) algorithm, depending on whether
+or not a near-lossless value is specified.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+There are no options.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+# Create a lossless compressed image
+.RE
+% dcjls in.dcm out.dcm
+.RE
+\ 
+.RE
+# Create a lossy compressed 8 bit image with a near-lossless pixel value error limit of 4
+.RE
+% dcjls in.dcm out.dcm 4
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcunjls(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

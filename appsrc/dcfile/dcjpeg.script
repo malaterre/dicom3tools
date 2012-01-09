@@ -1,0 +1,58 @@
+#!/bin/sh
+#
+# usage: dcjpeg infile outfile transfersyntax jpegoptions
+#
+# e.g. "1.2.840.10008.1.2.4.70 -k 1" is lossless with predictor 1
+# e.g. "1.2.840.10008.1.2.4.50 -q 1" is lossy 8 bit table with high quality
+# e.g. "1.2.840.10008.1.2.4.51 -ql 1" is lossy 16 bit table with high quality
+#
+
+TMPROOT=/tmp/`basename $0`.$$
+
+DCCP=dccp
+DCTORAW=dctoraw
+DCKEY=dckey
+DCENCAP=dcencap
+JPEG=jpeg
+
+infile="$1"
+shift
+outfile="$1"
+shift
+transfersyntax="$1"
+shift
+
+components=`$DCKEY -d -k SamplesPerPixel "$infile" 2>&1`
+if [ "$components" != 1 ]
+then
+	echo 1>&2 "Only grayscale images supported"
+	exit 1
+fi
+
+precision=`$DCKEY -d -k BitsStored "$infile" 2>&1`
+if [ $precision -gt 12 ]
+then
+	if [ "$transfersyntax" = "1.2.840.10008.1.2.4.51" ]
+	then
+		echo 1>&2 "Only up to 12 bits supported for extended process lossy compression"
+		exit 1
+	elif [ "$transfersyntax" = "1.2.840.10008.1.2.4.50" ]
+	then
+		echo 1>&2 "Only up to 8 bits supported for baseline process lossy compression"
+		exit 1
+	fi
+fi
+
+width=`$DCKEY -d -k Columns "$infile" 2>&1`
+height=`$DCKEY -d -k Rows "$infile" 2>&1`
+
+$DCCP -d PixelData "$infile" "$TMPROOT.header"
+$DCCP "$infile" "$TMPROOT.big.dcm" -endian big -vr explicit
+$DCTORAW -quiet "$TMPROOT.big.dcm" "$TMPROOT.big.raw"
+rm "$TMPROOT.big.dcm"
+$JPEG -iw "$width" -ih "$height" -p "$precision" $* "$TMPROOT.big.raw"	# creates $TMPROOT.big.raw.jpg
+rm "$TMPROOT.big.raw"
+$DCENCAP "$TMPROOT.header" "$TMPROOT.big.raw.jpg" -ts "$transfersyntax" -of "$outfile"
+rm "$TMPROOT.header" "$TMPROOT.big.raw.jpg"
+
+exit 0

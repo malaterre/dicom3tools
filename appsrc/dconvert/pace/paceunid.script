@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# replace identifying information in pace file
+
+# Usage: paceunid infile outfile
+
+if [ $# != 2 ]
+then
+	echo "Usage: `basename $0` infile outfile" 1>&2
+	exit 1
+fi
+
+#	256+38	12	SPATID
+#	256+54	12	SPATNAME
+#	256+144	32	SHOSP
+#	256+256	250	SDESC ...
+#	768+576	42	ISRDESC ...
+#	768+618	25	IIMDESC ...
+#	768+644	340	IEXDESC ...
+
+
+binpatch -v -r 294  12  "12345678" " " \
+            -r 310  12  "CITIZEN DOE" " " \
+            -r 400  32  "ST. ELSEWHERE" " " \
+            -r 512  250 "THIS IS A STUDY DESCRIPTION" " " \
+            -r 1344 42  "THIS IS A SERIES DESCRIPTION" " " \
+            -r 1386 25  "THIS IS AN IMAGE " " " \
+            -r 1412 340 "THIS IS AN EXTENSION DESCRIPTION" " " \
+         $1 $2
+
+exit $?

@@ -1,0 +1,7 @@
+all::	depend
+
+depend::	smptetxt.h
+
+smptetxt.h:	makesmptetxt
+	./makesmptetxt smpte_string > smptetxt.h
+

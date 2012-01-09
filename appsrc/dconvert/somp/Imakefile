@@ -1,0 +1,33 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTAPPDCONVERTEXTRAINCLUDES)
+
+SRCSTODC = somptodc.cc
+OBJSTODC = somptodc.o
+
+SRCSDUMP = sompdump.cc
+OBJSDUMP = sompdump.o
+
+CPLUSPLUS_SRCS = $(SRCSDUMP) $(SRCSTODC)
+OBJS = $(OBJSDUMP) $(OBJSTODC)
+
+AllTarget(somptodc)
+NormalCCProgramTarget(somptodc,$(OBJSTODC),$(TOP)/libsrc/lib/libdsomp.a $(PROJECTDCONVERTDEPLIBS),-ldsomp $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(somptodc,$(INSTALLBINDIR))
+InstallManPage(somptodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(sompdump)
+NormalCCProgramTarget(sompdump,$(OBJSDUMP),$(TOP)/libsrc/lib/libdsomp.a $(PROJECTDCONVERTDEPLIBS),-ldsomp $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(sompdump,$(INSTALLBINDIR))
+InstallManPage(sompdump,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./sompdump "" $(TOP)/images/somplus $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./somptodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/somplus $(TOP)/test/$(CURRENT_DIR) compare todc
+
+test.create::
+	@$(TOP)/support/testapp testlist ./sompdump "" $(TOP)/images/somplus $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./somptodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/somplus $(TOP)/test/$(CURRENT_DIR) create todc
+

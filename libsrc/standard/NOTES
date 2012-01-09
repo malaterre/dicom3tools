@@ -1,0 +1,120 @@
+20110529
+
+dcmtk format again
+
+^[(]([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]),"([^"]+)",([0-9A-Fa-f][0-9A-Fa-f])[)][\s]+([A-Z][A-Z])[\s]+([^\s]+)[\s]+([0-9n-]+)[\s]+.*$
+(\1,00\3) VERS="HOL"  VR="\4"   VM="\6"	Owner="\2"		Keyword="\5"			Name="\5"
+
+20110521
+
+# sort
+
+s/\([(][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f],[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][)]\)[ 	]*\(VERS="[^"]*"\)[ 	]*\(VR="[^"]*"\)[ 	]*\(VM="[^"]*"\)[ 	]*\(Owner="[^"]*"\)[ 	]*\(Keyword="[^"]*"\)[ 	]*\(Name="[^"]*"\)/\1	\2	\3	\4	\5	\6	\7/
+sed -f ../../support/canonicalizespacinginelmdict.sed | sort -t '       ' -k 5,5 -k 1,1
+
+([(][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f],[0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][)])[\s]+(VERS="[^"]*")[\s]+(VR="[^"]+")[\s]+(VM="[^"]+")[\s]+(Owner="[^"]+")[\s]+(Keyword="[^"]+")[\s]+(Name="[^"]+")
+\1	\2	\3	\4	\5	\6	\7
+
+# dcmtk to template
+[(]([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]),"(.*)",([0-9A-Fa-f][0-9A-Fa-f])[)][\s]+([A-Z][A-Z])[\s]+([^\s]+)[\s]+([0-9n-]+)
+(\1,00\3) VERS="DTK" VR="\4"   VM="\6"	Owner="\2"		Keyword="\5"					Name="\5"
+
+# use name as keyword
+Keyword="[?]"[\s]+Name="([^"]*)"
+Keyword="\1"	Name="\1"
+
+# replace spaces in keywords
+Keyword="([^ "]*) ([^"]*)"
+Keyword="\1\2"
+
+# Patterns for dcdump output to template:
+[(]0x([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]),0x[0-9A-Fa-f][0-9A-Fa-f]([0-9A-Fa-f][0-9A-Fa-f])[)][\s]+[?][\s]+VR=<([A-Z][A-Z])>[\s]+VL=.*$
+(\1,00\2) VERS="SSPI" VR="\3"   VM="1"	Owner="SIEMENS MR SDI 02"				Keyword="?"				Name="?"
+
+# Patterns for Siemens conformance statement layout to template:
+
+Keyword="([^"^ ]*) ([A-Z][^"]*)"
+Keyword="\1\2"
+
+[(]([0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]),([A-Z ]*),([0-9A-F][0-9A-F])[)] ([A-Za-z0-9 ]+) ([A-Z][A-Z]) ([0-9n-]+)
+(\1,00\3) VERS="SSPI" VR="\5"   VM="\6"	Owner="\2"		Keyword="\4"					Name="\4"
+
+
+
+
+
+
+19961111	Why is 0028,0036 LUTData only US not "US or SS" in elmdict.tpl ?
+
+From Elscint Passport Conformance Statement v2.04 23Jun95:
+
+
+	0601,0030 Owner="ELSCINT1"	Keyword="SurviewDirection"
+
+		Def terms: IN,OUT 
+
+	0601,0031 Owner="ELSCINT1"	Keyword="SurviewLength"
+
+		Units: mm
+
+	0601,0050 Owner="ELSCINT1"	Keyword="ImageViewType" 
+
+		Def terms:
+
+			S,PS,ES	surview (localized)
+			OB	oblique reformatting
+			CM	combined image
+			TL	time lapse CT
+			MF	multiformat
+			3D,3C	3D images
+			ST	stereotaxis
+			DT	dental
+			MR	MR images
+
+From DuPont Lynx Conformance Statement 16Aug95:
+
+	0019,0010 Owner="1.2.840.113681"	Keyword="CRImageParamsCommon"
+
+	0019,0011 Owner="1.2.840.113681"	Keyword="CRImageIPParamsSingle"
+
+	0019,0012 Owner="1.2.840.113681"	Keyword="CRImageIPParamsLeft"
+
+	0019,0013 Owner="1.2.840.113681"	Keyword="CRImageIPParamsRight"
+
+From Philips EasyGuide Neuro Conformance Statement:
+
+	0009,0004 Owner="SPI-P Release 1"	 Keyword="ImageDataConsistence"
+
+From GE Advantx DLX Conformance Statement:
+
+	0011,xx01 Owner="?"	Keyword="PatientDOB" (in free form)
+
+	0015,xx01 Owner="?"	Keyword="Stenos_calibr_ratio" (Calibration ratio for Stenosis Quantification expressed for a 1024 matrix)
+	0015,xx02 Owner="?"	Keyword="Stenos_magnification" (Calibration ratio for Length measurement)
+	0015,xx03 Owner="?"	Keyword="Cardiac_calibr_ratio" (Calibration ratio for VG quanitifcation)
+
+	0019,xx01 Owner="?"	Keyword="Angle_value_1" (of L arm in degrees)
+	0019,xx02 Owner="?"	Keyword="Angle_value_2" (of P arm in degrees)
+	0019,xx03 Owner="?"	Keyword="Angle_value_3" (of C arm in degrees)
+	0019,xx04 Owner="?"	Keyword="Angle_label_1" (L)
+	0019,xx05 Owner="?"	Keyword="Angle_label_2" (CAU,CRA)
+	0019,xx06 Owner="?"	Keyword="Angle_label_3" (LAO,RAO)
+	0019,xx07 Owner="?"	Keyword="Adx_procedure_name" (free text)
+	0019,xx08 Owner="?"	Keyword="Adx_exam_name" (free text)
+	0019,xx09 Owner="?"	Keyword="Adx_patient_size" (LOW MEDIUM ADULT)
+	0019,xx0A Owner="?"	Keyword="Adx_Record_View" (1=frontal;2=lateral;3=biplane)
+	0019,xx10 Owner="?"	Keyword="Adx_injector delay" (in 1/10th secs)
+	0019,xx11 Owner="?"	Keyword="Adx_auto_inject" (1 if yes, 0 if no)
+	0019,xx14 Owner="?"	Keyword="Adx_acq_mode" (0,1 vascular;2..7 cardiac;8..13 dsa stepping;14..19,26 bolus chasing;20..25 HSS acquisition)
+	0019,xx15 Owner="?"	Keyword="Adx_camera_rotation_enable" (0..3 disabled; 4..7 enabled)
+	0019,xx16 Owner="?"	Keyword="Adx_reverse_sweep" (0,4 none;1,5 vertical; 2,6 horiz ; 3,7 both)
+	0019,xx17 Owner="?"	Keyword="Cur_spatial_filter_strength" (in free form)
+	0019,xx18 Owner="?"	Keyword="Zoom_factor" (1,2 or 4) 
+	0019,xx19 Owner="?"	Keyword="X_zoom" (X center)
+	0019,xx1A Owner="?"	Keyword="Y_zoom" (Y center)
+	0019,xx1B Owner="?"	Keyword="Adx_focus" (focus on frontal plane)
+	0019,xx1C Owner="?"	Keyword="Adx_dose" (0,1,2,3 for dose A,B,C,D)
+	0019,xx1D Owner="?"	Keyword="Side_mark" (0-6)
+	0019,xx1E Owner="?"	Keyword="Percentage_landsape" (Presentage of mask applied)
+	0019,xx1F Owner="?"	Keyword="Adx_exposure_duration" (ms)
+

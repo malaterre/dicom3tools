@@ -1,0 +1,159 @@
+The file that describes the public interface:
+
+	"xxxx.h"
+		class XXXX_Conversion {
+			XXXX_Conversion(istream &i,ostream &e);
+			virtual ~XXXX_Conversion();
+			bool dump(ostream &out);
+			bool convertAll(AttributeList *list,TransferSyntax *transfersyntax);
+			bool convertHeader(AttributeList *list);
+			bool convertPixelData(AttributeList *list,TransferSyntax *transfersyntax);
+		};
+
+	NB. The Imakefile is set up to install this file in the main include area
+	whenever on a "make".
+
+Files that are usually left alone (the "glue" between headers, classes, etc.):
+
+	"xxxx.cc"
+
+		XXXX_Conversion::XXXX_Conversion(istream &i,ostream &e);
+		XXXX_Conversion::~XXXX_Conversion();
+
+	"xxxxcl.h"
+
+		class XXXX_Header_BothClass  : public XXXX_HeaderClass
+		{
+		public:
+			XXXX_Header_BothClass(istream *ist) : XXXX_HeaderClass(ist) {}
+			void Dump(TextOutputStream *log);
+			void ToDicom_Template   (AttributeList *list);
+			void ToDicom_ManualMisc (AttributeList *list);
+			void ToDicom_ManualPlane(AttributeList *list);
+			void ToDicom_ManualDates(AttributeList *list);
+		};
+
+	"xxxxconv.cc"
+
+		#include "xxxxconv.h"
+
+	"xxxxdc.c"
+
+		bool XXXX_Conversion::convertHeader(AttributeList *list);
+		bool XXXX_Conversion::convertPixelData(AttributeList *list,TransferSyntax *transfersyntax);
+		bool XXXX_Conversion::convertAll(AttributeList *list,TransferSyntax *transfersyntax);
+
+	"xxxxdc.h"
+
+	"xxxxdmp.cc"
+
+		bool XXXX_Conversion::dump(ostream &o);
+
+	"xxxxdmp.h"
+
+	"xxxxhdrc.cc"
+
+		#include "xxxxhdrc.h"
+
+Files that definitely need to be tailored for each format:
+
+	"xxxx.tpl"
+
+		The template "describing" the format for header generation
+
+	"xxxxmdt.cc"
+
+		void XXXX_Header_BothClass::ToDicom_ManualDates(AttributeList *list);
+
+	"xxxxmmsc.cc"
+
+		void XXXX_Header_BothClass::ToDicom_ManualMisc(AttributeList *list);
+
+	"xxxxmpln.cc"
+
+		void XXXX_Header_BothClass::ToDicom_ManualPlane(AttributeList *list);
+
+	"xxxxptrs.h"
+
+		define offsets, pointers and values, both fixed, and dependent on previous fields
+
+	"xxxxsrc.h"
+
+		class XXXX_PixelDataSource : public SourceBase<Uint16> {
+		public:
+			XXXX_PixelDataSource(istream& i,long off,Uint16 r,Uint16 c) : SourceBase<Uint16>();
+			~XXXX_PixelDataSource();
+			size_t read(void);
+			const Uint16 *getBuffer(void);
+			size_t getBufferCount(void) const;
+			int good(void) const;
+		};
+
+Files that are automatically generated from xxxx.tpl:
+
+	"xxxxhdrp.h"
+
+		generated with role=headerpart
+
+		contains the detailed description of each format header
+		block class, eg.
+
+		class XXXX_HeaderClass_HDR1 {
+		public:
+			XXXX_HeaderClass_HDR1(istream *ist,size_t offset)
+		 		{ ReadProprietaryHeader(ist,offset,sizeof *this,(char *)this); }
+
+			Uint16_L 	FHENTRIES	; // at 0
+			Uint16_L 	FHCOUNT		; // at 2
+			...
+		};
+
+	"xxxxhdrw.h"
+
+		generated with role=wholeheader
+
+		contains the declaration of the top level class that contains instances
+		classes for each block of the header, eg.
+
+		class XXXX_HeaderClass
+		{
+		public:
+			XXXX_HeaderClass(istream *ist);
+
+			XXXX_HeaderClass_HDR1 *XXXX_HeaderInstance_HDR1;
+			XXXX_HeaderClass_HDR2 *XXXX_HeaderInstance_HDR2;
+			...
+		};
+
+
+	"xxxxhdrc.h"
+
+		generated with role=constructheader
+
+		contains the constructor for the top level class that instantiates
+		classes for each block of the header
+
+		XXXX_HeaderClass::XXXX_HeaderClass(istream *ist);
+
+	"xxxxconv.h"
+
+		generated with role=dicom
+
+		contains the code to generate DICOM attributes
+
+		void XXXX_Header_BothClass::ToDicom_Template(AttributeList *list);
+
+	"xxxxdmpf.h"
+		generated with role=dump
+
+		contains the code to dump a describtion of the file header content
+
+		void XXXX_Header_BothClass::Dump(TextOutputStream *log);
+
+Places to put special handling code:
+
+	if you need an "extra" header file for miscellaneous stuff, use "xxxxhdrm.h".
+
+	if you have special purpose code, then "xxxxhdrc.cc" is a good place to put
+	it, as normally all this file does is instantiate the "xxxxhdrc.h", but it
+	is always going to get loaded in any application using this library.

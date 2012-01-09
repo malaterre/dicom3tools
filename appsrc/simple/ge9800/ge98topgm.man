@@ -1,0 +1,35 @@
+.TH GE98TOPGM 1 "05 April 1998" "DICOM PS3" "DICOM PS3 - GE 9800 image to PGM file"
+.SH NAME
+ge98topgm \- ACR/NEMA DICOM PS3 ... DICOM PS3 - GE 9800 image to PGM file
+.SH SYNOPSIS
+.HP 10
+.B ge98topgm
+.B < " infile"
+.B > " outfile"
+.SH DESCRIPTION
+.LP
+.B ge98topgm
+reads the GE 9800 CT input file and copies the decompressed image
+pixel data to a PGM file after adding a PGM header.
+.SH OPTIONS
+The PGM output goes to standard out.
+Any error messages go to standard error.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR dctopnm(1) ,
+.BR pnmtodc(1) ,
+.BR rawtodc(1) ,
+.BR dctoraw(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

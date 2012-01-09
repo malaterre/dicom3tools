@@ -1,0 +1,44 @@
+.TH DCMVHIER 1 "14 August 2008" "DICOM PS3" "DICOM PS3 - Move DICOM files into hierarchy"
+.SH NAME
+dcmvhier.datedescnoid \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Move DICOM files into hierarchy
+.SH SYNOPSIS
+.HP 10
+.B dcmvhier.datedescnoid filename
+.SH DESCRIPTION
+.LP
+.B dcmvhier
+reads the named dicom or acr-nema input file and moves it into a directory
+hierarchy of the form "PatientName [PatientID]/StudyDate StudyTime/Series SeriesNumber [Series Description]/SOPInstanceUID.dcm", rooted at
+the current working directory. Any characters
+in the identifiers other than numbers, letters, underscore, hyphen and period
+are deleted before creating the path name. The files are moved, not copied,
+and renamed. If any of the necessary identifiers is missing the script aborts.
+If the directory hierarchy does not yet exist it is created, but if the image
+file name already exists in that directory, the script aborts (to avoid
+overwriting images not properly disamibiguated by the selected identifiers
+and characters).
+.SH OPTIONS
+.LP
+\ 
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+find . -type f -exec dcmvhier.datedescnoid '{}' ';'
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcmvhier(1),
+.BR dcmvhier.8only(1),
+.BR dcmvhier.uid(1),
+.BR dcmvhier.datedesc(1),
+.BR dcmvhier.all(1)
+.LP
+\ 
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

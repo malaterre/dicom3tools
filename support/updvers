@@ -1,0 +1,95 @@
+#!/bin/sh
+
+# recursively updates all files & directories in current directory
+
+# uses VERSION and COPYRIGHT files if present
+
+# creates or updates a single copyright line, as follows:
+
+# - all header file copyright descriptions
+#   - defined as any C/C++ comment line (/* or //)
+#     containing the word "copyright" followed
+#     by four digits
+
+# - all awk script comments (#)
+#     containing the word "copyright" followed
+#     by four digits
+
+# - all C/C++ programs static CopyrightIdentifier string
+
+if [ -f VERSION ]
+then
+	version=`head -1 <VERSION`
+else
+	version="0.00"
+fi
+
+if [ -f COPYRIGHT ]
+then
+	copyright=`head -1 <COPYRIGHT`
+else
+	copyright='Copyright (C) 1995. David A. Clunie. All rights reserved.'
+fi
+
+date=`date +%y/%m/%d`
+
+idstring="$version $date $copyright"
+
+dodirectory() {
+	echo Directory `pwd`
+	for i in $*
+	do
+		if [ -d $i ]
+		then
+			(cd $i; dodirectory *)
+		fi
+	done
+
+	for i in *.h
+	do
+		if [ -f $i ]
+		then
+			echo Updating $i
+			rm -f $i.BAK
+			mv $i $i.BAK
+			echo '/*' "$i $idstring" '*/' >>$i
+			grep -vi \
+			  '^[ 	]*/[*/].*copyright.*[0-9][0-9][0-9[0-9]' \
+				<$i.BAK >>$i
+			if [ -f $i ] ; then rm -f $i.BAK ; fi
+		fi
+	done
+
+	for i in *.awk
+	do
+		if [ -f $i ]
+		then
+			echo Updating $i
+			rm -f $i.BAK
+			mv $i $i.BAK
+			echo '# ' "$i $idstring" >>$i
+			grep -vi \
+			  '^[ 	]*#.*copyright.*[0-9][0-9][0-9[0-9]' \
+				<$i.BAK >>$i
+			if [ -f $i ] ; then rm -f $i.BAK ; fi
+		fi
+	done
+
+	for i in *.c *.cc *.C *.CC *.cp *.cpp
+	do
+		if [ -f $i ]
+		then
+			echo Updating $i
+			rm -f $i.BAK
+			mv $i $i.BAK
+			echo "static char *CopyrightIdentifier(void) {" \
+				"return \"@(#)$i $idstring\"; }" >>$i
+			grep -v \
+				'^[ 	]*static char [*]*CopyrightIdentifier' \
+				<$i.BAK >>$i
+			if [ -f $i ] ; then rm -f $i.BAK ; fi
+		fi
+	done
+}
+
+dodirectory appsrc include libsrc scripts

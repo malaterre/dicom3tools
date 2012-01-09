@@ -1,0 +1,30 @@
+.TH DCDEFLATE 1 "17 Dec 2000" "DICOM PS3" "DICOM PS3 - Create deflated DICOM file"
+.SH NAME
+dcdeflate \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Create deflated DICOM file
+.SH SYNOPSIS
+.HP 10
+.B dcdeflate "infile" "outfile"
+.SH DESCRIPTION
+.LP
+.B dcdeflate
+reads the named dicom or acr-nema input file and copies the information and
+pixel data to a new dicom file, with the dataset compressed using the deflate
+transfer syntax, and a meta information header prepended.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+There are no options.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcinflate(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

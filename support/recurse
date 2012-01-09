@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# recursively executes command $1 on current and directories
+
+commandtodo="$1"
+
+dodirectory() {
+	# echo Directory `pwd`
+	for i in *
+	do
+		if [ -d $i ]
+		then
+			(cd $i; dodirectory)
+		fi
+	done
+
+	sh -c "$commandtodo"
+}
+
+dodirectory

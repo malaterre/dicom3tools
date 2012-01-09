@@ -1,0 +1,45 @@
+.TH DCMVHIER 1 "14 August 2008" "DICOM PS3" "DICOM PS3 - Move DICOM files into hierarchy by UID"
+.SH NAME
+dcmvhier \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Move DICOM files into hierarchy by UID
+.SH SYNOPSIS
+.HP 10
+.B dcmvhier.uid filelist
+.SH DESCRIPTION
+.LP
+.B dcmvhier.uid
+reads the named dicom or acr-nema input files and moves them into a directory
+hierarchy of the form PatientID/StudyInstanceUID/SeriesInstanceUID/ImageNumber, rooted at
+the current working directory. Any characters
+in the identifiers other than numbers, letters, underscore, hyphen and period
+are deleted before creating the path name. The files are moved, not copied,
+and renamed. If any of the necessary identifiers is missing the script aborts.
+If the directory hierarchy does not yet exist it is created, but if the image
+file name already exists in that directory, the script aborts (to avoid
+overwriting images not properly disamibiguated by the selected identifiers
+and characters).
+.SH OPTIONS
+.LP
+\ 
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.LP
+.BR dcmvhier(1),
+.BR dcmvhier.8only(1),
+.BR dcmvhier.datedesc(1),
+.BR dcmvhier.datedescnoid(1),
+.BR dcmvhier.all(1)
+.LP
+\ 
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+No effort is made to check that other patient/study/series level attributes (such
+as IDs) are the same values within all images of the created patient/study/series
+directories.

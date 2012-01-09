@@ -1,0 +1,159 @@
+The file that describes the public interface:
+
+	"gaw.h"
+		class GAW_Conversion {
+			GAW_Conversion(istream &i,ostream &e);
+			virtual ~GAW_Conversion();
+			bool dump(ostream &out);
+			bool convertAll(AttributeList *list,TransferSyntax *transfersyntax);
+			bool convertHeader(AttributeList *list);
+			bool convertPixelData(AttributeList *list,TransferSyntax *transfersyntax);
+		};
+
+	NB. The Imakefile is set up to install this file in the main include area
+	whenever on a "make".
+
+Files that are usually left alone (the "glue" between headers, classes, etc.):
+
+	"gaw.cc"
+
+		GAW_Conversion::GAW_Conversion(istream &i,ostream &e);
+		GAW_Conversion::~GAW_Conversion();
+
+	"gawcl.h"
+
+		class GAW_Header_BothClass  : public GAW_HeaderClass
+		{
+		public:
+			GAW_Header_BothClass(istream *ist) : GAW_HeaderClass(ist) {}
+			void Dump(TextOutputStream *log);
+			void ToDicom_Template   (AttributeList *list);
+			void ToDicom_ManualMisc (AttributeList *list);
+			void ToDicom_ManualPlane(AttributeList *list);
+			void ToDicom_ManualDates(AttributeList *list);
+		};
+
+	"gawconv.cc"
+
+		#include "gawconv.h"
+
+	"gawdc.c"
+
+		bool GAW_Conversion::convertHeader(AttributeList *list);
+		bool GAW_Conversion::convertPixelData(AttributeList *list,TransferSyntax *transfersyntax);
+		bool GAW_Conversion::convertAll(AttributeList *list,TransferSyntax *transfersyntax);
+
+	"gawdc.h"
+
+	"gawdmp.cc"
+
+		bool GAW_Conversion::dump(ostream &o);
+
+	"gawdmp.h"
+
+	"gawhdrc.cc"
+
+		#include "gawhdrc.h"
+
+Files that definitely need to be tailored for each format:
+
+	"gaw.tpl"
+
+		The template "describing" the format for header gaweration
+
+	"gawmdt.cc"
+
+		void GAW_Header_BothClass::ToDicom_ManualDates(AttributeList *list);
+
+	"gawmmsc.cc"
+
+		void GAW_Header_BothClass::ToDicom_ManualMisc(AttributeList *list);
+
+	"gawmpln.cc"
+
+		void GAW_Header_BothClass::ToDicom_ManualPlane(AttributeList *list);
+
+	"gawptrs.h"
+
+		define offsets, pointers and values, both fixed, and dependent on previous fields
+
+	"gawsrc.h"
+
+		class GAW_PixelDataSource : public SourceBase<Uint16> {
+		public:
+			GAW_PixelDataSource(istream& i,long off,Uint16 r,Uint16 c) : SourceBase<Uint16>();
+			~GAW_PixelDataSource();
+			size_t read(void);
+			const Uint16 *getBuffer(void);
+			size_t getBufferCount(void) const;
+			int good(void) const;
+		};
+
+Files that are automatically gawerated from gaw.tpl:
+
+	"gawhdrp.h"
+
+		gawerated with role=headerpart
+
+		contains the detailed description of each format header
+		block class, eg.
+
+		class GAW_HeaderClass_HDR1 {
+		public:
+			GAW_HeaderClass_HDR1(istream *ist,size_t offset)
+		 		{ ReadProprietaryHeader(ist,offset,sizeof *this,(char *)this); }
+
+			Uint16_L 	FHENTRIES	; // at 0
+			Uint16_L 	FHCOUNT		; // at 2
+			...
+		};
+
+	"gawhdrw.h"
+
+		gawerated with role=wholeheader
+
+		contains the declaration of the top level class that contains instances
+		classes for each block of the header, eg.
+
+		class GAW_HeaderClass
+		{
+		public:
+			GAW_HeaderClass(istream *ist);
+
+			GAW_HeaderClass_HDR1 *GAW_HeaderInstance_HDR1;
+			GAW_HeaderClass_HDR2 *GAW_HeaderInstance_HDR2;
+			...
+		};
+
+
+	"gawhdrc.h"
+
+		gawerated with role=constructheader
+
+		contains the constructor for the top level class that instantiates
+		classes for each block of the header
+
+		GAW_HeaderClass::GAW_HeaderClass(istream *ist);
+
+	"gawconv.h"
+
+		gawerated with role=dicom
+
+		contains the code to gawerate DICOM attributes
+
+		void GAW_Header_BothClass::ToDicom_Template(AttributeList *list);
+
+	"gawdmpf.h"
+		gawerated with role=dump
+
+		contains the code to dump a describtion of the file header content
+
+		void GAW_Header_BothClass::Dump(TextOutputStream *log);
+
+Places to put special handling code:
+
+	if you need an "extra" header file for miscellaneous stuff, use "gawhdrm.h".
+
+	if you have special purpose code, then "gawhdrc.cc" is a good place to put
+	it, as normally all this file does is instantiate the "gawhdrc.h", but it
+	is always going to get loaded in any application using this library.

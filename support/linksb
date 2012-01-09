@@ -1,0 +1,32 @@
+#!/bin/sh
+
+sbdir=$1
+shift
+
+if [ ! -d $sbdir ]; then mkdir $sbdir; fi
+
+cd $sbdir
+
+for subdir in NewRoot Refd
+do
+	if [ ! -d $subdir ]; then mkdir $subdir; fi
+	for dir in $*
+	do
+		echo "Checking $dir for $subdir"
+		for file in `find ../$dir -name '*.bd' -print | grep $subdir`
+		do
+			if [ -f "$file" ]
+			then
+				cd $subdir
+				echo $file
+				if [ ! -f `basename $file` ]
+				then
+					ln -s ../$file
+				fi
+				cd ..
+			fi
+		done
+	done
+done
+
+exit 0

@@ -1,0 +1,31 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBGENERICEXTRAINCLUDES)
+
+SRCSTOPGM = ge98topgm.cc ge98id.cc
+OBJSTOPGM = ge98topgm.o  ge98id.o
+
+CPLUSPLUS_SRCS = $(SRCSTOPGM)
+OBJS = $(OBJSTOPGM)
+
+AllTarget(ge98topgm)
+
+NormalCCProgramTarget(ge98topgm,ge98topgm.o,NullParameter,NullParameter,NullParameter)
+
+InstallProgram(ge98topgm,$(INSTALLBINDIR))
+InstallManPage(ge98topgm,$(INSTALLMANDIR)/man1)
+
+AllTarget(ge98id)
+
+NormalCCProgramTarget(ge98id,ge98id.o,NullParameter,NullParameter,NullParameter)
+
+InstallProgram(ge98id,$(INSTALLBINDIR))
+InstallManPage(ge98id,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./ge98topgm "" $(TOP)/images/ge9800 $(TOP)/test/$(CURRENT_DIR) compare filter
+
+test.create::
+	@$(TOP)/support/testapp testlist ./ge98topgm "" $(TOP)/images/ge9800 $(TOP)/test/$(CURRENT_DIR) create filter

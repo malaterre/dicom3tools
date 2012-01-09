@@ -1,0 +1,17 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCDISPEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = lutclass.cc lutextr.cc \
+		 rdargb.cc rdcmyk.cc rdgray.cc rdhsv.cc \
+		 rdimage.cc rdindex.cc rdrgb.cc \
+		 usegray.cc useindex.cc usepal.cc usetrue.cc
+
+OBJS =           lutclass.o  lutextr.o  \
+		 rdargb.o  rdcmyk.o  rdgray.o  rdhsv.o  \
+		 rdimage.o  rdindex.o  rdrgb.o  \
+		 usegray.o  useindex.o  usepal.o  usetrue.o 
+
+LibraryTarget($(PROJECTLIBDIR)/lib$(PROJECTDCDISPLIBNAME).a,$(OBJS))
+
+DependCCTarget()

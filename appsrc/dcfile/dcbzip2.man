@@ -1,0 +1,30 @@
+.TH dcbzip2 1 "23 Feb 2003" "DICOM PS3" "DICOM PS3 - Create bzip2 DICOM file"
+.SH NAME
+dcbzip2 \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Create bzip2 DICOM file
+.SH SYNOPSIS
+.HP 10
+.B dcbzip2 "infile" "outfile"
+.SH DESCRIPTION
+.LP
+.B dcbzip2
+reads the named dicom or acr-nema input file and copies the information and
+pixel data to a new dicom file, with the dataset compressed using the bzip2
+transfer syntax, and a meta information header prepended.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+There are no options.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcunbzip2(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

@@ -1,0 +1,90 @@
+     1	cd ..
+     2	ls
+     3	more mailbox*
+     4	ls
+     5	ls -a clunie
+     6	ls -a /home/clunie | more
+     7	cat /home/clunie/.login
+     8	openwin
+     9	printenv
+    10	echo $PATH
+    11	ls /
+    12	ls /usr
+    13	ls /usr/openwin
+    14	ls -a
+    15	ls -a | more
+    16	man cde
+    17	ls /usr/openwin
+    18	ls /usr/openwin/bin
+    19	ls
+    20	man useraddd
+    21	man useradd
+    22	cat /etc/skel
+    23	ls /etc/skel
+    24	mv .cshrc gsao.cshrc
+    25	mv .login gsao.login
+    26	mv .profile gsao.profile
+    27	cp /etc/skel/local.cshrc .cshrc
+    28	cp /etc/skel/local.login .login
+    29	cp /etc/skel/local.profile .profile
+    30	logout
+    31	make rawnjl2
+    32	make rawnjl2
+    33	make rawnjl2
+    34	make rawnjl2
+    35	make rawnjl2
+    36	make rawnjl2
+    37	make rawnjl2
+    38	rawnjl2 -crap
+    39	./rawnjl2 -rows 256 -columns 256 -depth 8 -input-endian little /tmp/crap.raw /tmp/crap.raw
+    40	make rawnjl2
+    41	history
+    42	./rawnjl2 -rows 256 -columns 256 -depth 8 -input-endian little /tmp/crap.raw /tmp/crap.raw
+    43	make rawnjl2
+    44	history
+    45	./rawnjl2 -rows 256 -columns 256 -depth 8 -input-endian little /tmp/crap.raw /tmp/crap.raw
+    46	ls -l /tmp/crap.raw
+    47	./rawnjl2 -rows 256 -columns 256 -depth 8 -input-endian little /tmp/crap.raw /tmp/crap.raw
+    48	MAXVAL = 255
+    49	./rawnjl2 -rows 256 -columns 256 -depth 8 -input-endian little /tmp/crap.raw /tmp/crap.myls
+    50	ls -l /tmp/crap*
+    51	history
+    52	./rawnjl2 -rows 256 -columns 256 -depth 8 -input-endian little /tmp/crap.raw /tmp/crap.myls
+    53	50 ls -l /tmp/crap*
+    54	history
+    55	./rawnjl2 -d -rows 256 -columns 256 -depth 8 -input-endian little /tmp/crap.myls /tmp/crap.cmp
+    56	./rawnjl2 -d -rows 256 -columns 256 -depth 8 /tmp/crap.myls /tmp/crap.cmp
+    57	./rawnjl2 -d -rows 256 -columns 256 -depth 8 -output-endian little /tmp/crap.myls /tmp/crap.cmp
+    58	ls -l /tmp/crap*
+    59	cmp /tmp/crap.raw /tmp/crap.cmp
+    60	od -x /tmp/crap.raw | head 2
+    61	od -x /tmp/crap.raw | head -2
+    62	od -x /tmp/crap.cmp | head -2
+    63	cat > /tmp/crap.raw
+    64	mv /tmp/crap.raw /tmp/crap.pgm
+    65	pnmtoraw /tmp/crap.pgm /tmp/crap.raw
+    66	pnmnoraw /tmp/crap.pgm > /tmp/crap.pgmnoraw
+    67	pnmscale 1 /tmp/crap.pgm > /tmp/crap.pgmraw
+    68	textedit /tmp/crap.pgm &
+    69	pnmscale 1 /tmp/crap.pgm > /tmp/crap.pgmraw
+    70	cat /tmp/crap.pgmraw
+    71	pnmtoraw /tmp/crap.pgm /tmp/crap.raw
+    72	od -x pnmtoraw /tmp/crap.pgmraw /tmp/crap.raw
+    73	history
+    74	pnmtoraw /tmp/crap.pgmraw /tmp/crap.raw
+    75	ls -l /tmp/crap.raw
+    76	./rawnjl2 -rows 4 -columns 4 -depth 8 -input-endian little /tmp/crap.raw /tmp/crap.myls
+    77	./rawnjl2 -d -rows 4 -columns 4 -depth 8 -output-endian little /tmp/crap.myls /tmp/crap.cmp
+    78	cmp /tmp/crap.raw /tmp/crap.cmp
+    79	od -x /tmp/crap.raw
+    80	od -x /tmp/crap.cmp
+    81	0d -x /tmp/crap.myls
+    82	od -x /tmp/crap.myls
+    83	cp /tmp/crap.raw njltest.raw
+    84	make rawnjl2
+    85	make rawnjl2
+    86	history
+    87	./rawnjl2 -rows 4 -columns 4 -depth 8 -input-endian little /tmp/crap.raw /tmp/crap.myls
+    88	./rawnjl2 -d -rows 4 -columns 4 -depth 8 -output-endian little /tmp/crap.myls /tmp/crap.cmp
+    89	history
+    90	history > njlwork.history.tmp

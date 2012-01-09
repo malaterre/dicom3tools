@@ -1,0 +1,542 @@
+Last modified: Sun Feb  6 14:20:49 EST 2011
+
+Quick start:
+
+	Edit config/site.p-def to set your UID root (a la UseClunieID, to be
+	selected with a UseXXXXID define on the imake command line).
+	
+	NB. Don't ever use any UseClunie*ID or your instances
+	will conflict with mine !
+
+	./Configure
+	setenv IMAKEINCLUDE -I./config		# only needed for suns
+	imake -I./config -DInstallInTopDir -DUseXXXXID
+	make World
+	make install		# into ./bin
+	make install.man	# into ./man
+
+Assuming that imake, makedepend, and mkdirhier (not to mention the C and C++
+compilers) are in your PATH, and that your system isn't too far off then:
+
+	1. ./Configure
+
+	   This checks for certain things and makes config/generic.cf
+	   which is subsequently used in the imake process.
+
+	   It chooses gnu tools and compilers by preference over native
+	   tools or compilers, if they are in the current execution path,
+	   and it also tries to figure out the appropriate include paths
+	   to feed to later makedepend's. If you want to suppress the
+	   choice of gnu over the native compiler and both are in the
+	   PATH, say "notgcc" as an argument to ./Configure.
+
+	   Configure uses whatever is the first compiler found in
+	   the PATH, so be sure to set the path to find CC, cc and/or
+	   acc.
+
+	   If Configure fails with a syntax error, you may have a wierd
+	   /bin/sh ... try changing the first line of config/Configure
+	   to "#!/bin/sh5" (eg. under Ultrix).
+
+	2. Make the (absent) top level Makefile, either:
+
+		imake -I./config
+
+	   Note that -I./config is VERY important, otherwise imake
+	   will go looking for "standard" config files in "standard"
+	   places which will not work. Note that the version of imake
+	   supplied with OpenWindows ALWAYS looks in standard places
+	   first unless you define an IMAKEINCLUDE environment variable.
+	   Set it to "-I./config" and it will work. Symptoms of this
+	   problem are messages like "Can't find `Makefile.ini'".
+
+	   The default is to install things in /usr/local/bin and man. If
+	   you imake with -DInstallInTopDir, then they go into ./bin, etc.:
+
+		imake -I./config -DInstallInTopDir
+
+	   One can specify a UID root for your organization by adding
+           "-DDefaultUIDRoot=n.n.nnnn.nnnnn" to the imake command, eg.:
+
+		imake -I./config -DDefaultUIDRoot=1.2.840.99999
+
+           though it is better to properly configure all identification
+           related stuff in config/site.def-p.
+
+	   One can specify the level of optimization (default is -O) by
+           "-DOptimizeLevel=-On" where n is the level (from 1 to 3 for
+           g++, for 1 to 4 for SunPro) to the imake command, eg.:
+
+		imake -I./config -DOptimizeLevel=-O3
+
+           Note that serious optimization requires seriously large
+           amounts of memory/swap space, and temporary file space.
+           The entire package has been compiled with maximum levels
+           of optimization turned on without exposing any wierd bugs.
+	   If you keep running out of memory try -O0.
+
+	   One can specify an alternative SunPro temporary path by adding
+           "-DTmpPath=/path" to the imake command, eg.:
+
+		imake -I./config -DTmpPath=/usr1/tmp
+
+           (This does not work for g++ which looks in the environment
+           variable TMPDIR instead).
+
+	   Check the man pages on your c and CC compilers to determine
+	   which is more appropriate.
+
+	   Obviously imake needs to be found in PATH. You may need to
+	   add "/usr/bin/X11/imake". Else see "Imake" below.
+
+	2. Make everything (subdirectory makefiles, clean, depend, all):
+
+		make World
+
+	3. To install the binaries in ./bin or /usr/local/bin:
+
+		make install
+
+	4. To test the conversion routines, and some of the dicom and
+	   miscellaneous utilities, if you have the sample images, which
+	   are distributed separately, having set the PATH, correctly, do:
+
+		make test
+
+	   This takes ages, does lots of repetitive things, compares
+	   binary output, and times the commands. To see what is being
+	   done look in scripts/testconv.sh.
+
+	5. To install what manuals there are in ./man or /usr/local/man:
+
+		make install.man
+
+	6. If you are root and hence can update whatis database:
+
+		make install.whatis
+
+If you change your mind about one/split you need to go all the way back
+to step 1, as the Makefiles are created differently. Other useful targets
+are:
+
+	make Makefile		- makes the Makefile from Imakefile
+	make Makefiles		- makes the Makefiles in sub-directories
+	make depend		- does as it usually does
+	make			- makes all the libraries and applications
+	make all		- same
+	make library		- makes just the libraries
+	make clean		- cleans all directories
+	make archive		- for posterity, includes cleaning
+	make update.version	- before posterity
+
+Debugging Flags
+
+Debugging flags for both the c and c++ compilation steps are defined
+and recursively passed down the subdirectory hierarchy. These also
+override any optimization options set.
+
+For example, to compile with no debugging or optimization:
+
+	make "C_DEBUGFLAGS=" "CPLUSPLUS_DEBUGFLAGS="
+
+To compile with the "-g" option to include debugging information:
+
+	make "C_DEBUGFLAGS=-g" "CPLUSPLUS_DEBUGFLAGS=-g"
+
+To compile with the "-g" option and the "-pg" option to include
+code to write a gmon.out file for gprof call graph profiling:
+
+	make "C_DEBUGFLAGS=-g -pg" "CPLUSPLUS_DEBUGFLAGS=-g -pg"
+
+This is done at make time, and an imake/make Makefiles cycle is
+not required.
+
+Imake.
+
+(See also Darwin (Mac OS X) Stuff).
+
+If you don't have imake, I suggest you get it from Paul DuBois's archive
+(he has also hacked up the X11 files to produce "extensible" imake
+configurations, and I have culled them down further). Everything for
+this project is in config ... you don't have to worry about moving things
+to /usr/lib/X11/config ... I hate that. You just need to supply the
+programs. I don't use imboot, use "imake -I./config" instead. Everything
+here is based on Paul's EA version of the config files.
+
+Everything you need for this project is available at:
+
+	ftp://ftp.uu.net/published/oreilly/nutshell/imake/imake.tar.Z
+
+It is also probably at the site where you found dicom3tools.
+
+Get and read the book too ... it is one of the best Nutshell handbooks I
+have seen.
+
+One of the nicest thing about using imake is the ability to generate
+Makefiles in multiple sub-directories, which contain all the right paths
+and definitions without them needing to be passed by "parent" makes, so
+one can happily work and change things in each sub-directory issuing
+"local" make commands -  really speeds up the edit/compile/test cycle.
+
+C++ features required.
+
+Templates are used. Exceptions are not.
+
+Different template instantiation mechanisms were driving me crazy so now
+declarations are not separated from definitions ... all in one header file.
+This may be inefficient but it avoids maintaining different #pragma's and
+file name/directory conventions for different compilers (yuck).
+
+This may change now that gnu g++ (almost) supports template repositories,
+and hopefully this might avoid the current code bloat.
+
+With some compilers if things are missing at link time because certain
+templates weren't instantiated at compile time (ie. statically into
+the object), you may need to use a compile option (eg. -pto for SC 4.0).
+
+The old (pre-ANSI C++ standard) strstream stuff is used; this means that
+g++ version 2, not 3, is required, since version 3 does not support the
+older headers. The Configure script looks for this, and usually both
+compilers are available, but if not, you may need to manually install
+a gcc package (such as 2.95).
+
+Porting.
+
+Porting to another unix version or site should be painless, as there are
+no vendor specific features used. The config really only applies to the
+tools used to build and compile the toolkit, not to any of the toolkit
+behaviour.
+
+All the site specific stuff (paths et al.) should be in site.def (shared 
+between projects) and the stuff specific to this project should be in
+site.p-def, and so on. These rarely need to be changed however.
+
+There are no specific operating system or compiler targets specified
+in Imake.tmpl ... it assumes that generic.cf has been created by the
+Configure script.
+
+To port, it is easiest to try running with an empty generic.cf, using
+the defaults in Imake.tmpl, and see what fails. Examine the shell script
+config/Configure to get an idea of what things you might need to replace,
+and build a manual generic.cf. When you have it working, send it to me,
+or fold it back into config/Configure and send that to me, and I will
+include it in the next release (dclunie@dclunie.com).
+
+It is best not to go editing the other files such as rules and so on, 
+unless absolutely necessary, as the principle is to define everything 
+local early on to override the default definitions that come later.
+
+NEVER edit a Makefile by hand ... these will get overwritten and your
+changes will be lost.
+
+The X stuff has been tested under OpenWindows 3 only but is so primitive
+it should run on any version of X11R4 and above at least.
+
+Missing Prototypes.
+
+SunOS and Solaris do not include declarations for a host of functions,
+particularly in the network related code, and using g++ in these
+environments, despite fixincludes, means that no prototypes are
+available. Accordingly -DNEEDMISSINGPROTOTYPES brings these in, and
+probably isn't necessary in any other environment, and will create
+conflicts if it is used when correct prototypes are available.
+
+GNU libg++ and makedepend wierdness.
+
+Some versions of makedepend that are shipped with X11 don't recognize
+the #if construct ... if you are using gcc then this shows up as
+complaints like "Make:  Don't know how to make _IO_config.h." because
+the makedepend has ignored an #if 1/#else/#include "_IO_config.h"/#endif
+that occurs in g++-include/libio.h, and created a dependency on the
+_IO_config.h file that of course doesn't exist.
+
+Solutions are manually edit g++-include/libio.h or get a real
+makedepend, such as with the imake package.
+
+Sunpro SC wierdness.
+
+Configure will use the first CC and cc or acc compilers it finds
+in the path, and check for versions of SC to create make depend
+include paths. These will be relative to LANGHOME so don't forget
+to set itif using Sun SC.
+
+You also may need LD_LIBRARY_PATH set to the Sun SC lib directory
+at run time.
+
+At compile time for later versions you may need to set LM_LICENSE_FILE.
+
+For example:
+
+	setenv LANGHOME /usr/3p/SUNWspro
+	setenv PATH ${LANGHOME}/SC4.2/bin:${PATH}
+	setenv LM_LICENSE_FILE ${LANGHOME}/license_dir/sunpro.lic
+	setenv LD_LIBRARY_PATH ${LANGHOME}/SC4.2/lib
+
+More recent versions of SunPro have not been tested.
+
+Solaris Notes.
+
+You can find makedepend and imake in /usr/openwin/bin.
+
+You can find make in /usr/ccs/bin.
+
+The Solaris nawk works fine ... you don't need gawk.
+
+These all need to be in your PATH.
+
+Solaris and GNU Binaries Wierdness.
+
+You can get pre-packaged binaries for Solaris from:
+
+	http://metalab.unc.edu/pub/packages/solaris/sparc/
+
+amongst other places.
+
+These are installed using the Solaris pkgadd mechanism.
+
+Unfortunately older gcc packages don't know about the libg++
+package, so dctool Configure doesn't pickup the include and
+library paths. Newer releases (libstdc++) should be better.
+
+You may need to manually link /opt/FSFlibg++/lib/g++-include into
+/opt/GCC2721/lib, for example, if you get errors from makedepend
+about not finding c++ header files.
+
+You probably also need to link /opt/FSFlibg++/lib/lib*.a into
+/opt/GCC2721/lib/gcc-lib/sparc-sun-solaris2.5/2.7.2.1, or deal
+with the problem in site.def, if you get errors at link time
+about not finding g++ or stdc++, etc.
+
+The package has compiled OK under Solaris releases from 2.5 up
+to Solaris 8 Early Access, the latter both on Sparc and X86.
+
+X86 Stuff.
+
+A few of the tools, notably binpatch, are big-endian byte order
+dependent and won't work on Solaris X86 or Linux on X86.
+
+Linux Stuff.
+
+Recent "distributions" of Linux should have no problem compiling
+the tools. The Configure script should set up everything required.
+earlier versions of egcs were a problem, but no longer seem to be.
+
+Finding the X11 static libraries can be painful and Configure does
+its best; under FC5 they have stopped distributing the static
+library libX11.a in the RPM, so one has to build it oneself,
+which is a pain (but described by Michael Peters in a thread on
+the subject at "http://forums.fedoraforum.org/showthread.php?t=108049")
+that I adapt here:
+
+  wget http://download.fedora.redhat.com/pub/fedora/linux/core/5/source/SRPMS/libX11-1.0.0-3.src.rpm
+  sudo yum install fedora-rpmdevtools
+  fedora-buildrpmtree
+  rpm -i libX11-1.0.0-3.src.rpm
+  vi rpmbuild/SPECS/libX11.spec
+    ... change Release from 3 to 3.1
+    ... change %define with_static from 0 to 1
+  rpmbuild -bb rpmbuild/SPECS/libX11.spec
+  sudo rpm -U rpmbuild/RPMS/x86_64/libX11*.rpm
+  ls -l /usr/lib64/libX11.a
+
+  wget http://download.fedora.redhat.com/pub/fedora/linux/core/5/source/SRPMS/libXext-1.0.0-3.2.src.rpm
+  rpm -i libXext-1.0.0-3.2.src.rpm
+  vi rpmbuild/SPECS/libXext.spec
+    ... change Release from 3.2 to 3.3
+    ... change %define with_static from 0 to 1
+  rpmbuild -bb rpmbuild/SPECS/libXext.spec
+  sudo rpm -U rpmbuild/RPMS/x86_64/libXext*.rpm
+  ls -l /usr/lib64/libXext.a
+
+Irix Stuff.
+
+It has been a long time since the package was compiled under any
+version of Irix using the SGI compilers ... it may no longer compile.
+I have never tried it with gcc and the SGI development libraries.
+
+OSF Stuff.
+
+It has been a long time since it was compiled on a Dec Alpha.
+
+Darwin (Mac OS X) Stuff.
+
+On Snow Leopard (10.6), X11 (an optional install) no longer contains
+imake; the easiest way to get it is to install MacPorts and then install
+the port of imake.
+
+On earlier versions, the XQuartz or the Apple (optional) installation of
+X11 contains imake (in /usr/X11R6/bin).
+
+The version of awk supplied is not sufficient ... use gawk, which is available
+from MacPorts (the Configure script will use it); installing the port of
+coreutils will include this.
+
+On early Darwin versions, the gcc compiler is installed as "cc" not "gcc", so unless
+you make symbolic links named "gcc" you will get a lot of can't find the header errors
+from the make depend phase. Unfortunately these can't just be ignored, so you need to do
+something like add /usr/local/bin to your path if not already there, as root, make
+/usr/local/bin if not already there and create symbolic links named "gcc" and "g++"
+to "/usr/bin/cc" and "/usr/bin/c++" respectively.
+
+This should not be necessary if you have the Dec 2002 Developer package installed,
+either from the Apple developer site or from a more recent Jaguar set of install
+disks (e.g. 10.2.3 or later).
+
+Cygwin Stuff.
+
+As long as you have installed the necessary packages with Cygwin (including X11
+in order to get imake and build dcdisp), then everything compiles just fine. The
+executables will be named with a .exe extension as expected.
+
+This can be achieved by installing the default Cygwin set of packages, and
+additionally selecting the following (binary) packages:
+
+- gcc-g++ (NOT gcc4-g++)
+- imake
+- make
+- makedepend
+- libX11-devel
+- libXext-devel
+- zip (only needed to make archive.winexe target, not to compile and install)
+
+which will also select all of the necessary dependencies.
+
+Note that if you are getting make time errors that mention "strip" not
+being found, then the wrong version of make is being used.
+
+If you want to run the executables in a command shall without Cygwin installed,
+then you just need to have a copy the cygwin1.dll file in your current path.
+
+UID Related Stuff.
+
+This is best configured in config/site.def-p, though you can do it
+with defines on the command line of the first imake.
+
+All generated DICOM SOP Instances should have a globally unique UIDu
+and the scheme for this presumes that the user of the tools has a "root"
+that is unique to their implementation (or compilation of these tools),
+from which subsequent UIDs for instances can be generated by adding stuff
+to the end of the root that disambiguates instances ... the default is
+to use a date/time stamp, though one can supply one's own "stamp" with
+a command line option if necessary to ensure consistency of series, study
+and frame of reference UID's between invocations of various tools that
+create instances.
+
+This is all done by setting the macro 'DefaultUIDRoot' to an appropriate
+value. There are also various implementation specific things in a DICOM
+metaheader that can be set with 'DefaultImplementationClassUID',
+'DefaultImplementationVersionName' and 'DefaultSourceApplicationEntityTitle',
+though these are less vital.
+
+An example of how to do this easily is the definition of my own macro,
+'UseClunieGEID' in config/site.def-p. Use this as a model if you like
+but DO NOT UNDER ANY CIRCUMSTANCES use my root ID or your instances
+will conflict with mine !
+
+If you don't have a real root and just want to experiment, define nothing
+and '0.0.0.0' will be used ... this is bad, and means you can't send
+these instances out into the real world, but at least it is obviously
+not a valid root, whereas using mine would appear to be.
+
+How to you get one of these roots ? ISO delagates responsibility for
+assigning them to national member bodies such as ANSI, BSI, DIN, etc.
+See the alt.image.medical FAQ for further information and contacts. You
+can find it at:
+
+	http://www.dclunie.com/medical-image-faq/html/
+
+Tuning for faster image display.
+
+If you use dcdisp and want to increase the speed of the image refresh
+after window/level width etc., then compile with USEXMITSHMEXTENSION,
+and if you display a lot of large images (eg. mammo or CR), tune your
+OS System V shared memory maximum size. On Solaris, edit /etc/system
+to include:
+
+	set shmsys:shminfo_shmmax=16777216
+
+where 16777216 is big enough to hold a 16MB 8 bit image, etc.
+
+Note that the default configuration is specifically set up to
+activiate shared memory (ie. UseXMitShmExtension is turned on
+in config/Configure. You can turn it off by putting in site.def
+in the BeforeVendorCF section:
+
+	#ifndef UseXMitShmExtension
+	#define UseXMitShmExtension 0
+	#endif	UseXMitShmExtension
+
+JPEG Stuff
+
+A script (dcunjpeg) is available that makes use of the Stanford PVRG
+JPEG codec that supports lossless compression. A patch is included in
+the "support" directory to apply to the Stanford codec to support some
+GE implementation bugs on decompression.
+
+For more information, including source of the Stanford codec, see:
+
+	"http://www.dclunie.com/jpegge.html"
+
+The PVRG codec (jpeg) is required to be available in the PATH at runtime.
+
+For color 8 bit images, the IJG codec (djpeg) is required to be available
+in the PATH at runtime (on MacOS, port install jpeg).
+
+For JPEG 2000 images, the Kakadu codec (kdu_expand) is required to be
+available in the PATH at runtime.
+
+Deflate Stuff
+
+Scripts (dcdeflate and dcinflate) are provided to support the proposed
+use of the gzip/pkzip deflate algorithm as a standard DICOM transfer
+syntax, compressing the entire DICOM dataset beyond the metaheader,
+rather than just the pixel data. It is intended for use with reports,
+waveforms and presentation states.
+
+The scripts depend on the availability of the gzip utility, patched to
+take an extra option (-x) that outputs just the deflated bitstream and
+not the gzip header. The patches to gzip versions 1.2.4 and 1.3.12 are
+included in the "support" directory. The source to gzip is available from
+many sites, including:
+
+	"http://www.gzip.org/"
+
+Netpbm Stuff
+
+Some of the scripts (e.g. dcunrgb) depend on utilities from the netpbm
+library, and hence the netpbm utilities are required to be available in
+the PATH at runtime, though the library is not required for compilation of
+dicom3tools. See:
+
+	"http://netpbm.sourceforge.net/"
+	
+On a Mac, installation of a recent port of netpbm using MacPorts will
+suffice.
+
+Documentation
+
+There is a marvellous set of tools called "doxygen" that creates javadoc
+style documentation for C++ but goes way beyond and draws class diagrams
+and even collaboration diagrams if the ATT "graphviz" package is also
+available.
+
+If one does "make docs" then a "docs"directory is created in which the
+"html" folder contains an "index.html" that may be used to read the
+documentation of class, files, etc. This depends on both doxygen and
+dot (from graphiz) being in the current path.
+
+See the following URLs to get these excellent packages:
+
+	http://www.doxygen.org/
+	http://www.research.att.com/sw/tools/graphviz/
+
+BTW. The generated docs are way to bulky to distribute and can always
+be generated, so please don't ask.
+
+Note also that the docs are generated from the class definitions as is,
+and there has been no effort (yet) to actually insert any comments that
+get included in the generated docs to explain what the classes and methods
+actually do !
+
+The end.
+

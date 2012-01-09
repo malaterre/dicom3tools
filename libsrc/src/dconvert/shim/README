@@ -1,0 +1,159 @@
+The file that describes the public interface:
+
+	"shim.h"
+		class SHIM_Conversion {
+			SHIM_Conversion(istream &i,ostream &e);
+			virtual ~SHIM_Conversion();
+			bool dump(ostream &out);
+			bool convertAll(AttributeList *list,TransferSyntax *transfersyntax);
+			bool convertHeader(AttributeList *list);
+			bool convertPixelData(AttributeList *list,TransferSyntax *transfersyntax);
+		};
+
+	NB. The Imakefile is set up to install this file in the main include area
+	whenever on a "make".
+
+Files that are usually left alone (the "glue" between headers, classes, etc.):
+
+	"shim.cc"
+
+		SHIM_Conversion::SHIM_Conversion(istream &i,ostream &e);
+		SHIM_Conversion::~SHIM_Conversion();
+
+	"shimcl.h"
+
+		class SHIM_Header_BothClass  : public SHIM_HeaderClass
+		{
+		public:
+			SHIM_Header_BothClass(istream *ist) : SHIM_HeaderClass(ist) {}
+			void Dump(TextOutputStream *log);
+			void ToDicom_Template   (AttributeList *list);
+			void ToDicom_ManualMisc (AttributeList *list);
+			void ToDicom_ManualPlane(AttributeList *list);
+			void ToDicom_ManualDates(AttributeList *list);
+		};
+
+	"shimconv.cc"
+
+		#include "shimconv.h"
+
+	"shimdc.c"
+
+		bool SHIM_Conversion::convertHeader(AttributeList *list);
+		bool SHIM_Conversion::convertPixelData(AttributeList *list,TransferSyntax *transfersyntax);
+		bool SHIM_Conversion::convertAll(AttributeList *list,TransferSyntax *transfersyntax);
+
+	"shimdc.h"
+
+	"shimdmp.cc"
+
+		bool SHIM_Conversion::dump(ostream &o);
+
+	"shimdmp.h"
+
+	"shimhdrc.cc"
+
+		#include "shimhdrc.h"
+
+Files that definitely need to be tailored for each format:
+
+	"shim.tpl"
+
+		The template "describing" the format for header generation
+
+	"shimmdt.cc"
+
+		void SHIM_Header_BothClass::ToDicom_ManualDates(AttributeList *list);
+
+	"shimmmsc.cc"
+
+		void SHIM_Header_BothClass::ToDicom_ManualMisc(AttributeList *list);
+
+	"shimmpln.cc"
+
+		void SHIM_Header_BothClass::ToDicom_ManualPlane(AttributeList *list);
+
+	"shimptrs.h"
+
+		define offsets, pointers and values, both fixed, and dependent on previous fields
+
+	"shimsrc.h"
+
+		class SHIM_PixelDataSource : public SourceBase<Uint16> {
+		public:
+			SHIM_PixelDataSource(istream& i,long off,Uint16 r,Uint16 c) : SourceBase<Uint16>();
+			~SHIM_PixelDataSource();
+			size_t read(void);
+			const Uint16 *getBuffer(void);
+			size_t getBufferCount(void) const;
+			int good(void) const;
+		};
+
+Files that are automatically generated from shim.tpl:
+
+	"shimhdrp.h"
+
+		generated with role=headerpart
+
+		contains the detailed description of each format header
+		block class, eg.
+
+		class SHIM_HeaderClass_HDR1 {
+		public:
+			SHIM_HeaderClass_HDR1(istream *ist,size_t offset)
+		 		{ ReadProprietaryHeader(ist,offset,sizeof *this,(char *)this); }
+
+			Uint16_L 	FHENTRIES	; // at 0
+			Uint16_L 	FHCOUNT		; // at 2
+			...
+		};
+
+	"shimhdrw.h"
+
+		generated with role=wholeheader
+
+		contains the declaration of the top level class that contains instances
+		classes for each block of the header, eg.
+
+		class SHIM_HeaderClass
+		{
+		public:
+			SHIM_HeaderClass(istream *ist);
+
+			SHIM_HeaderClass_HDR1 *SHIM_HeaderInstance_HDR1;
+			SHIM_HeaderClass_HDR2 *SHIM_HeaderInstance_HDR2;
+			...
+		};
+
+
+	"shimhdrc.h"
+
+		generated with role=constructheader
+
+		contains the constructor for the top level class that instantiates
+		classes for each block of the header
+
+		SHIM_HeaderClass::SHIM_HeaderClass(istream *ist);
+
+	"shimconv.h"
+
+		generated with role=dicom
+
+		contains the code to generate DICOM attributes
+
+		void SHIM_Header_BothClass::ToDicom_Template(AttributeList *list);
+
+	"shimdmpf.h"
+		generated with role=dump
+
+		contains the code to dump a describtion of the file header content
+
+		void SHIM_Header_BothClass::Dump(TextOutputStream *log);
+
+Places to put special handling code:
+
+	if you need an "extra" header file for miscellaneous stuff, use "shimhdrm.h".
+
+	if you have special purpose code, then "shimhdrc.cc" is a good place to put
+	it, as normally all this file does is instantiate the "shimhdrc.h", but it
+	is always going to get loaded in any application using this library.

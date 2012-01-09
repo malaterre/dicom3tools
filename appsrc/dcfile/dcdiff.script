@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# compare the dumps of two dicom files
+
+if [ $# != 2 ]
+then
+	echo "usage: `basename $0` file1 file2"
+	exit 1
+fi
+
+TMPFILE1=/tmp/`basename $0`.$$.tmp1
+TMPFILE2=/tmp/`basename $0`.$$.tmp2
+
+dcdump -ignoreoutofordertags "$1" >"$TMPFILE1" 2>&1
+dcdump -ignoreoutofordertags "$2" >"$TMPFILE2" 2>&1
+diff "$TMPFILE1" "$TMPFILE2"
+
+rm "$TMPFILE1" "$TMPFILE2"
+
+exit 0
+

@@ -1,0 +1,60 @@
+.TH PDFTODC 1 "08 October 2005" "DICOM PS3" "DICOM PS3 - Encapsulate PDF in DICOM"
+.SH NAME
+pdftodc \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Encapsulate PDF in DICOM
+.SH SYNOPSIS
+.HP 10
+.B pdftodc
+[
+.B \-conceptname scheme code meaning version
+]
+[
+.B \-v|verbose
+]
+.so man1/genin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B pdftodc
+reads the named PDF input file and encapsulates in a new dicom file, creating an Encapsulated PDF Storage SOP
+Class instance.
+.LP
+The output encoding of the file will be the default or explicitly
+requested transfer syntax, as described in dcintro(1) under output
+options.
+.LP
+During the translation, specific attributes may be deleted, added or
+replaced, class and instance unique identifiers generated or removed,
+group lengths added, or private attributes removed, as specified by
+the replacement options described in dcintro(1). This allows the
+specification of additional DICOM attributes, such as the patient's
+name, necessary to make a complete and useful Encapsulated PDF instance.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-verbose
+.RS
+Display contents after creation, during replacement, and before writing.
+.RE
+.TP
+.B \-conceptname scheme code meaning version
+.RS
+Fill in the ConceptNameCodeSequence attribute with the supplied values.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dctopdf(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+

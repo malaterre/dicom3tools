@@ -1,0 +1,73 @@
+SamplesPerPixel == 1
+
+	PhotometricInterpretation == MONOCHROME1
+
+		minimum value displayed as white after VOI grayscale transform		--> ReadableWindowed{8,12,16}BitGrayImage
+
+	PhotometricInterpretation == MONOCHROME2
+
+		minimum value displayed as black after VOI grayscale transform		--> ReadableWindowed{8,12,16}BitGrayImage
+
+	PhotometricInterpretation == PALETTE COLOR
+
+		use RGB LUT which must be present
+
+		BitsAllocated == 8							--> Readable8BitIndexedPaletteColorImage
+
+		BitsAllocated == 16							--> Readable16BitIndexedPaletteColorImage
+
+SamplesPerPixel == 3
+
+	PhotometricInterpretation == RGB
+
+		minimum sample value displayed as minimum intensity color
+
+		PlanarConfiguration == 0						--> ReadableInterleaved24BitRGBTrueColorImage
+
+			R1,G1,B1,R2,G2,B2,...,Rn,Gn,Bn
+
+		PlanarConfiguration == 1						--> ReadableNonInterleaved24BitRGBTrueColorImage
+
+			R1,R2,..,Rn, G1,G2,..,Gn, B1,B2,...,Bn
+
+	PhotometricInterpretation == HSV
+
+		minimum sample value is minimum value of vector
+
+		PlanarConfiguration == 0						--> ReadableInterleaved24BitHSVTrueColorImage
+
+			H1,S1,V1,H2,S2,V2....Hn,Sn,Vn
+
+		PlanarConfiguration == 1						--> ReadableNonInterleaved24BitHSVTrueColorImage
+
+			H1,H2,..,Hn, S1,S2,..,Sn, V1,V2,...,Vn
+
+SamplesPerPixel == 4
+
+	PhotometricInterpretation == ARGB
+
+		minimum sample RGB value displayed as minimum intensity color
+
+		alpha channel passed through palette color lookup tables, and
+		if the resulting pixel value > 0 replaces RGB pixel value
+
+		PlanarConfiguration == 0						--> ReadableInterleaved32BitARGBTrueColorImage
+
+			A1,R1,G1,B1,A2,R2,G2,B2,...,An,Rn,Gn,Bn
+
+		PlanarConfiguration == 1						--> ReadableNonInterleaved32BitARGBTrueColorImage
+
+			A1,A2,..,An, R1,R2,..,Rn, G1,G2,..,Gn, B1,B2,...,Bn
+
+	PhotometricInterpretation == CMYK
+
+		minimum sample value displayed as minimum intensity color
+
+		PlanarConfiguration == 0						--> ReadableInterleaved32BitCMYKTrueColorImage
+
+			C1,M1,Y1,K1,C2,M2,Y2,K2,...,Cn,Mn,Yn,Kn
+
+		PlanarConfiguration == 1						--> ReadableNonInterleaved32BitCMYKTrueColorImage
+
+			C1,C2,..,Cn, M1,M2,..,Mn, Y1,Y2,..,Yn, K1,K2,...,Kn
+

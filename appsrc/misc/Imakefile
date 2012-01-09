@@ -1,0 +1,156 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTAPPMISCEXTRAINCLUDES)
+
+SRCSDUMPWHAT = dumpwhat.cc
+OBJSDUMPWHAT = dumpwhat.o
+
+SRCSBINPATCH = binpatch.cc
+OBJSBINPATCH = binpatch.o
+
+SRCSDCUNMETA = dcunmeta.cc
+OBJSDCUNMETA = dcunmeta.o
+
+SRCSJPEGDUMP = jpegdump.cc
+OBJSJPEGDUMP = jpegdump.o
+
+SRCSJPEGSPLIT = jpegsplit.cc
+OBJSJPEGSPLIT = jpegsplit.o
+
+SRCSPBMSWBIT = pbmswbit.cc
+OBJSPBMSWBIT = pbmswbit.o
+
+SRCSPNMPRED = pnmpred.cc
+OBJSPNMPRED = pnmpred.o
+
+SRCSPNMTORAW = pnmtoraw.cc
+OBJSPNMTORAW = pnmtoraw.o
+
+SRCSRAWARITH = rawarith.cc
+OBJSRAWARITH = rawarith.o
+
+SRCSRAWDIFF = rawdiff.cc
+OBJSRAWDIFF = rawdiff.o
+
+SRCSRAWMASK = rawmask.cc
+OBJSRAWMASK = rawmask.o
+
+SRCSRAWNJL = rawnjl.cc
+OBJSRAWNJL = rawnjl.o
+
+SRCSRAWNJL2 = rawnjl2.cc
+OBJSRAWNJL2 = rawnjl2.o
+
+SRCSDUMPTIFF = dumptiff.cc
+OBJSDUMPTIFF = dumptiff.o
+
+/* SRCSPPMTRCLR = ppmtrclr.cc */
+/* OBJSPPMTRCLR = ppmtrclr.o */
+
+SRCSPGMTOBMP = pgmtobmp.cc
+OBJSPGMTOBMP = pgmtobmp.o
+
+SRCSBMPDUMP = bmpdump.cc
+OBJSBMPDUMP = bmpdump.o
+
+CPLUSPLUS_SRCS = $(SRCSBMPDUMP) $(SRCSPGMTOBMP) $(SRCSDUMPWHAT) $(SRCSBINPATCH) $(SRCSJPEGDUMP) $(SRCSJPEGSPLIT) $(SRCSPBMSWBIT) $(SRCSPNMPRED) $(SRCSPNMTORAW) $(SRCSRAWARITH) $(SRCSRAWDIFF) $(SRCSRAWMASK) $(SRCSRAWNJL) $(SRCSRAWNJL2) $(SRCSDUMPTIFF)
+OBJS           = $(OBJSBMPDUMP) $(OBJSPGMTOBMP) $(OBJSDUMPWHAT) $(OBJSBINPATCH) $(OBJSJPEGDUMP) $(OBJSJPEGSPLIT) $(OBJSPBMSWBIT) $(OBJSPNMPRED) $(OBJSPNMTORAW) $(OBJSRAWARITH) $(OBJSRAWDIFF) $(OBJSRAWMASK) $(OBJSRAWNJL) $(OBJSRAWNJL2) $(OBJSDUMPTIFF)
+
+AllTarget(bmpdump)
+NormalCCProgramTarget(bmpdump,$(OBJSBMPDUMP),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(bmpdump,$(INSTALLBINDIR))
+InstallManPage(bmpdump,$(INSTALLMANDIR)/man1)
+
+AllTarget(pgmtobmp)
+NormalCCProgramTarget(pgmtobmp,$(OBJSPGMTOBMP),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(pgmtobmp,$(INSTALLBINDIR))
+InstallManPage(pgmtobmp,$(INSTALLMANDIR)/man1)
+
+/* this utility fails because cannot work within 8 bits; also round() not present on Solaris */
+/* AllTarget(ppmtrclr) */
+/* NormalCCProgramTarget(ppmtrclr,$(OBJSPPMTRCLR),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm) */
+/* InstallProgram(ppmtrclr,$(INSTALLBINDIR)) */
+/* InstallManPage(ppmtrclr,$(INSTALLMANDIR)/man1) */
+
+AllTarget(dumpwhat)
+NormalCCProgramTarget(dumpwhat,$(OBJSDUMPWHAT),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(dumpwhat,$(INSTALLBINDIR))
+InstallManPage(dumpwhat,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcunmeta)
+NormalCCProgramTarget(dcunmeta,$(OBJSDCUNMETA),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(dcunmeta,$(INSTALLBINDIR))
+InstallManPage(dcunmeta,$(INSTALLMANDIR)/man1)
+
+AllTarget(binpatch)
+NormalCCProgramTarget(binpatch,$(OBJSBINPATCH),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(binpatch,$(INSTALLBINDIR))
+InstallManPage(binpatch,$(INSTALLMANDIR)/man1)
+
+AllTarget(jpegdump)
+NormalCCProgramTarget(jpegdump,$(OBJSJPEGDUMP),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(jpegdump,$(INSTALLBINDIR))
+InstallManPage(jpegdump,$(INSTALLMANDIR)/man1)
+
+AllTarget(jpegsplit)
+NormalCCProgramTarget(jpegsplit,$(OBJSJPEGSPLIT),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(jpegsplit,$(INSTALLBINDIR))
+InstallManPage(jpegsplit,$(INSTALLMANDIR)/man1)
+
+AllTarget(pbmswbit)
+NormalCCProgramTarget(pbmswbit,$(OBJSPBMSWBIT),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(pbmswbit,$(INSTALLBINDIR))
+InstallManPage(pbmswbit,$(INSTALLMANDIR)/man1)
+
+AllTarget(pnmpred)
+NormalCCProgramTarget(pnmpred,$(OBJSPNMPRED),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(pnmpred,$(INSTALLBINDIR))
+InstallManPage(pnmpred,$(INSTALLMANDIR)/man1)
+
+AllTarget(pnmtoraw)
+NormalCCProgramTarget(pnmtoraw,$(OBJSPNMTORAW),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(pnmtoraw,$(INSTALLBINDIR))
+InstallManPage(pnmtoraw,$(INSTALLMANDIR)/man1)
+
+AllTarget(rawarith)
+NormalCCProgramTarget(rawarith,$(OBJSRAWARITH),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(rawarith,$(INSTALLBINDIR))
+InstallManPage(rawarith,$(INSTALLMANDIR)/man1)
+
+AllTarget(rawdiff)
+NormalCCProgramTarget(rawdiff,$(OBJSRAWDIFF),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(rawdiff,$(INSTALLBINDIR))
+InstallManPage(rawdiff,$(INSTALLMANDIR)/man1)
+
+AllTarget(rawmask)
+NormalCCProgramTarget(rawmask,$(OBJSRAWMASK),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(rawmask,$(INSTALLBINDIR))
+InstallManPage(rawmask,$(INSTALLMANDIR)/man1)
+
+AllTarget(rawnjl)
+NormalCCProgramTarget(rawnjl,$(OBJSRAWNJL),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(rawnjl,$(INSTALLBINDIR))
+InstallManPage(rawnjl,$(INSTALLMANDIR)/man1)
+
+AllTarget(rawnjl2)
+NormalCCProgramTarget(rawnjl2,$(OBJSRAWNJL2),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(rawnjl2,$(INSTALLBINDIR))
+InstallManPage(rawnjl2,$(INSTALLMANDIR)/man1)
+
+AllTarget(dumptiff)
+NormalCCProgramTarget(dumptiff,$(OBJSDUMPTIFF),$(PROJECTMISCDEPLIBS),$(PROJECTMISCLIBS),-lm)
+InstallProgram(dumptiff,$(INSTALLBINDIR))
+InstallManPage(dumptiff,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::	testbinpatch
+
+test.create::	testbinpatch.create
+
+testbinpatch:
+	./binpatch.test.sh $(TOP)/test/$(CURRENT_DIR) compare
+
+testbinpatch.create:
+	./binpatch.test.sh $(TOP)/test/$(CURRENT_DIR) create
+

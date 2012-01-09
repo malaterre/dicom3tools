@@ -1,0 +1,55 @@
+.TH DCENTVFY 1 "28 September 2008" "DICOM PS3" "DICOM PS3 - Validate DICOM entities"
+.SH NAME
+dcentvfy \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Validate DICOM entities
+.SH SYNOPSIS
+.HP 10
+.B dcentvfy
+" inputfile1 [ inputfile2 ... ]"
+[
+.B \-v|verbose|vv|veryverbose
+]
+[
+.B \-f|-filelist " filename"
+]
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B dcentvfy
+reads the named dicom files (and/or the files listed in the specified
+file), extracts patient, study, series and instance entity unique identifiers
+and then validates that the attribute values defined in the standard
+for those entities have consistent values for the same entity.
+.SH OPTIONS
+The description and verbose output go to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-v|verbose
+.RS
+Describe as files are read and analyzed and the model of entity relationships to instances is built.
+.RE
+.TP
+.B \-vv|veryverbose
+.RS
+Describe the detailed behavior of comparison of each attribute for each entity for each instance.
+.RE
+.TP
+.B \-f|filelist filename
+.RS
+A file containing a list of DICOM input files (one filename per line).
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dciodvfy(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

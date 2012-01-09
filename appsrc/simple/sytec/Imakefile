@@ -1,0 +1,24 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBGENERICEXTRAINCLUDES)
+
+SRCSTOPGM = syttopgm.cc
+OBJSTOPGM = syttopgm.o
+
+CPLUSPLUS_SRCS = $(SRCSTOPGM)
+OBJS = $(OBJSTOPGM)
+
+AllTarget(syttopgm)
+
+NormalCCProgramTarget(syttopgm,$(OBJSTOPGM),NullParameter,NullParameter,NullParameter)
+InstallManPage(syttopgm,$(INSTALLMANDIR)/man1)
+
+InstallProgram(syttopgm,$(INSTALLBINDIR))
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./syttopgm "" $(TOP)/images/sytec $(TOP)/test/$(CURRENT_DIR) compare filter
+
+test.create::
+	@$(TOP)/support/testapp testlist ./syttopgm "" $(TOP)/images/sytec $(TOP)/test/$(CURRENT_DIR) create filter

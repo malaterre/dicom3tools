@@ -1,0 +1,31 @@
+.TH SGNDUMP 1 "25 November 2007" "DICOM PS3" "Signa dump"
+.SH NAME
+sgndump \- ACR/NEMA DICOM PS3 ... Signa dump contents
+.SH SYNOPSIS
+.HP 10
+.B sgndump
+.I inputfilename
+.SH DESCRIPTION
+.LP
+.B sgndump
+reads the named GE MR Signa input file and dumps its contents.
+.LP
+.SH OPTIONS
+The dump output goes to standard error.
+.PP
+The basic switches are described in dcintro(1).
+.LP
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1) ,
+.BR sgntodc(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

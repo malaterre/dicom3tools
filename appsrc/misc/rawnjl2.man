@@ -1,0 +1,133 @@
+.TH RAWNJL2 1 "05 April 98" "DICOM PS3" "JPEG-LS codec"
+.SH NAME
+rawnjl2 \- JPEG-LS compress/decompress from raw file
+.SH SYNOPSIS
+.HP 10
+.B rawnjl2
+.B \-rows|\-height|\-h " rows"
+.B \-columns|\-width|\-w " cols"
+.B \-bits|\-depth " bits"
+[
+.B \-d|\-decompress
+]
+[
+.B \-near " n"
+]
+[
+.B \-T1|\-Ta " n"
+]
+[
+.B \-T2|\-Tb " n"
+]
+[
+.B \-T3|\-Tc " n"
+]
+[
+.B \-reset " n"
+]
+[
+.B \-nomarkers
+]
+[
+.B \-noruns
+]
+.so man1/binin.so
+.so man1/binout.so
+.SH DESCRIPTION
+.LP
+.B rawnjl2
+either reads the named raw input file and compresses it per the JPEG-LS
+(ISO DIS 14495-1) standard, or reads a compressed file and decompresses
+it into a raw output file (when the \-d option is specified).
+.LP
+The default compression is lossless, though near-lossless compression
+can be selected by specifying a pixel value error with the \-near option.
+.SH OPTIONS
+Error messages go to standard error.
+.PP
+.PP
+Options specific to this program are:
+.TP
+.BI \-rows|\-height|\-h " rows"
+.RS
+Required for compression.
+.RE
+.TP
+.BI \-columns|\-width|\-w " cols"
+.RS
+Required for compression.
+.RE
+.TP
+.BI \-bits|\-depth|\-d " bits"
+.RS
+Required for compression.
+.RE
+.TP
+.BI \-d|\-decompress
+.RS
+Selects decompression rather than compression (the default).
+.RE
+.TP
+.BI \-near " n"
+.RS
+If not zero (the default), selects near\-lossless compression. The
+value specified is the amount of error allowed in the reconstructed
+pixel value realtive to the original pixel value.
+.RE
+.TP
+.BI \-T1|\-Ta " n"
+.TP
+.BI \-T2|\-Tb " n"
+.TP
+.BI \-T3|\-Tc " n"
+.TP
+.BI \-reset " n"
+.RS
+Specify values other than the defaults for various compression
+parameters (see the standard for explanation).
+.RE
+.TP
+.BI \-nomarkers
+.RS
+Turns off writing (and reading) JPEG markers in the compressed output.
+Useful for examining the coompressed bitstream, though zero bit stuffing
+after 0xff bytes is still performed (and expected on decompression). Implies
+that the image parameters and non-default compression parameters need to be
+specified on the command line during decompression.
+.RE
+.TP
+.BI \-noruns
+.RS
+Turns off run mode during compression (and also needs to be specified for
+decompression). Thgis creates a non-standard bitstream bit is interesting
+to test the additional effectiveness the low entropy (less than one bit per
+pixel) run mode.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.RE
+% rawnjl2 -h 4 -e 4 -bits 8 -input-endian little 1.raw 1.jls
+.RE
+% rawnjl2 -d -output-endian little 1.jls 1.cmp
+.RE
+% cmp 1.raw 1.cmp
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.LP
+http://www.jpeg.org/
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+The near-lossless mode may trigger a bug that cause mapped error values
+to go negative and lead to a failed assertion. The standard seems unlcear
+on this point.
+.LP
+The compressed datastream does not seem to match the HP LOCO 0.90 implementation
+for some images, though the tiny example file in the standard compresses to
+match the standard and the HP implementation.

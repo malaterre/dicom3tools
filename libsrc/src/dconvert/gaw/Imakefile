@@ -1,0 +1,31 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = gawdc.cc gawconv.cc gawmpln.cc \
+		 gawmmsc.cc gawmdt.cc \
+		 gawdmp.cc gawdmpf.cc \
+		 gawhdrc.cc gaw.cc
+
+OBJS = 		 gawdc.o  gawconv.o  gawmpln.o  \
+		 gawmmsc.o  gawmdt.o  \
+		 gawdmp.o  gawdmpf.o  \
+		 gawhdrc.o  gaw.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdgaw.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(gaw,dconvert)
+ProjectInstallOnMakeUpdatedLibraryHeader(gawinfo,dconvert)
+
+ProjectConvertTemplate(gawhdrp.h,gaw,convert,prefix=GAW_ role=headerpart offsetwarning=off)
+ProjectConvertTemplate(gawhdrw.h,gaw,convert,prefix=GAW_ role=wholeheader headerclassparameters=",GAW_FileStructureInformation &fileinfo")
+ProjectConvertTemplate(gawhdrc.h,gaw,convert,prefix=GAW_ role=constructheader headerclassparameters=",GAW_FileStructureInformation &fileinfo")
+ProjectConvertTemplate(gawconv.h,gaw,convert,prefix=GAW_ role=dicom)
+ProjectConvertTemplate(gawdmpf.h,gaw,convert,prefix=GAW_ role=dump)
+
+gawdmpf.o: gawdmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) gawdmpf.cc
+
+DependCCTarget()
+

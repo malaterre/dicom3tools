@@ -1,0 +1,136 @@
+.TH RAWFTODC 1 "15 October 2002" "DICOM PS3" "Create DICOM from raw float file"
+.SH NAME
+rawftodc \- ACR/NEMA DICOM PS3 ... Create DICOM from raw float file
+.SH SYNOPSIS
+.HP 10
+.B rawftodc
+.B \-rows|\-height|\-h " rows"
+.B \-columns|\-width|\-w " cols"
+[
+.B \-frames " frames"
+]
+[
+.B \-scale " scalefactor"
+]
+[
+.B \-componentoffset " 0|1"
+]
+[
+.B \-componentnumber " 2"
+]
+[
+.B \-little|\-l|\-big
+]
+[
+.B \-samples " samples"
+]
+[
+.B \-gray|\-grey|\-rgb|\-argb|\-hsv|\-cmyk
+]
+[
+.B \-photometric-interpretation " xxx"
+]
+[
+.B \-color-by-pixel|\-color-by-plane
+]
+[
+.B \-v|verbose
+]
+.so man1/genin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B rawftodc
+reads the named raw input file and converts it to a 16-bit DICOM Secondary Capture Image Storage SOP Class instance stored in a DICOM file. Only uncompressed raw images with one sample per byte or word are supported, though multiple samples per pixel are allowed. The planar configuration can be specified but not re-ordered.
+.LP
+During the translation, specific attributes may be deleted, added or
+replaced, class and instance unique identifiers generated or removed,
+group lengths added, or private attributes removed, as specified by
+the replacement options described in dcintro(1). This allows the
+specification of additional DICOM attributes, such as the patient's
+name, necessary to make a complete and useful SC instance.
+.SH OPTIONS
+The verbose output goes to standard error.
+.PP
+.PP
+The basic switches are described in dcintro(1). Options specific to this program are:
+.TP
+.BI \-rows|\-height|\-h " rows"
+.RS
+Required.
+.RE
+.TP
+.BI \-columns|\-width|\-w " cols"
+.RS
+Required.
+.RE
+.TP
+.BI \-little|\-big
+.RS
+Required.
+.RE
+.TP
+.BI \-frames " frames"
+.RS
+Defaults to 1.
+.RE
+.TP
+.BI \-scale " scalefactor"
+.RS
+Normally the floating point values are truncated to 16 bit integers to create pixel 
+values. A scale factor may be specified by which to multiply them before truncation.
+Defaults to 1.
+.RE
+.TP
+.BI \-componentoffset " 0|1"
+.RS
+Normally it is assumed there is one floating point value per pixel. When more than one
+component is specified by -componentnumber, then which component (first, second etc.)
+may be specified. Usually the first component of a complex pair is real, and the
+second imaginary. Defaults to 0 (first component).
+.RE
+.TP
+.BI \-componentnumber " 2"
+.RS
+Specifies that there is more than one floating point value per pixel, e.g. a complex pair
+of two components. Defaults to 1 (one component).
+.RE
+.TP
+.BI \-samples " samples"
+.RS
+Defaults to appropriate value for photometric interpretation, or 1 if none specified. Only needs to be specified for unusual photometric interpretations.
+.RE
+.TP
+.BI \-gray|\-grey|\-rgb|\-argb|\-hsv|\-cmyk
+.RS
+Recognized photometric interpretations, defaults to gray if no samples specified or samples is 1, and rgb if samples is 3.
+.RE
+.TP
+.BI \-photometric-interpretation " xxx"
+.RS
+Explicitly specify string value for photometric interpretation attribute; will need value for samples.
+.RE
+.TP
+.BI \-color-by-pixel|\-color-by-plane
+.RS
+Specifies the planar configuration. Required if samples not 1 (explicitly or deduced from photometric interpretation). No default.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR dctoraw(1) ,
+.BR pnmtodc(1) ,
+.BR rawtodc(1) ,
+.BR dciodvfy(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

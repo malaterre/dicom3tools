@@ -1,0 +1,198 @@
+.TH PNMTODC 1 "9 December 2005" "DICOM PS3" "DICOM PS3 - Create DICOM from PNM file"
+.SH NAME
+pnmtodc \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Create DICOM from PNM file
+.SH SYNOPSIS
+.HP 10
+.B pnmtodc
+[
+.B \-little|\-l|\-big|\-b
+]
+[
+.B \-imagepixelmoduleonly
+]
+[
+.B \-v|verbose
+]
+.so man1/genin.so
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B pnmtodc
+reads the named PNM input file and copies the information and
+pixel data to a new dicom file, creating a Secondary Capture SOP
+Class instance.
+.LP
+The output encoding of the file will be the default or explicitly
+requested transfer syntax, as described in dcintro(1) under output
+options. The byte order of the pixel data will be changed as necessary.
+.LP
+During the translation, specific attributes may be deleted, added or
+replaced, class and instance unique identifiers generated or removed,
+group lengths added, or private attributes removed, as specified by
+the replacement options described in dcintro(1). This allows the
+specification of additional DICOM attributes, such as the patient's
+name, necessary to make a complete and useful SC instance.
+.LP
+Photometric Interpretation will be MONOCHROME2 for PGM and RGB for PPM
+images.
+.LP
+Pixel Representation will always be unsigned.
+.LP
+Bits Stored will depend on maxval, and may be less than 8 or 16.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.BI \-little|\-big
+.RS
+Required if the maxval in the input file is greater than 255 (bit depth is greater than 8).
+Originally the PGM and PPM binary formats did not support more than one byte; in earlier
+versions of the dicom3tools the non-standard convention of using little endian two byte
+raw binary values was supported, but later the maintainers of netpbm added the same
+capability, but using big-endian. In order to force the issue in case one behavior or
+the other is assumed, it is now mandatory to specify this on the command line whenever
+more than 8 bits are used.
+.RE
+.TP
+.BI \-imagepixelmoduleonly
+.RS
+Write only the image pixel data module and not the basic mandatory secondary capture and composite IOD modules as well
+(e.g., prior to dcmerge'ing with an existing SOP instance that has its pixel data deleted); use the -nodisclaimer switch
+to avoid generating Image Comments and the -n switch to avoid adding a meta-information header (will fail if you do not
+since there is no SOP Class UID to use in the meta-information header).
+.RE
+.TP
+.B \-verbose
+.RS
+Display contents after creation, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% head gray.256.256.12.pgm
+.RE
+P5
+.RE
+256 256
+.RE
+4095
+.RE
+% pnmtodc -v -little -r PatientName "Smith^Harry^^^"
+.RE
+        gray.256.256.12.pgm gray.dc3
+.RE
+Converting ...
+.RE
+******** As read ... ********
+.RE
+(0x0008,0x0020) DA Study Date ...
+.RE
+ ...
+.RE
+(0x0010,0x0010) PN Patient's Name <^^^^>
+.RE
+ ...
+.RE
+(0x0028,0x0002) US Samples per Pixel          [0x0001] 
+.RE
+(0x0028,0x0004) CS Photometric Interpretation <MONOCHROME2> 
+.RE
+(0x0028,0x0008) IS Number of Frames           <1 > 
+.RE
+(0x0028,0x0010) US Rows                       [0x0100] 
+.RE
+(0x0028,0x0011) US Columns                    [0x0100] 
+.RE
+(0x0028,0x0100) US Bits Allocated             [0x0010] 
+.RE
+(0x0028,0x0101) US Bits Stored                [0x000c] 
+.RE
+(0x0028,0x0102) US High Bit                   [0x000b] 
+.RE
+(0x0028,0x0103) US Pixel Representation       [0x0000]
+.RE
+ ...
+.RE
+******** After replace before... ********
+.RE
+ ...
+.RE
+(0x0010,0x0010) PN Patient's Name <Smith^Harry^^^>
+.RE
+ ...
+.RE
+******** As written ... ********
+.RE
+(0x0002,0x0000) UL Meta Element Group Length ...
+.RE
+(0x0002,0x0001) OB File Meta Information Version ...
+.RE
+ ...
+.RE
+\ 
+.RE
+% dciodvfy gray.dc3
+.RE
+SCImage
+.RE
+\ 
+.RE
+% head rgb.256.256.8.ppm
+.RE
+P6
+.RE
+256 256
+.RE
+255
+.RE
+% pnmtodc -v rgb.256.256.8.ppm rgb.dc3
+.RE
+Converting ...
+.RE
+******** As read ... ********
+.RE
+ ...
+.RE
+(0x0028,0x0002) US Samples per Pixel          [0x0003] 
+.RE
+(0x0028,0x0004) CS Photometric Interpretation <RGB> 
+.RE
+(0x0028,0x0008) IS Number of Frames           <1 > 
+.RE
+(0x0028,0x0010) US Rows                       [0x0100] 
+.RE
+(0x0028,0x0011) US Columns                    [0x0100] 
+.RE
+(0x0028,0x0100) US Bits Allocated             [0x0008] 
+.RE
+(0x0028,0x0101) US Bits Stored                [0x0008] 
+.RE
+(0x0028,0x0102) US High Bit                   [0x0007] 
+.RE
+(0x0028,0x0103) US Pixel Representation       [0x0000]
+.RE
+ ...
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR dctoraw(1) ,
+.BR rawtodc(1) ,
+.BR dciodvfy(1) ,
+.BR dcintro(1) ,
+.BR dcmerge(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+Only raw grayscale PGM (P5) and RGB PPM (P6) PNM files are supported, not
+text or PBM files.
+.LP
+The number of Columns (horizontal pixels) must be an even number.

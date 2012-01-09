@@ -1,0 +1,38 @@
+all::
+
+sort:
+	for i in	\
+		acrnema	\
+		dicom3	\
+		philips	\
+		siemens	\
+		gems	\
+		retired	\
+		compress	\
+		vli	\
+		wave	\
+		softcopy	\
+		sr	\
+		security	\
+		mr \
+		papyrus	\
+		toshiba	\
+		isg	\
+		elscint	\
+		acuson	\
+		camtron	\
+		agfa	\
+		picker	\
+		spi	\
+		other	\
+		dicos	\
+		diconde	\
+		dicondep	\
+	; do	\
+		rm -f $$i.tpl.bak;	\
+		mv $$i.tpl $$i.tpl.bak;	\
+		$(SORT) -b -n +0 -1 +4 -5 <$$i.tpl.bak >$$i.tpl;	\
+	done
+
+
+

@@ -1,0 +1,71 @@
+.TH DCSRDUMP 1 "18 July 2009" "DICOM PS3" "DICOM PS3 - Describe DICOM SR content"
+.SH NAME
+dcsrdump \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Describe DICOM SR content
+.SH SYNOPSIS
+.HP 10
+.B dcsrdump
+[
+.B \-v|verbose
+]
+[
+.B \-vv|veryverbose
+]
+[
+.B \-filename
+]
+[
+.B \-identifier
+]
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B dcsrdump
+reads the named dicom structured report (SR) input file and describes the information contained.
+.SH OPTIONS
+The attribute values, description and verbose output go to standard error.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-verbose
+.RS
+Describe the parsing process; does not actually do anything at present.
+.RE
+.TP
+.B \-veryverbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents of the DICOM dataset while reading.
+.RE
+.TP
+.B \-filename
+.RS
+Show the name of the file supplied in the arguments; a hyphen will be reported if no filename was supplied.
+.RE
+.TP
+.B \-identifier
+.RS
+Preceed each content item with the dot delimited numeric identifier of the content item (as used in references).
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcsrdump -identifier basictextsr.dcm 
+.RE
+1: : CONTAINER: (18748-4,LN,"Diagnostic Imaging Report")  [SEPARATE]
+.RE
+	>1.1: CONTAINS: CONTAINER: (121070,DCM,"Findings")  [SEPARATE]
+.RE
+		>>1.1.1: CONTAINS: TEXT: (121071,DCM,"Finding")  = "stuff"
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

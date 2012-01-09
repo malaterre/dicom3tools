@@ -1,0 +1,30 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = sgndc.cc sgnconv.cc sgnmpln.cc \
+		 sgnmmsc.cc sgnmdt.cc \
+		 sgndmp.cc sgndmpf.cc \
+		 sgnhdrc.cc sgn.cc
+
+OBJS = 		 sgndc.o  sgnconv.o  sgnmpln.o  \
+		 sgnmmsc.o  sgnmdt.o  \
+		 sgndmp.o  sgndmpf.o  \
+		 sgnhdrc.o  sgn.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdsgn.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(signa,dconvert)
+
+ProjectConvertTemplate(sgnhdrp.h,signa,convert,prefix=SGN_ role=headerpart offsetwarning=off)
+ProjectConvertTemplate(sgnhdrw.h,signa,convert,prefix=SGN_ role=wholeheader)
+ProjectConvertTemplate(sgnhdrc.h,signa,convert,prefix=SGN_ role=constructheader)
+ProjectConvertTemplate(sgnconv.h,signa,convert,prefix=SGN_ role=dicom)
+ProjectConvertTemplate(sgndmpf.h,signa,convert,prefix=SGN_ role=dump)
+
+sgndmpf.o: sgndmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) sgndmpf.cc
+
+DependCCTarget()
+

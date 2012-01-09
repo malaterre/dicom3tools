@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# convert a whole tree of images, making sure to use 
+# shared Study and Series instance UIDs by using stamp
+
+stamp="`date '+%Y%m%d%H%M%S'`.$$"
+for i in `find . -type f -name 'I.[0-9][0-9][0-9]' -print`
+do
+	echo $i
+	gentodc -stamp "$stamp" -output-endian little -output-vr explicit $i $i.dcm
+done

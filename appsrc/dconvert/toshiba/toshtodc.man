@@ -1,0 +1,32 @@
+.TH toshtodc 1 "18 March 2007" "DICOM PS3" "Convert separate Toshiba files to DICOM"
+.SH NAME
+toshtodc \- ACR/NEMA DICOM PS3 ... Convert separate Toshiba ACR-NEMA header and raw pixel data files to DICOM
+.SH SYNOPSIS
+.HP 10
+.B toshtodc
+.B imagefilenames
+.SH DESCRIPTION
+.LP
+.B toshtodc
+reads a list of Toshiba ACR-NEMA raw pixel data image filenames (.img) from the command line, searches for the
+corresponding ACR-NEMA header files (.zlc), combines them and converts them to DICOM using antodc, creating corresponding
+filenames with a .dcm extension.
+.SH OPTIONS
+.LP
+\ 
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR antodc(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP
+The search for the corresponding header file expects the extension to be lower case.

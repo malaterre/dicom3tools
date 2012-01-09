@@ -1,0 +1,6 @@
+#define IHaveSubdirs
+
+SUBDIRS = support xxxx pace imtn gen gaw shim somp himr pq toshiba signa ge9800
+
+MakeSubdirs($(SUBDIRS))
+DependSubdirs($(SUBDIRS))

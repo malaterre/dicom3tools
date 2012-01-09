@@ -1,0 +1,30 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = himrdc.cc himrconv.cc himrmpln.cc \
+		 himrmmsc.cc himrmdt.cc \
+		 himrdmp.cc himrdmpf.cc \
+		 himrhdrc.cc himr.cc
+
+OBJS = 		 himrdc.o  himrconv.o  himrmpln.o  \
+		 himrmmsc.o  himrmdt.o  \
+		 himrdmp.o  himrdmpf.o  \
+		 himrhdrc.o  himr.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdhimr.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(himr,dconvert)
+
+ProjectConvertTemplate(himrhdrp.h,himr,convert,prefix=HIMR_ role=headerpart)
+ProjectConvertTemplate(himrhdrw.h,himr,convert,prefix=HIMR_ role=wholeheader)
+ProjectConvertTemplate(himrhdrc.h,himr,convert,prefix=HIMR_ role=constructheader)
+ProjectConvertTemplate(himrconv.h,himr,convert,prefix=HIMR_ role=dicom)
+ProjectConvertTemplate(himrdmpf.h,himr,convert,prefix=HIMR_ role=dump)
+
+himrdmpf.o: himrdmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) himrdmpf.cc
+
+DependCCTarget()
+

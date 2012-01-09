@@ -1,0 +1,30 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = shimdc.cc shimconv.cc shimmpln.cc \
+		 shimmmsc.cc shimmdt.cc \
+		 shimdmp.cc shimdmpf.cc \
+		 shimhdrc.cc shim.cc
+
+OBJS = 		 shimdc.o  shimconv.o  shimmpln.o  \
+		 shimmmsc.o  shimmdt.o  \
+		 shimdmp.o  shimdmpf.o  \
+		 shimhdrc.o  shim.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdshim.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(shim,dconvert)
+
+ProjectConvertTemplate(shimhdrp.h,shim,convert,prefix=SHIM_ role=headerpart)
+ProjectConvertTemplate(shimhdrw.h,shim,convert,prefix=SHIM_ role=wholeheader)
+ProjectConvertTemplate(shimhdrc.h,shim,convert,prefix=SHIM_ role=constructheader)
+ProjectConvertTemplate(shimconv.h,shim,convert,prefix=SHIM_ role=dicom)
+ProjectConvertTemplate(shimdmpf.h,shim,convert,prefix=SHIM_ role=dump)
+
+shimdmpf.o: shimdmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) shimdmpf.cc
+
+DependCCTarget()
+

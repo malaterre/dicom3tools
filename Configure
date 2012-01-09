@@ -1,0 +1,11 @@
+#!/bin/sh
+
+cd config
+if [ `uname -s` = "ULTRIX" -a -f "/bin/sh5" ]
+then
+	mv Configure Configure.bak
+	echo "#!/bin/sh5" >Configure
+	sed '1d' <Configure.bak >>Configure
+	chmod +x Configure
+fi
+./Configure $*

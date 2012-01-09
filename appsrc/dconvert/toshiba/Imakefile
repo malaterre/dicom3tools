@@ -1,0 +1,5 @@
+MANSUFFIX = 1
+
+InstallScript(toshtodc,$(INSTALLBINDIR))
+InstallManPage(toshtodc,$(INSTALLMANDIR)/man1)
+

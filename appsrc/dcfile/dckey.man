@@ -1,0 +1,146 @@
+.TH DCKEY 1 "19 November 2008" "DICOM PS3" "DICOM PS3 - Extract attribute values"
+.SH NAME
+dckey \- ACR/NEMA DICOM PS3 ... Extract attribute values
+.SH SYNOPSIS
+.HP 10
+.B dckey
+[
+.B \-ignorereaderrors
+]
+[
+.B \-v|verbose
+]
+[
+.B \-filename
+]
+[
+.B \-describe
+]
+[
+.B \-brief
+]
+[
+.B \-d|decimal
+]
+[
+.B \-key|k " elementname|(0xgggg,0xeeee) ] ..."
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B dckey
+reads the named dicom input file and displays the values of the selected attributes.
+.LP
+Binary attributes are written in hexadecimal with a preceding
+"0x" and numeric string attributes are written in decimal as they are encoded,
+unless the \-decimal option is specified.
+.SH OPTIONS
+The attribute values, description and verbose output go to standard error.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-describe
+.RS
+Display the tag, name, value representation and value length of the attribute.
+.RE
+.TP
+.B \-brief
+.RS
+Display the keyword of the attribute, and equals sign, and then the value, for use in
+scripts that automatically extract multiple values in the same dckey invocation. Implies \-noerror.
+.RE
+.TP
+.B \-ignorereaderrors
+.RS
+Attempt to extract key values even if errors encountered whilst parsing DICOM file.
+.RE
+.TP
+.B \-noerror
+.RS
+Do not report an error if the requested attribute was not found, just an empty value or line. Implied by \-brief.
+.RE
+.TP
+.B \-d|decimal
+.RS
+Display the first (or only) value of a numeric attribute as a decimal value.
+.RE
+.TP
+.B \-k|key " elementname|(0xgggg,0xeeee)"
+.RS
+Add a key to the list of attributes to be extracted. The attribute may also be specified
+as a hexadecimal pair of the form (0xgggg,0xeeee), which also allows private attributes to be fetched.
+.RE
+.TP
+.B \-filename
+.RS
+Show the name of the file supplied in the arguments; a hyphen will be reported if no filename was supplied.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dckey -key Rows -key Columns -key ImageLocation
+.RE
+        -describe test.dc3
+.RE
+(0x0028,0x0010) US Rows    VR=<US> VL=<0x0002> [0x0100] 
+.RE
+(0x0028,0x0011) US Columns VR=<US> VL=<0x0002> [0x0100] 
+.RE
+Error - Not found - (0x0028,0x0200) US Image Location 
+.RE
+\ 
+.RE
+% dckey -k Rows -k ImagePositionPatient
+.RE
+      -k StudyDate -k StudyTime
+.RE
+      -k SOPClassUID test.dc3
+.RE
+1.2.840.10008.5.1.4.1.1.2
+.RE
+1996.04.17
+.RE
+19:38:00
+.RE
+45.000000\\-120.000000\\120.000000 
+.RE
+0x0200
+\ 
+.RE
+% dckey -d -k Rows test.dc3
+.RE
+512
+\ 
+.RE
+% dckey -brief -k Rows -k Columns test.dc3
+.RE
+Rows=0x200
+.RE
+Columns=0x200
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1), dctable(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP
+Attempts to extract sequences or OB,OW attributes may fail nastily.
+.LP
+The order in which the attributes are extracted and written is not the same
+order as they are specified on the command line, and should not be depended
+on.
+.LP
+The \-describe and other options cannot be used at the same time.
+.LP
+The \-decimal option uses a double conversion before displaying the value and
+there may be sign extension and precision issues with some values.
+.LP
+The reading of the attributes from the DICOM file will not proceed past the
+top level Pixel Data attribute, in order to accelerate the speed of reading.
+

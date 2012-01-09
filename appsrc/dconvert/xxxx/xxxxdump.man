@@ -1,0 +1,42 @@
+.TH XXXXDUMP 1 "05 April 1998" "DICOM PS3" "xxxx dump"
+.SH NAME
+xxxxdump \- ACR/NEMA DICOM PS3 ... xxxx dump contents
+.SH SYNOPSIS
+.HP 10
+.B xxxxdump
+.I inputfilename
+.SH DESCRIPTION
+.LP
+.B xxxxdump
+reads the named xxxx input file and dumps its contents.
+.LP
+.SH OPTIONS
+The dump output goes to standard error.
+.PP
+The basic switches are described in dcintro(1).
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% xxxxdump test
+.RE
+\ 
+.RE
+[block:offset] Description        <value>
+.RE
+\ 
+.RE
+ ...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1) ,
+.BR xxxxtodc(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

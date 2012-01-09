@@ -1,0 +1,748 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES = $(PROJECTAPPDCFILEEXTRAINCLUDES)
+
+SRCSDCLUTMIX = dclutmix.cc
+OBJSDCLUTMIX = dclutmix.o
+
+SRCSDCDTCHG = dcdtchg.cc
+OBJSDCDTCHG = dcdtchg.o
+
+SRCSDCUIDCHG = dcuidchg.cc
+OBJSDCUIDCHG = dcuidchg.o
+
+SRCSDCLUTBURN = dclutburn.cc
+OBJSDCLUTBURN = dclutburn.o
+
+SRCSDCTOPDF = dctopdf.cc
+OBJSDCTOPDF = dctopdf.o
+
+SRCSPDFTODC = pdftodc.cc
+OBJSPDFTODC = pdftodc.o
+
+SRCSPGXTODC = pgxtodc.cc
+OBJSPGXTODC = pgxtodc.o
+
+SRCSDCENCAP = dcencap.cc
+OBJSDCENCAP = dcencap.o
+
+SRCSDCBURN = dcburn.cc
+OBJSDCBURN = dcburn.o
+
+SRCSRAWFTODC = rawftodc.cc
+OBJSRAWFTODC = rawftodc.o
+
+SRCSDCCOMB = dccomb.cc
+OBJSDCCOMB = dccomb.o
+
+SRCSDCUNCAT = dcuncat.cc
+OBJSDCUNCAT = dcuncat.o
+
+SRCSDCSRMRG = dcsrmrg.cc
+OBJSDCSRMRG = dcsrmrg.o
+
+SRCSDCOSTOSR = dcostosr.cc
+OBJSDCOSTOSR = dcostosr.o
+
+SRCSDCSUB = dcsub.cc
+OBJSDCSUB = dcsub.o
+
+SRCSDCDECMPR = dcdecmpr.cc
+OBJSDCDECMPR = dcdecmpr.o
+
+SRCSDCSORT = dcsort.cc
+OBJSDCSORT = dcsort.o
+
+SRCSDCPROJ = dcproj.cc
+OBJSDCPROJ = dcproj.o
+
+SRCSDCARITH = dcarith.cc
+OBJSDCARITH = dcarith.o
+
+SRCSDCTOPGM8 = dctopgm8.cc
+OBJSDCTOPGM8 = dctopgm8.o
+
+SRCSDCTOPGX = dctopgx.cc
+OBJSDCTOPGX = dctopgx.o
+
+SRCSDCPOST = dcpost.cc
+OBJSDCPOST = dcpost.o
+
+SRCSDCMULTI = dcmulti.cc
+OBJSDCMULTI = dcmulti.o
+
+SRCSDCTABLE = dctable.cc
+OBJSDCTABLE = dctable.o
+
+SRCSDCMKPRES = dcmkpres.cc
+OBJSDCMKPRES = dcmkpres.o
+
+SRCSDCORTHO = dcortho.cc
+OBJSDCORTHO = dcortho.o
+
+SRCSANTODC = antodc.cc
+OBJSANTODC = antodc.o
+
+SRCSCP = dccp.cc
+OBJSCP = dccp.o
+
+SRCSDICT = dcdict.cc
+OBJSDICT = dcdict.o
+
+SRCSDIRDMP = dcdirdmp.cc
+OBJSDIRDMP = dcdirdmp.o
+
+SRCSDIRMK = dcdirmk.cc
+OBJSDIRMK = dcdirmk.o
+
+SRCSDUMP = dcdump.cc
+OBJSDUMP = dcdump.o
+
+SRCSFILE = dcfile.cc
+OBJSFILE = dcfile.o
+
+SRCSHIST = dchist.cc
+OBJSHIST = dchist.o
+
+SRCSKEY = dckey.cc
+OBJSKEY = dckey.o
+
+SRCSIODVFY = dciodvfy.cc
+OBJSIODVFY = dciodvfy.o
+
+SRCSLUTDMP = dclutdmp.cc
+OBJSLUTDMP = dclutdmp.o
+
+SRCSMERGE = dcmerge.cc
+OBJSMERGE = dcmerge.o
+
+SRCSPOSN = dcposn.cc
+OBJSPOSN = dcposn.o
+
+SRCSSMPTE = dcsmpte.cc
+OBJSSMPTE = dcsmpte.o
+
+SRCSBRIGGS = dcbriggs.cc
+OBJSBRIGGS = dcbriggs.o
+
+SRCSSQEXTR = dcsqextr.cc
+OBJSSQEXTR = dcsqextr.o
+
+SRCSSTATS = dcstats.cc
+OBJSSTATS = dcstats.o
+
+SRCSTORAW = dctoraw.cc
+OBJSTORAW = dctoraw.o
+
+SRCSTOPNM = dctopnm.cc
+OBJSTOPNM = dctopnm.o
+
+SRCSPBMTOOVL = pbmtoovl.cc
+OBJSPBMTOOVL = pbmtoovl.o
+
+SRCSPNMTO = pnmtodc.cc
+OBJSPNMTO = pnmtodc.o
+
+SRCSRAWTO = rawtodc.cc
+OBJSRAWTO = rawtodc.o
+
+SRCSDCSRDUMP = dcsrdump.cc
+OBJSDCSRDUMP = dcsrdump.o
+
+SRCSDCRMMETA = dcrmmeta.cc
+OBJSDCRMMETA = dcrmmeta.o
+
+SRCSDCENTVFY = dcentvfy.cc
+OBJSDCENTVFY = dcentvfy.o
+
+CPLUSPLUS_SRCS = $(SRCSDCENTVFY) $(SRCSDCLUTMIX) $(SRCSDCUIDCHG) $(SRCSDCDTCHG) $(SRCSDCLUTBURN) $(SRCSDCTOPDF) $(SRCSPDFTODC) $(SRCSPGXTODC) $(SRCSDCENCAP) $(SRCSDCBURN) $(SRCSRAWFTODC) $(SRCSDCCOMB) $(SRCSDCUNCAT) $(SRCSDCSRMRG) $(SRCSDCOSTOSR) $(SRCSDCRMMETA) $(SRCSDCSRDUMP) $(SRCSDCDECMPR) $(SRCSDCSUB) $(SRCSDCSORT) $(SRCSDCPROJ) $(SRCSDCARITH) $(SRCSDCTOPGM8) $(SRCSDCTOPGX) $(SRCSDCPOST) $(SRCSDCTABLE) $(SRCSDCMKPRES) $(SRCSDCORTHO) $(SRCSANTODC) $(SRCSCP) $(SRCSDICT) $(SRCSDIRDMP) $(SRCSDUMP) $(SRCSFILE) $(SRCSHIST) $(SRCSKEY) $(SRCSMERGE) $(SRCSPOSN) $(SRCSIODVFY) $(SRCSSMPTE) $(SRCSBRIGGS) $(SRCSSQEXTR) $(SRCSSTATS) $(SRCSTORAW) $(SRCSTOPNM) $(SRCSPBMTOOVL) $(SRCSPNMTO) $(SRCSRAWTO) $(SRCSLUTDMP)
+OBJS           = $(OBJSDCENTVFY) $(OBJSDCLUTMIX) $(OBJSDCUIDCHG) $(OBJSDCDTCHG) $(OBJSDCLUTBURN) $(OBJSDCTOPDF) $(OBJSPDFTODC) $(OBJSPGXTODC) $(OBJSDCENCAP) $(OBJSDCBURN) $(OBJSRAWFTODC) $(OBJSDCCOMB) $(OBJSDCUNCAT) $(OBJSDCSRMRG) $(OBJSDCOSTOSR) $(OBJSDCRMMETA) $(OBJSDCSRDUMP) $(OBJSDCDECMPR) $(OBJSDCSUB) $(OBJSDCSORT) $(OBJSDCPROJ) $(OBJSDCARITH) $(OBJSDCTOPGM8) $(OBJSDCTOPGX) $(OBJSDCPOST) $(OBJSDCTABLE) $(OBJSDCMKPRES) $(OBJSDCORTHO) $(OBJSANTODC) $(OBJSCP) $(OBJSDICT) $(OBJSDIRDMP) $(OBJSDUMP) $(OBJSFILE) $(OBJSHIST) $(OBJSKEY) $(OBJSIODVFY) $(OBJSMERGE) $(OBJSPOSN) $(OBJSSMPTE) $(OBJSBRIGGS) $(OBJSSQEXTR) $(OBJSSTATS) $(OBJSTORAW) $(OBJSTOPNM) $(OBJSPBMTOOVL) $(OBJSPNMTO) $(OBJSRAWTO) $(OBJSLUTDMP)
+
+AllTarget(dcentvfy)
+NormalCCProgramTarget(dcentvfy,$(OBJSDCENTVFY),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcentvfy,$(INSTALLBINDIR))
+InstallManPage(dcentvfy,$(INSTALLMANDIR)/man1)
+
+AllTarget(dclutmix)
+NormalCCProgramTarget(dclutmix,$(OBJSDCLUTMIX),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dclutmix,$(INSTALLBINDIR))
+InstallManPage(dclutmix,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcuidchg)
+NormalCCProgramTarget(dcuidchg,$(OBJSDCUIDCHG),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcuidchg,$(INSTALLBINDIR))
+InstallManPage(dcuidchg,$(INSTALLMANDIR)/man1)
+
+depend::	dcdtchg.h
+
+dcdtchg.h:	${PROJECTLIBSTANDARDDIR}/elmdict/dicom3.tpl makedcdtchgheader.sh
+	./makedcdtchgheader.sh ${PROJECTLIBSTANDARDDIR}/elmdict/dicom3.tpl dcdtchg.h
+	
+AllTarget(dcdtchg)
+NormalCCProgramTarget(dcdtchg,$(OBJSDCDTCHG),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcdtchg,$(INSTALLBINDIR))
+InstallManPage(dcdtchg,$(INSTALLMANDIR)/man1)
+
+AllTarget(dclutburn)
+NormalCCProgramTarget(dclutburn,$(OBJSDCLUTBURN),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dclutburn,$(INSTALLBINDIR))
+InstallManPage(dclutburn,$(INSTALLMANDIR)/man1)
+
+AllTarget(dctopdf)
+NormalCCProgramTarget(dctopdf,$(OBJSDCTOPDF),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dctopdf,$(INSTALLBINDIR))
+InstallManPage(dctopdf,$(INSTALLMANDIR)/man1)
+
+AllTarget(pdftodc)
+NormalCCProgramTarget(pdftodc,$(OBJSPDFTODC),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(pdftodc,$(INSTALLBINDIR))
+InstallManPage(pdftodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(pgxtodc)
+NormalCCProgramTarget(pgxtodc,$(OBJSPGXTODC),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(pgxtodc,$(INSTALLBINDIR))
+InstallManPage(pgxtodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcencap)
+NormalCCProgramTarget(dcencap,$(OBJSDCENCAP),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcencap,$(INSTALLBINDIR))
+InstallManPage(dcencap,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcburn)
+NormalCCProgramTarget(dcburn,$(OBJSDCBURN),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcburn,$(INSTALLBINDIR))
+InstallManPage(dcburn,$(INSTALLMANDIR)/man1)
+
+AllTarget(rawftodc)
+NormalCCProgramTarget(rawftodc,$(OBJSRAWFTODC),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(rawftodc,$(INSTALLBINDIR))
+InstallManPage(rawftodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(dccomb)
+NormalCCProgramTarget(dccomb,$(OBJSDCCOMB),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dccomb,$(INSTALLBINDIR))
+InstallManPage(dccomb,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcuncat)
+NormalCCProgramTarget(dcuncat,$(OBJSDCUNCAT),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcuncat,$(INSTALLBINDIR))
+InstallManPage(dcuncat,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcsrmrg)
+NormalCCProgramTarget(dcsrmrg,$(OBJSDCSRMRG),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcsrmrg,$(INSTALLBINDIR))
+InstallManPage(dcsrmrg,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcostosr)
+NormalCCProgramTarget(dcostosr,$(OBJSDCOSTOSR),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcostosr,$(INSTALLBINDIR))
+InstallManPage(dcostosr,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcrmmeta)
+NormalCCProgramTarget(dcrmmeta,$(OBJSDCRMMETA),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcrmmeta,$(INSTALLBINDIR))
+InstallManPage(dcrmmeta,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcsrdump)
+NormalCCProgramTarget(dcsrdump,$(OBJSDCSRDUMP),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcsrdump,$(INSTALLBINDIR))
+InstallManPage(dcsrdump,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcsub)
+NormalCCProgramTarget(dcsub,$(OBJSDCSUB),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcsub,$(INSTALLBINDIR))
+InstallManPage(dcsub,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcdecmpr)
+NormalCCProgramTarget(dcdecmpr,$(OBJSDCDECMPR),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcdecmpr,$(INSTALLBINDIR))
+InstallManPage(dcdecmpr,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcsort)
+NormalCCProgramTarget(dcsort,$(OBJSDCSORT),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcsort,$(INSTALLBINDIR))
+InstallManPage(dcsort,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcproj)
+NormalCCProgramTarget(dcproj,$(OBJSDCPROJ),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcproj,$(INSTALLBINDIR))
+InstallManPage(dcproj,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcarith)
+NormalCCProgramTarget(dcarith,$(OBJSDCARITH),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcarith,$(INSTALLBINDIR))
+InstallManPage(dcarith,$(INSTALLMANDIR)/man1)
+
+AllTarget(dctopgm8)
+NormalCCProgramTarget(dctopgm8,$(OBJSDCTOPGM8),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dctopgm8,$(INSTALLBINDIR))
+InstallManPage(dctopgm8,$(INSTALLMANDIR)/man1)
+
+AllTarget(dctopgx)
+NormalCCProgramTarget(dctopgx,$(OBJSDCTOPGX),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dctopgx,$(INSTALLBINDIR))
+InstallManPage(dctopgx,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcpost)
+NormalCCProgramTarget(dcpost,$(OBJSDCPOST),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcpost,$(INSTALLBINDIR))
+InstallManPage(dcpost,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcmulti)
+NormalCCProgramTarget(dcmulti,$(OBJSDCMULTI),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcmulti,$(INSTALLBINDIR))
+InstallManPage(dcmulti,$(INSTALLMANDIR)/man1)
+
+AllTarget(dctable)
+NormalCCProgramTarget(dctable,$(OBJSDCTABLE),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dctable,$(INSTALLBINDIR))
+InstallManPage(dctable,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcmkpres)
+NormalCCProgramTarget(dcmkpres,$(OBJSDCMKPRES),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcmkpres,$(INSTALLBINDIR))
+InstallManPage(dcmkpres,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcortho)
+NormalCCProgramTarget(dcortho,$(OBJSDCORTHO),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcortho,$(INSTALLBINDIR))
+InstallManPage(dcortho,$(INSTALLMANDIR)/man1)
+
+AllTarget(antodc)
+NormalCCProgramTarget(antodc,$(OBJSANTODC),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(antodc,$(INSTALLBINDIR))
+InstallManPage(antodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(dclutdmp)
+NormalCCProgramTarget(dclutdmp,$(OBJSLUTDMP),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dclutdmp,$(INSTALLBINDIR))
+InstallManPage(dclutdmp,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcbriggs)
+NormalCCProgramTarget(dcbriggs,$(OBJSBRIGGS),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcbriggs,$(INSTALLBINDIR))
+InstallManPage(dcbriggs,$(INSTALLMANDIR)/man1)
+
+AllTarget(dccp)
+NormalCCProgramTarget(dccp,$(OBJSCP),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dccp,$(INSTALLBINDIR))
+InstallManPage(dccp,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcdict)
+NormalCCProgramTarget(dcdict,$(OBJSDICT),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcdict,$(INSTALLBINDIR))
+InstallManPage(dcdict,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcdirdmp)
+NormalCCProgramTarget(dcdirdmp,$(OBJSDIRDMP),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcdirdmp,$(INSTALLBINDIR))
+InstallManPage(dcdirdmp,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcdirmk)
+NormalCCProgramTarget(dcdirmk,$(OBJSDIRMK),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcdirmk,$(INSTALLBINDIR))
+InstallManPage(dcdirmk,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcdump)
+NormalCCProgramTarget(dcdump,$(OBJSDUMP),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcdump,$(INSTALLBINDIR))
+InstallManPage(dcdump,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcfile)
+NormalCCProgramTarget(dcfile,$(OBJSFILE),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcfile,$(INSTALLBINDIR))
+InstallManPage(dcfile,$(INSTALLMANDIR)/man1)
+
+AllTarget(dchist)
+NormalCCProgramTarget(dchist,$(OBJSHIST),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dchist,$(INSTALLBINDIR))
+InstallManPage(dchist,$(INSTALLMANDIR)/man1)
+
+AllTarget(dckey)
+NormalCCProgramTarget(dckey,$(OBJSKEY),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dckey,$(INSTALLBINDIR))
+InstallManPage(dckey,$(INSTALLMANDIR)/man1)
+
+AllTarget(dciodvfy)
+NormalCCProgramTarget(dciodvfy,$(OBJSIODVFY),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dciodvfy,$(INSTALLBINDIR))
+InstallManPage(dciodvfy,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcmerge)
+NormalCCProgramTarget(dcmerge,$(OBJSMERGE),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcmerge,$(INSTALLBINDIR))
+InstallManPage(dcmerge,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcposn)
+NormalCCProgramTarget(dcposn,$(OBJSPOSN),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcposn,$(INSTALLBINDIR))
+InstallManPage(dcposn,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcsmpte)
+NormalCCProgramTarget(dcsmpte,$(OBJSSMPTE),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcsmpte,$(INSTALLBINDIR))
+InstallManPage(dcsmpte,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcsqextr)
+NormalCCProgramTarget(dcsqextr,$(OBJSSQEXTR),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcsqextr,$(INSTALLBINDIR))
+InstallManPage(dcsqextr,$(INSTALLMANDIR)/man1)
+
+AllTarget(dcstats)
+NormalCCProgramTarget(dcstats,$(OBJSSTATS),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dcstats,$(INSTALLBINDIR))
+InstallManPage(dcstats,$(INSTALLMANDIR)/man1)
+
+AllTarget(dctoraw)
+NormalCCProgramTarget(dctoraw,$(OBJSTORAW),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dctoraw,$(INSTALLBINDIR))
+InstallManPage(dctoraw,$(INSTALLMANDIR)/man1)
+
+AllTarget(dctopnm)
+NormalCCProgramTarget(dctopnm,$(OBJSTOPNM),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(dctopnm,$(INSTALLBINDIR))
+InstallManPage(dctopnm,$(INSTALLMANDIR)/man1)
+
+AllTarget(pbmtoovl)
+NormalCCProgramTarget(pbmtoovl,$(OBJSPBMTOOVL),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(pbmtoovl,$(INSTALLBINDIR))
+InstallManPage(pbmtoovl,$(INSTALLMANDIR)/man1)
+
+AllTarget(pnmtodc)
+NormalCCProgramTarget(pnmtodc,$(OBJSPNMTO),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(pnmtodc,$(INSTALLBINDIR))
+InstallManPage(pnmtodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(rawtodc)
+NormalCCProgramTarget(rawtodc,$(OBJSRAWTO),$(PROJECTDCFILEDEPLIBS),$(PROJECTDCFILELIBS),-lm)
+InstallProgram(rawtodc,$(INSTALLBINDIR))
+InstallManPage(rawtodc,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcpatmpl,$(INSTALLBINDIR))
+InstallManPage(dcpatmpl,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcswab,$(INSTALLBINDIR))
+InstallManPage(dcswab,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcjls,$(INSTALLBINDIR))
+InstallManPage(dcjls,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcunjls,$(INSTALLBINDIR))
+InstallManPage(dcunjls,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcj2k,$(INSTALLBINDIR))
+InstallManPage(dcj2k,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcjpeg,$(INSTALLBINDIR))
+InstallManPage(dcjpeg,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcunjpeg,$(INSTALLBINDIR))
+InstallManPage(dcunjpeg,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcunjpeg.all,$(INSTALLBINDIR))
+InstallManPage(dcunjpeg.all,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcunrgb,$(INSTALLBINDIR))
+InstallManPage(dcunrgb,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcanon,$(INSTALLBINDIR))
+InstallManPage(dcanon,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcmvhier,$(INSTALLBINDIR))
+InstallManPage(dcmvhier,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcmvhier.uid,$(INSTALLBINDIR))
+InstallManPage(dcmvhier.uid,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcmvhier.datedesc,$(INSTALLBINDIR))
+InstallManPage(dcmvhier.datedesc,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcmvhier.datedescnoid,$(INSTALLBINDIR))
+InstallManPage(dcmvhier.datedescnoid,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcmvhier.8only,$(INSTALLBINDIR))
+InstallManPage(dcmvhier.8only,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcmvhier.all,$(INSTALLBINDIR))
+InstallManPage(dcmvhier.all,$(INSTALLMANDIR)/man1)
+
+InstallScript(antodc.all,$(INSTALLBINDIR))
+InstallManPage(antodc.all,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcrmsfx.all,$(INSTALLBINDIR))
+InstallManPage(dcrmsfx.all,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcdeflate,$(INSTALLBINDIR))
+InstallManPage(dcdeflate,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcinflate,$(INSTALLBINDIR))
+InstallManPage(dcinflate,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcbzip2,$(INSTALLBINDIR))
+InstallManPage(dcbzip2,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcunbzip2,$(INSTALLBINDIR))
+InstallManPage(dcunbzip2,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcsrdiff,$(INSTALLBINDIR))
+InstallManPage(dcsrdiff,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcdiff,$(INSTALLBINDIR))
+InstallManPage(dcdiff,$(INSTALLMANDIR)/man1)
+
+InstallScript(dccmp,$(INSTALLBINDIR))
+InstallManPage(dccmp,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcacqmap,$(INSTALLBINDIR))
+InstallManPage(dcacqmap,$(INSTALLMANDIR)/man1)
+
+InstallScript(dcckovly,$(INSTALLBINDIR))
+InstallManPage(dcckovly,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test:: testdchist testy2k testpbmtoovl testdcfile testdccp testantodc testpnmtodc testdcdirdmp testdcdump testdciodvfy testdcposn testpack
+
+testpbmtoovl:
+	@$(TOP)/support/testapp testlist ./pbmtoovl "-overlaygroup 0 -r SOPClassUID 0 -r SOPInstanceUID 0" $(TOP)/images/ovltest $(TOP)/test/$(CURRENT_DIR) compare pbmtoovl
+
+testy2k:
+	./testy2k.sh $(TOP)/test/$(CURRENT_DIR) compare
+	./testy2k.antodc.sh $(TOP)/test/$(CURRENT_DIR) compare
+
+testpack:
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"                                $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack1
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n"                             $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack2
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little"    $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack3
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack4
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big"       $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack5
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n"    $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack6
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -rb BitsAllocated 12 -rb BitsStored 12 -rb HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack11
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -rb BitsAllocated 12 -rb BitsStored 12 -rb HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack12
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -rb BitsAllocated 12 -rb BitsStored 12 -rb HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack13
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -rb BitsAllocated 12 -rb BitsStored 12 -rb HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack14
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -rb BitsAllocated 12 -rb BitsStored 12 -rb HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack15
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -rb BitsAllocated 12 -rb BitsStored 12 -rb HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack16
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -rb BitsAllocated 16 -rb BitsStored 16 -rb HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack21
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -rb BitsAllocated 16 -rb BitsStored 16 -rb HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack22
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -rb BitsAllocated 16 -rb BitsStored 16 -rb HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack23
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -rb BitsAllocated 16 -rb BitsStored 16 -rb HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack24
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -rb BitsAllocated 16 -rb BitsStored 16 -rb HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack25
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -rb BitsAllocated 16 -rb BitsStored 16 -rb HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack26
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -rb BitsAllocated 8 -rb BitsStored 8 -rb HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack31
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -rb BitsAllocated 8 -rb BitsStored 8 -rb HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack32
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -rb BitsAllocated 8 -rb BitsStored 8 -rb HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack33
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -rb BitsAllocated 8 -rb BitsStored 8 -rb HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack34
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -rb BitsAllocated 8 -rb BitsStored 8 -rb HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack35
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -rb BitsAllocated 8 -rb BitsStored 8 -rb HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack36
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack111
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack112
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack113
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack114
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack115
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack116
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack121
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack122
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack123
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack124
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack125
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack126
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack131
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack132
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack133
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack134
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack135
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) compare pack136
+
+testdciodvfy:
+	@$(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) compare iodvfy
+	@$(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare iodvfy
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) compare iodvfy; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) compare iodvfy; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) compare iodvfy; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/wuerlim  $(TOP)/test/wuerlim/$(CURRENT_DIR) compare iodvfy; fi
+
+testdcfile:
+	@$(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) compare file
+	@$(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare file
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) compare file; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) compare file; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) compare file; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/wuerlim  $(TOP)/test/wuerlim/$(CURRENT_DIR) compare file; fi
+
+testdcdirdmp:
+	@$(TOP)/support/testapp testdirs ./dcdirdmp "-vv"                  $(TOP)/images/dicom $(TOP)/test/$(CURRENT_DIR) compare dcdirdmp
+
+testdchist:
+	@$(TOP)/support/testapp testlist ./dchist "-h"                $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) compare hist
+	@$(TOP)/support/testapp testlist ./dchist "-h"                $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare hist
+
+testdcdump:
+	@$(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare dump
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) compare dump; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/wuerlim  $(TOP)/test/wuerlim/$(CURRENT_DIR) compare dump; fi
+
+testdccp:
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) compare cp
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare cp
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) compare cp; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) compare cp; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) compare cp; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/wuerlim  $(TOP)/test/wuerlim/$(CURRENT_DIR) compare cp; fi
+
+testantodc:
+	@$(TOP)/support/testapp testlist ./antodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) compare antodc
+	@$(TOP)/support/testapp testlist ./antodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare antodc
+
+testpnmtodc:
+	@$(TOP)/support/testapp testlist ./pnmtodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/pnm $(TOP)/test/$(CURRENT_DIR) compare pnmtodc
+
+testdcposn:
+	@$(TOP)/support/testapp testlist ./dcposn "-row   0 -col   0" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare posnTLHC
+	@$(TOP)/support/testapp testlist ./dcposn "-row   0 -col 255" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare posnRRHC
+	@$(TOP)/support/testapp testlist ./dcposn "-row 255 -col   0" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare posnBLHC
+	@$(TOP)/support/testapp testlist ./dcposn "-row 255 -col 255" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) compare posnBRHC
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col   0" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) compare posnTLHC; fi
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col 255" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) compare posnRRHC; fi
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col   0" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) compare posnBLHC; fi
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col 255" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) compare posnBRHC; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col   0" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) compare posnTLHC; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col 255" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) compare posnRRHC; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col   0" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) compare posnBLHC; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col 255" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) compare posnBRHC; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col   0" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) compare posnTLHC; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col 255" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) compare posnRRHC; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col   0" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) compare posnBLHC; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col 255" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) compare posnBRHC; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col   0" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) compare posnTLHC; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col 255" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) compare posnRRHC; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col   0" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) compare posnBLHC; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col 255" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) compare posnBRHC; fi
+
+test.create:: testdchist.create testy2k.create testpbmtoovl.create testdcfile.create testdccp.create testantodc.create testpnmtodc.create testdcdirdmp.create testdcdump.create testdciodvfy.create testdcposn.create testpack.create
+
+testy2k.create:
+	./testy2k.sh $(TOP)/test/$(CURRENT_DIR) create
+	./testy2k.antodc.sh $(TOP)/test/$(CURRENT_DIR) create
+
+testpbmtoovl.create:
+	@$(TOP)/support/testapp testlist ./pbmtoovl "-overlaygroup 0 -r SOPClassUID 0 -r SOPInstanceUID 0" $(TOP)/images/ovltest $(TOP)/test/$(CURRENT_DIR) create pbmtoovl
+
+testpack.create:
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"                                $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack1
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n"                             $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack2
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little"    $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack3
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack4
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big"       $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack5
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n"    $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack6
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -r BitsAllocated 12 -r BitsStored 12 -r HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack11
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -r BitsAllocated 12 -r BitsStored 12 -r HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack12
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -r BitsAllocated 12 -r BitsStored 12 -r HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack13
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -r BitsAllocated 12 -r BitsStored 12 -r HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack14
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -r BitsAllocated 12 -r BitsStored 12 -r HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack15
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -r BitsAllocated 12 -r BitsStored 12 -r HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack16
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -r BitsAllocated 16 -r BitsStored 16 -r HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack21
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -r BitsAllocated 16 -r BitsStored 16 -r HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack22
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -r BitsAllocated 16 -r BitsStored 16 -r HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack23
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -r BitsAllocated 16 -r BitsStored 16 -r HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack24
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -r BitsAllocated 16 -r BitsStored 16 -r HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack25
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -r BitsAllocated 16 -r BitsStored 16 -r HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack26
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -r BitsAllocated 8 -r BitsStored 8 -r HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack31
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -r BitsAllocated 8 -r BitsStored 8 -r HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack32
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -r BitsAllocated 8 -r BitsStored 8 -r HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack33
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -r BitsAllocated 8 -r BitsStored 8 -r HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack34
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -r BitsAllocated 8 -r BitsStored 8 -r HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack35
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -r BitsAllocated 8 -r BitsStored 8 -r HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack36
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack111
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack112
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack113
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack114
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack115
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -ra BitsAllocated 12 -ra BitsStored 12 -ra HighBit 11" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack116
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack121
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack122
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack123
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack124
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack125
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -ra BitsAllocated 16 -ra BitsStored 16 -ra HighBit 15" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack126
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100                                -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack131
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -n                             -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack132
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little    -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack133
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian little -n -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack134
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big       -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack135
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100 -vr explicit -endian big -n    -ra BitsAllocated 8 -ra BitsStored 8 -ra HighBit 7" $(TOP)/images/packtest $(TOP)/test/$(CURRENT_DIR) create pack136
+
+testdciodvfy.create:
+	@$(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) create iodvfy
+	@$(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create iodvfy
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) create iodvfy; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) create iodvfy; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) create iodvfy; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dciodvfy ""                $(TOP)/images/wuerlim  $(TOP)/test/wuerlim/$(CURRENT_DIR) create iodvfy; fi
+
+testdcfile.create:
+	@$(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) create file
+	@$(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create file
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) create file; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) create file; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) create file; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcfile ""                  $(TOP)/images/wuerlim  $(TOP)/test/wuerlim/$(CURRENT_DIR) create file; fi
+
+testdcdirdmp.create:
+	@$(TOP)/support/testapp testdirs ./dcdirdmp "-vv"                  $(TOP)/images/dicom $(TOP)/test/$(CURRENT_DIR) create dcdirdmp
+
+
+testdchist.create:
+	@$(TOP)/support/testapp testlist ./dchist "-h"                $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) create hist
+	@$(TOP)/support/testapp testlist ./dchist "-h"                $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create hist
+
+testdcdump.create:
+	@$(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create dump
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) create dump; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) create dump; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) create dump; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcdump ""                  $(TOP)/images/wuerlim  $(TOP)/test/wuerlim/$(CURRENT_DIR) create dump; fi
+
+testdccp.create:
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) create cp
+	@$(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create cp
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) create cp; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) create cp; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) create cp; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dccp "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/wuerlim  $(TOP)/test/wuerlim/$(CURRENT_DIR) create cp; fi
+
+testantodc.create:
+	@$(TOP)/support/testapp testlist ./antodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/acrnema $(TOP)/test/$(CURRENT_DIR) create antodc
+	@$(TOP)/support/testapp testlist ./antodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create antodc
+
+testpnmtodc.create:
+	@$(TOP)/support/testapp testlist ./pnmtodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100"      $(TOP)/images/pnm $(TOP)/test/$(CURRENT_DIR) create pnmtodc
+
+testdcposn.create:
+	@$(TOP)/support/testapp testlist ./dcposn "-row   0 -col   0" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create posnTLHC
+	@$(TOP)/support/testapp testlist ./dcposn "-row   0 -col 255" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create posnRRHC
+	@$(TOP)/support/testapp testlist ./dcposn "-row 255 -col   0" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create posnBLHC
+	@$(TOP)/support/testapp testlist ./dcposn "-row 255 -col 255" $(TOP)/images/dicom   $(TOP)/test/$(CURRENT_DIR) create posnBRHC
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col   0" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) create posnTLHC; fi
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col 255" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) create posnRRHC; fi
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col   0" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) create posnBLHC; fi
+	@if [ -f $(TOP)/images/disc95/us000001. ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col 255" $(TOP)/images/disc95   $(TOP)/test/$(CURRENT_DIR) create posnBRHC; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col   0" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) create posnTLHC; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col 255" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) create posnRRHC; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col   0" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) create posnBLHC; fi
+	@if [ -f $(TOP)/images/disc95am/cine01. ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col 255" $(TOP)/images/disc95am $(TOP)/test/$(CURRENT_DIR) create posnBRHC; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col   0" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) create posnTLHC; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col 255" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) create posnRRHC; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col   0" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) create posnBLHC; fi
+	@if [ -f $(TOP)/images/osiriscd/dicom/ctspine.dcm ]; then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col 255" $(TOP)/images/osiriscd $(TOP)/test/$(CURRENT_DIR) create posnBRHC; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col   0" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) create posnTLHC; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcposn "-row   0 -col 255" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) create posnRRHC; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col   0" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) create posnBLHC; fi
+	@if [ -d $(TOP)/images/wuerlim/version3 ];           then $(TOP)/support/testapp testlist ./dcposn "-row 255 -col 255" $(TOP)/images/wuerlim  $(TOP)/test/$(CURRENT_DIR) create posnBRHC; fi
+
+
+

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# usage: dcrmsfx.all.script
+#
+# this script removes a .dcm extension (e.g. prior to dcdirmk)
+
+MV=mv
+
+for i in `find "$1" -name '*.dcm' -print`
+do
+	newname=`echo "$i" | sed 's/[.]dcm$//'`
+	echo "Moving $i to $newname" 
+	$MV "$i" "$newname"
+done
+

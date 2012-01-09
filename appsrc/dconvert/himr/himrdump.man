@@ -1,0 +1,42 @@
+.TH HIMRDUMP 1 "05 April 1998" "DICOM PS3" "himr dump"
+.SH NAME
+himrdump \- ACR/NEMA DICOM PS3 ... himr dump contents
+.SH SYNOPSIS
+.HP 10
+.B himrdump
+.I inputfilename
+.SH DESCRIPTION
+.LP
+.B himrdump
+reads the named himr input file and dumps its contents.
+.LP
+.SH OPTIONS
+The dump output goes to standard error.
+.PP
+The basic switches are described in dcintro(1).
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% himrdump test
+.RE
+\ 
+.RE
+[block:offset] Description        <value>
+.RE
+\ 
+.RE
+ ...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1) ,
+.BR himrtodc(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

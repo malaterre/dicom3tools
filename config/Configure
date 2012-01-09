@@ -1,0 +1,857 @@
+
+#!/bin/sh
+
+TMPROOT="/tmp/$0.$$"
+
+if [ -f generic.cf ]; then mv generic.cf generic.cf.bak; fi
+
+echo  >generic.cf "/* Automagically generated - edits will be lost */"
+echo              '/* Configure last updated $Date: 2008/09/02 17:18:15 $ */' | sed -e 's/[$]//g' -e 's/Date: //' >>generic.cf
+echo >>generic.cf "/* This file created      "`date +'%Y/%m/%d %H:%M:%S'`" */"
+if [ ! -z "$BASH_VERSION" ]
+then
+	echo >>generic.cf "/* By                     $BASH version $BASH_VERSION */"
+fi
+echo >>generic.cf
+
+usegccifpresent="yes"
+
+while [ $# -ge 1 ]
+do
+	if [ "$1" = "notgcc" ]; then usegccifpresent="no"; fi
+	shift
+done
+
+# ----------------------- support functions -------------------------
+
+getIsPresent()		# getIsPresent "cmd"
+{
+	#echo 1>&2 "Configure: looking for $1"
+	rm -f $TMPROOT.getIsPresent
+	($1 </dev/null) >$TMPROOT.getIsPresent 2>&1
+	#echo 1>&2 "Configure: attempted to execute $1"
+	if grep -i "not found" <$TMPROOT.getIsPresent >/dev/null
+	then
+		#echo 1>&2 "Configure: not found $1"
+		rm -f $TMPROOT.getIsPresent
+		return 1
+	elif grep -i "no such" <$TMPROOT.getIsPresent >/dev/null
+	then
+		#echo 1>&2 "Configure: no such $1"
+		rm -f $TMPROOT.getIsPresent
+		return 1
+	else
+		#echo 1>&2 "Configure: found $1"
+		rm -f $TMPROOT.getIsPresent
+		return 0
+	fi
+}
+
+getVersion()		# getVersion "cmd"
+{
+	rm -f $TMPROOT.getVersion
+	($1 </dev/null) >$TMPROOT.getVersion 2>&1
+	if grep -i "not found" <$TMPROOT.getVersion >/dev/null
+	then
+		rm -f $TMPROOT.getVersion
+		return 1
+	elif grep -i "no such" <$TMPROOT.getVersion >/dev/null
+	then
+		rm -f $TMPROOT.getVersion
+		return 1
+	else
+		cat $TMPROOT.getVersion
+		rm -f $TMPROOT.getVersion
+		return 0
+	fi
+}
+
+SunProIncludePath()	# SunProIncludePath cmd extension definecmd defineflagsprefix defineflagssuffix definepath
+{
+	echo 1>&2 "Configure: find SunPro include path for $1"
+
+	cmd="$1"
+	language="$2"
+	extension="$3"
+	definecmd="$4"
+	defineflagsprefix="$5"
+	defineflagssuffix="$6"
+	definepath="$7"
+
+	touch $TMPROOT.testsp.$extension
+	rm -f $TMPROOT.testsp.o
+	if getIsPresent "$cmd -V -o $TMPROOT.testsp.o -c $TMPROOT.testsp.$extension"
+	then
+		echo 1>&2 "Configure: found $cmd"
+		sunproversion=`$cmd -V -o $TMPROOT.testsp.o \
+				-c $TMPROOT.testsp.$extension 2>&1 | \
+			grep ":" | head -1 | \
+			sed -e 's/\([0-9][.][0-9]\)[^0-9.].*$/\1/' \
+			    -e 's/^.*[^0-9.]\([0-9][.][0-9]\)/\1/'`
+		sunpromajorversion=`echo "$sunproversion" | sed 's/[^0-9].*$//'`
+
+		echo 1>&2 "Configure: found version $sunproversion"
+		echo 1>&2 "Configure: found major version $sunpromajorversion"
+
+		echo >>generic.cf "#ifndef $definecmd"
+		echo >>generic.cf "#define $definecmd $cmd"
+		echo >>generic.cf "#endif"
+
+		echo >>generic.cf "#ifndef YaccCmd"
+		echo >>generic.cf "#define YaccCmd yacc -l /* shuts up SunBrowser warnings about #line */"
+		echo >>generic.cf "#endif"
+
+		if [ "$sunpromajorversion" = 3 ]
+		then
+			echo >>generic.cf "#ifndef XarCmd"
+			echo >>generic.cf "#define XarCmd CPlusPlusCmd -xar -o"
+			echo >>generic.cf "#endif"
+		fi
+
+		if [ "$sunpromajorversion" = 2 ]
+		then
+			echo >>generic.cf "#ifndef $defineflagsprefix""SourceBrowser"
+			echo >>generic.cf "#define $defineflagsprefix""SourceBrowser -sb"
+			echo >>generic.cf "#endif"
+
+		fi
+
+		if [ "$sunpromajorversion" -ge 3 ]
+		then
+			echo >>generic.cf "#ifndef $defineflagsprefix""SourceBrowser"
+			echo >>generic.cf "#define $defineflagsprefix""SourceBrowser -xsb -xF"
+			echo >>generic.cf "#endif"
+		fi
+
+		echo >>generic.cf "#ifndef $defineflagsprefix""TmpPath"
+		echo >>generic.cf "#ifdef TmpPath"
+		echo >>generic.cf "#define $defineflagsprefix""TmpPath -temp=TmpPath"
+		echo >>generic.cf "#else"
+		echo >>generic.cf "#define $defineflagsprefix""TmpPath /**/"
+		echo >>generic.cf "#endif"
+		echo >>generic.cf "#endif"
+
+		echo >>generic.cf "#ifndef $defineflagsprefix""Optimized""$defineflagssuffix"
+		if [ "$sunpromajorversion" -ge 4 -a "$defineflagsprefix" = CPlusPlus ]
+		then
+			echo >>generic.cf "#define $defineflagsprefix""Optimized""$defineflagssuffix $defineflagsprefix""TmpPath $defineflagsprefix""SourceBrowser OptimizeLevel NeedMissingPrototypes -DNOBOOLEANTYPE -DNOBOOLEANVALUES -DNOGENERALINITIALIZERS -pto"
+		elif [ "$sunpromajorversion" -ge 2 ]
+		then
+			echo >>generic.cf "#define $defineflagsprefix""Optimized""$defineflagssuffix $defineflagsprefix""TmpPath $defineflagsprefix""SourceBrowser OptimizeLevel NeedMissingPrototypes -DNOBOOLEANTYPE -DNOBOOLEANVALUES -DNOGENERALINITIALIZERS"
+		else
+			echo >>generic.cf "#define $defineflagsprefix""Optimized""$defineflagssuffix $defineflagsprefix""TmpPath $defineflagsprefix""SourceBrowser OptimizeLevel NeedMissingPrototypes"
+		fi
+		echo >>generic.cf "#endif"
+
+		echo >>generic.cf "#ifndef $defineflagsprefix""Unoptimized""$defineflagssuffix"
+		if [ "$sunpromajorversion" -ge 4 -a "$defineflagsprefix" = CPlusPlus ]
+		then
+			echo >>generic.cf "#define $defineflagsprefix""Unoptimized""$defineflagssuffix $defineflagsprefix""TmpPath $defineflagsprefix""SourceBrowser NeedMissingPrototypes -DNOBOOLEANTYPE -DNOBOOLEANVALUES -DNOGENERALINITIALIZERS -pto"
+		elif [ "$sunpromajorversion" -ge 2 ]
+		then
+			echo >>generic.cf "#define $defineflagsprefix""Unoptimized""$defineflagssuffix $defineflagsprefix""TmpPath $defineflagsprefix""SourceBrowser NeedMissingPrototypes -DNOBOOLEANTYPE -DNOBOOLEANVALUES -DNOGENERALINITIALIZERS"
+		else
+			echo >>generic.cf "#define $defineflagsprefix""Unoptimized""$defineflagssuffix $defineflagsprefix""TmpPath $defineflagsprefix""SourceBrowser NeedMissingPrototypes"
+		fi
+		echo >>generic.cf "#endif"
+
+		rm -f $TMPROOT.testsp.o
+		extractedoptions=`$cmd -V -o $TMPROOT.testsp.o \
+						-c $TMPROOT.testsp.$extension 2>&1 | \
+					egrep '\-I' | head -1 | \
+					sed -e 's/^[^ 	]*//' \
+					    -e 's/-[^I][^ 	]*//g' \
+					    -e 's/[ 	][^-][^ 	]*//g'`
+
+		if [ -z "$extractedoptions" ]
+		then
+			if [ "$language" = CC ]
+			then
+				echo >>generic.cf "#ifndef $definepath"
+				echo >>generic.cf "#define $definepath -I\$(LANGHOME)/SC$sunproversion/include/CC" \
+					" -I\$(LANGHOME)/SC$sunproversion/include/cc"
+				echo >>generic.cf "#endif"
+			else
+				echo >>generic.cf "#ifndef $definepath"
+				echo >>generic.cf "#define $definepath -I\$(LANGHOME)/SC$sunproversion/include/cc"
+				echo >>generic.cf "#endif"
+			fi
+		else
+			echo >>generic.cf "#ifndef $definepath"
+			echo >>generic.cf "#define $definepath $extractedoptions"
+			echo >>generic.cf "#endif"
+		fi
+	fi
+	rm -f $TMPROOT.testsp.$extension $TMPROOT.testsp.o
+}
+
+OSFIncludePath()	# OSFIncludePath cmd extension definecmd defineflagsprefix defineflagssuffix definepath
+{
+	cmd="$1"
+	language="$2"
+	extension="$3"
+	definecmd="$4"
+	defineflags="$5"
+	definepath="$6"
+
+	touch $TMPROOT.testsp.$extension
+	rm -f $TMPROOT.testsp.o
+	if getIsPresent "$cmd -o $TMPROOT.testsp.o -c $TMPROOT.testsp.$extension"
+	then
+		echo >>generic.cf "#ifndef $definecmd"
+		echo >>generic.cf "#define $definecmd $cmd"
+		echo >>generic.cf "#endif"
+
+		echo >>generic.cf "#ifndef $defineflagsprefix""Unoptimized""$defineflagssuffix"
+		echo >>generic.cf "#define $defineflagsprefix""Unoptimized""$defineflagssuffix"
+		echo >>generic.cf "#endif"
+
+		echo >>generic.cf "#ifndef $defineflagsprefix""Optimized""$defineflagssuffix"
+		echo >>generic.cf "#define $defineflagsprefix""Optimized""$defineflagssuffix OptimizeLevel"
+		echo >>generic.cf "#endif"
+
+		if [ "$language" = CC ]
+		then
+			echo >>generic.cf "#ifndef $definepath"
+			echo >>generic.cf "#define $definepath -I/usr/include/cxx"
+			echo >>generic.cf "#endif"
+		else
+			echo >>generic.cf "#ifndef $definepath"
+			echo >>generic.cf "#define $definepath -I/usr/include"
+			echo >>generic.cf "#endif"
+		fi
+	fi
+	rm -f $TMPROOT.testsp.$extension $TMPROOT.testsp.o
+}
+
+# ----------------------- start of main routine -------------------------
+
+echo 1>&2 "Configure: begin"
+
+# --------------------- Before OS dependent stuff -----------------------
+
+osname=`uname -s`
+osnameforconfig="`uname -s` `uname -r`"
+leftover=`uname -r`
+osmajorversion=`echo "$leftover" | sed 's/[^0-9a-zA-Z].*$//'`
+leftover=`echo "$leftover" | sed 's/^[0-9a-zA-Z][0-9a-zA-Z]*[^0-9a-zA-Z]//'`
+osminorversion=`echo "$leftover" | sed 's/[^0-9a-zA-Z].*$//'`
+leftover=`echo "$leftover" | sed 's/^[0-9a-zA-Z][0-9a-zA-Z]*[^0-9a-zA-Z]//'`
+osteenyversion=`echo "$leftover" | sed 's/[^0-9a-zA-Z].*$//'`
+
+echo 1>&2 "Configure: we are on OS $osname"
+
+if [ "$osname" = "SunOS" -a "$osmajorversion" -le 4 ]
+then
+	hardware=`uname -m`	# -p isn't supported in SunOS uname - make do with machine architecture
+else
+	hardware=`uname -p`	# gets instruction set architecture not machine architecture
+fi
+
+echo 1>&2 "Configure: we are on instruction set architecture $hardware"
+
+platformnameforinstallpath=`echo "$osname.$osmajorversion.$osminorversion.$osteenyversion.$hardware" | tr -d -c '[0-9][a-z][A-Z].' | tr '[A-Z]' '[a-z]'`
+
+echo 1>&2 "Configure: make install use platform specific directory $platformnameforinstallpath"
+
+echo >>generic.cf "#ifndef OSName"
+echo >>generic.cf "#define OSName            $osnameforconfig"
+echo >>generic.cf "#endif"
+echo >>generic.cf "XCOMM hardware:              $hardware"
+echo >>generic.cf "XCOMM operating system:      $osnameforconfig"
+echo >>generic.cf "XCOMM operating system path: $platformnameforinstallpath"
+echo >>generic.cf "#ifndef OSMajorVersion"
+echo >>generic.cf "#define OSMajorVersion    $osmajorversion"
+echo >>generic.cf "#endif"
+echo >>generic.cf "#ifndef OSMinorVersion"
+echo >>generic.cf "#define OSMinorVersion    $osminorversion"
+echo >>generic.cf "#endif"
+echo >>generic.cf "#ifndef OSTeenyVersion"
+echo >>generic.cf "#define OSTeenyVersion    $osteenyversion"
+echo >>generic.cf "#endif"
+echo >>generic.cf "#ifndef PlatformNameForInstallPath"
+echo >>generic.cf "#define PlatformNameForInstallPath    $platformnameforinstallpath"
+echo >>generic.cf "#endif"
+
+if gawkversion=`getVersion "gawk -W version"`
+then
+        echo 1>&2 "Configure: using gawk"
+	echo >>generic.cf "#ifndef AwkCmd"
+	echo >>generic.cf "#define AwkCmd gawk"
+	echo >>generic.cf "#endif"
+else
+	if nawkversion=`getVersion "nawk </dev/null"`
+	then
+		echo 1>&2 "Configure: using nawk"
+		echo >>generic.cf "#ifndef AwkCmd"
+		echo >>generic.cf "#define AwkCmd nawk"
+		echo >>generic.cf "#endif"
+	fi
+fi
+
+if bisonversion=`getVersion "bison -V" | grep -i version`
+then
+	echo 1>&2 "Configure: using bison $bisonversion"
+	echo >>generic.cf "#ifndef YaccCmd"
+	echo >>generic.cf "#define YaccCmd bison -y"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef YaccLib"
+	echo >>generic.cf "#define YaccLib /**/"
+	echo >>generic.cf "#endif"
+fi
+
+if flexversion=`getVersion "flex -v" | grep -i version`
+then
+	echo 1>&2 "Configure: using flex $flexversion"
+	echo >>generic.cf "#ifndef LexCmd"
+	echo >>generic.cf "#define LexCmd flex"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef LexLib"
+	echo >>generic.cf "#define LexLib -lfl"
+	echo >>generic.cf "#endif"
+fi
+
+if bzip2version=`getVersion "bzip2 -V" | grep -i version`
+then
+	echo 1>&2 "Configure: using bzip2 $bzip2version"
+	echo >>generic.cf "#ifndef CompressCmd"
+	echo >>generic.cf "#define CompressCmd bzip2"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef UnCompressCmd"
+	echo >>generic.cf "#define UnCompressCmd bzip2 -d"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef CompressExtension"
+	echo >>generic.cf "#define CompressExtension bz2"
+	echo >>generic.cf "#endif"
+elif gzipversion=`getVersion "gzip -V" | grep -i gzip`
+then
+	echo 1>&2 "Configure: using gzip $gzipversion"
+	echo >>generic.cf "#ifndef CompressCmd"
+	echo >>generic.cf "#define CompressCmd gzip --best"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef UnCompressCmd"
+	echo >>generic.cf "#define UnCompressCmd gzip -d"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef CompressExtension"
+	echo >>generic.cf "#define CompressExtension gz"
+	echo >>generic.cf "#endif"
+fi
+
+if gnutarversion=`getVersion "gnutar --version" | grep -i tar`
+then
+	echo 1>&2 "Configure: using gnutar $gnutarversion"
+	echo >>generic.cf "#ifndef TarCmd"
+	echo >>generic.cf "#define TarCmd gnutar"
+	echo >>generic.cf "#endif"
+fi
+
+foundallgcc="no"
+if [ "$usegccifpresent" = "yes" ]
+then
+	echo 1>&2 "Configure: will try to use gcc"
+		usegcc="gcc"
+		usegpp="g++"
+	if gccversion=`getVersion "$usegcc -v" | grep -v 'Configured with:' | grep -i version`
+	then
+		echo 1>&2 "Configure: using $usegcc version $gccversion"
+		if gplusplusversion=`getVersion "$usegpp -v" | grep -v 'Configured with:' | grep -i version`
+		then
+			gplusplussubversion=`echo "$gplusplusversion" | sed -e 's/egcs-//' -e 's/Apple Computer.* based on //'`
+			gplusplusmajorversion=`echo "$gplusplussubversion" | awk '{print $3}' | sed 's/[.]/ /g' | awk '{print $1}'`
+			gplusplusminorversion=`echo "$gplusplussubversion" | awk '{print $3}' | sed 's/[.]/ /g' | awk '{print $2}'`
+			gplusplustinyversion=` echo "$gplusplussubversion" | awk '{print $3}' | sed 's/[.]/ /g' | awk '{print $3}'`
+
+			echo 1>&2 "Configure: using $usegpp version $gplusplusversion ($gplusplusmajorversion.$gplusplusminorversion.$gplusplustinyversion)"
+
+			foundallgcc="yes"
+			echo >>generic.cf "#ifndef AnsiCCmd"
+			echo >>generic.cf "#define AnsiCCmd $usegcc"
+			echo >>generic.cf "#endif"
+			echo >>generic.cf "#ifndef CPlusPlusCmd"
+			echo >>generic.cf "#define CPlusPlusCmd $usegpp"
+			echo >>generic.cf "#endif"
+
+			# cope with X11 includes screwing up g++ 2.95.x
+
+			if [ "$gplusplusmajorversion" -ge 2 -a "$gplusplusminorversion" -eq 95 ]
+			then
+				if [ "$gplusplustinyversion" -ge 2 ]
+				then
+					if [ "$osname" != "Darwin" ]
+					then
+						echo >>generic.cf "#ifndef SystemIncludeOption"
+						echo >>generic.cf "#define SystemIncludeOption -isystem" 
+						echo >>generic.cf "#endif"
+					fi
+				else
+					echo >>generic.cf "#ifndef CPlusPlusUnoptimizedDebugFlags"
+					echo >>generic.cf "#define CPlusPlusUnoptimizedDebugFlags NeedMissingPrototypes -fpermissive"
+					echo >>generic.cf "#endif"
+					echo >>generic.cf "#ifndef CPlusPlusOptimizedDebugFlags"
+					echo >>generic.cf "#define CPlusPlusOptimizedDebugFlags OptimizeLevel NeedMissingPrototypes -fpermissive"
+					echo >>generic.cf "#endif"
+				fi
+			fi
+
+			# cope with new standard C++ library in g++ 3.0 messing up streampos, etc.:
+
+			if [ "$gplusplusmajorversion" -ge 3 ]
+			then
+				echo >>generic.cf "#ifndef HasStdNameSpaceForStreamPos"
+				echo >>generic.cf "#define HasStdNameSpaceForStreamPos 1"
+				echo >>generic.cf "#endif"
+			fi
+
+			echo >>generic.cf "#ifndef AnsiCUnoptimizedDebugFlags"
+			echo >>generic.cf "#define AnsiCUnoptimizedDebugFlags NeedMissingPrototypes"
+			echo >>generic.cf "#endif"
+			echo >>generic.cf "#ifndef AnsiCOptimizedDebugFlags"
+			echo >>generic.cf "#define AnsiCOptimizedDebugFlags OptimizeLevel NeedMissingPrototypes"
+			echo >>generic.cf "#endif"
+			echo >>generic.cf "#ifndef CPlusPlusUnoptimizedDebugFlags"
+			echo >>generic.cf "#define CPlusPlusUnoptimizedDebugFlags NeedMissingPrototypes -Wno-deprecated"
+			echo >>generic.cf "#endif"
+			echo >>generic.cf "#ifndef CPlusPlusOptimizedDebugFlags"
+			echo >>generic.cf "#define CPlusPlusOptimizedDebugFlags OptimizeLevel NeedMissingPrototypes -Wno-deprecated"
+			echo >>generic.cf "#endif"
+
+			gccpath=`$usegcc -v 2>&1 \
+				| grep "Reading specs from" \
+				| awk '{print $4}' \
+				| sed 's/\/specs$//'`
+			
+			cpptouse="$gccpath/cpp"
+			if [ ! -f "$cpptouse" ]
+			then
+				cpptouse="$gccpath/cpp0"
+			fi
+			if [ ! -f "$cpptouse" ]
+			then
+				cpptouse="$gccpath/cpp*"
+			fi
+			echo 1>&2 "Configure: using cpp to build include paths: $cpptouse"
+
+
+			echo >>generic.cf "#ifndef AnsiCDependIncludePath"
+			echo >>generic.cf "#define AnsiCDependIncludePath " \
+				`$cpptouse -v -lang-c 2>&1 </dev/null \
+				| sed -e '1,/#include </d' -e '/^End of search list/,$d' \
+				| sed -e 's/^[ 	]*/\"-I/' -e 's/$/\"/'`
+			echo >>generic.cf "#endif"
+		
+			echo >>generic.cf "#ifndef CPlusPlusDependIncludePath"
+			echo >>generic.cf "#define CPlusPlusDependIncludePath " \
+				`$cpptouse -v -lang-c++ 2>&1 </dev/null \
+				| sed -e '1,/#include </d' -e '/^End of search list/,$d' \
+				| sed -e 's/^[ 	]*/\"-I/' -e 's/$/\"/'`
+			echo >>generic.cf "#endif"
+
+			if [ "$osname" = "SunOS" -a "$osmajorversion" = 4 ]
+			then
+				echo >>generic.cf "#ifndef NeedMissingPrototypes"
+				echo >>generic.cf "#define NeedMissingPrototypes -DNEEDMISSINGPROTOTYPES"
+				echo >>generic.cf "#endif"
+			fi
+		fi
+	else
+		echo 1>&2 "Configure: gcc not available :("
+	fi
+fi
+
+# ----------------------- OS dependent stuff -------------------------
+
+# see also the GNU stuff ... some of it is OS dependent
+
+# always supress the Imake.tpl default of adding a dependency on static libraries
+# like libX11.a, which often are not present these days, regardless of OS (has
+# been a problem on Solaris 10 and Linux with X11 from Xorg V7
+
+echo >>generic.cf "#ifndef DisplayDependFlags"
+echo >>generic.cf "#define DisplayDependFlags"
+echo >>generic.cf "#endif"
+
+if [ "$osname" = "SunOS" ]
+then
+	echo 1>&2 "Configure: we are on $osname"
+	if [ "$osmajorversion" = "5" ]
+	then
+		echo 1>&2 "Configure: using Solaris network load flags"
+		echo >>generic.cf "#ifndef NetworkLoadFlags"
+		echo >>generic.cf "#define NetworkLoadFlags -lsocket -lnsl"
+		echo >>generic.cf "#endif"
+
+		echo >>generic.cf "#ifndef UseDumbInfinityAndNAN"
+		echo >>generic.cf "#define UseDumbInfinityAndNAN 1"
+		echo >>generic.cf "#endif"
+		
+		if [ "$osminorversion" -lt 10 ]
+		then
+			echo >>generic.cf "#ifndef UseGlibcTimezone"
+			echo >>generic.cf "#define UseGlibcTimezone -1"	# use altzone as well as extern timezone (datetype.cc)
+			echo >>generic.cf "#endif"
+		else
+			echo >>generic.cf "#ifndef UseGlibcTimezone"
+			echo >>generic.cf "#define UseGlibcTimezone 0"	# altzone does not seem to exist on Solaris 5.10
+			echo >>generic.cf "#endif"
+		fi
+	fi
+
+	echo >>generic.cf "#ifndef HasGetHostID"
+	echo >>generic.cf "#define HasGetHostID 1"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef HasGetHostIDPrototype"
+	echo >>generic.cf "#define HasGetHostIDPrototype 1"	# in <unistd.h>; not true pre Solaris 2.6
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef X11LibraryPath"
+	echo >>generic.cf "#define X11LibraryPath /usr/openwin/lib"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef X11IncludePath"
+	echo >>generic.cf "#define X11IncludePath /usr/openwin/include"
+	echo >>generic.cf "#endif"
+
+	if [ "$osmajorversion" = "5" ]
+	then
+		echo 1>&2 "Configure: using Solaris display load flags"
+		echo >>generic.cf "#ifndef DisplayLoadFlags"
+		echo >>generic.cf "#define DisplayLoadFlags" \
+			" Concat(-L,\$(X11LIBRARYPATH))" \
+			" Concat(-R,\$(X11LIBRARYPATH)) -lX11 -lXext"
+		echo >>generic.cf "#endif"
+	fi
+
+	if [ $foundallgcc = "no" ]
+	then
+		if getIsPresent CC
+		then
+			echo 1>&2 "Configure: setting up for native CC (if g++ not used)"
+			SunProIncludePath CC  CC cc \
+				CPlusPlusCmd CPlusPlus DebugFlags \
+				CPlusPlusDependIncludePath
+		fi
+
+		if getIsPresent acc
+		then
+			echo 1>&2 "Configure: setting up for native acc (if g++ not used)"
+			SunProIncludePath acc cc c \
+				AnsiCCmd AnsiC DebugFlags \
+				AnsiCDependIncludePath
+		else
+			if getIsPresent cc
+			then
+				echo 1>&2 "Configure: setting up for native cc (if g++ not used)"
+				SunProIncludePath cc  cc c \
+					AnsiCCmd AnsiC DebugFlags \
+					AnsiCDependIncludePath
+			fi
+		fi
+	fi
+
+	if [ "$osmajorversion" = "5" ]
+	then
+		echo 1>&2 "Configure: Solaris has no ranlib"
+		echo >>generic.cf "#ifndef DoRanlibCmd"
+		echo >>generic.cf "#define DoRanlibCmd 0"
+		echo >>generic.cf "#endif"
+	fi
+
+	if [ "$osmajorversion" = "5" ]
+	then
+		echo 1>&2 "Configure: Solaris uses ucb install"
+		echo >>generic.cf "#ifndef InstallCmd"
+		echo >>generic.cf "#define InstallCmd /usr/ucb/install -c"
+		echo >>generic.cf "#endif"
+	fi
+
+	if [ "$osmajorversion" = "5" ]
+	then
+		echo 1>&2 "Configure: Solaris uses mkdir -p rather than mkdirhier"
+		echo >>generic.cf "#ifndef MkdirhierCmd"
+		echo >>generic.cf "#define MkdirhierCmd mkdir -p"
+		echo >>generic.cf "#endif"
+	fi
+
+	echo >>generic.cf "#ifndef RmCmd"
+	echo >>generic.cf "#define RmCmd rm -rf"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef ExtraFilesToClean"
+	echo >>generic.cf "#define ExtraFilesToClean *% *.old *.hold .nfs* ptrepository .sb"
+	echo >>generic.cf "#endif"
+fi
+
+if [ "$osname" = "Irix" -o "$osname" = "IRIX" ]
+then
+	echo 1>&2 "Configure: we are on $osname"
+	echo >>generic.cf "#ifndef X11LibraryPath"
+	echo >>generic.cf "#define X11LibraryPath /usr/lib"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef X11IncludePath"
+	echo >>generic.cf "#define X11IncludePath /usr/include"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef DoRanlibCmd"
+	echo >>generic.cf "#define DoRanlibCmd 0"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef InstallCmd"
+	echo >>generic.cf "#define InstallCmd /usr/bin/X11/bsdinst -c"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef WhatismanCmd"
+	echo >>generic.cf "#define WhatismanCmd makewhatis"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef CPlusPlusDependIncludePath"
+	echo >>generic.cf "#define CPlusPlusDependIncludePath  -I/usr/include/CC"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef AnsiCOptimizedDebugFlags"
+	echo >>generic.cf "#define AnsiCOptimizedDebugFlags OptimizeLevel NeedMissingPrototypes -DNOBOOLEANTYPE -DNOBOOLEANVALUES"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef AnsiCUnoptimizedDebugFlags"
+	echo >>generic.cf "#define AnsiCUnoptimizedDebugFlags NeedMissingPrototypes -DNOBOOLEANTYPE -DNOBOOLEANVALUES"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef CPlusPlusOptimizedDebugFlags"
+	echo >>generic.cf "#define CPlusPlusOptimizedDebugFlags OptimizeLevel NeedMissingPrototypes -DNOBOOLEANTYPE -DNOBOOLEANVALUES -woff 3115,3937,3262"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef CPlusPlusUnoptimizedDebugFlags"
+	echo >>generic.cf "#define CPlusPlusUnoptimizedDebugFlags NeedMissingPrototypes -DNOBOOLEANTYPE -DNOBOOLEANVALUES -woff 3115,3937,3262"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef UseDumbInfinityAndNAN"
+	echo >>generic.cf "#define UseDumbInfinityAndNAN 1"
+	echo >>generic.cf "#endif"
+fi
+
+if [ "$osname" = "HP-UX" ]
+then
+	echo 1>&2 "Configure: we are on $osname"
+	if [ -d /usr/include/X11R5 ]
+	then
+		echo >>generic.cf "#ifndef X11IncludePath"
+		echo >>generic.cf "#define X11IncludePath /usr/include/X11R5"
+		echo >>generic.cf "#endif"
+	fi
+
+	if [ -d /usr/lib/X11R5 ]
+	then
+		echo >>generic.cf "#ifndef X11LibraryPath"
+		echo >>generic.cf "#define X11LibraryPath /usr/lib/X11R5"
+		echo >>generic.cf "#endif"
+	fi
+
+	echo >>generic.cf "#ifndef PowIntegerExponentType"
+	echo >>generic.cf "#define PowIntegerExponentType int"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef UseDumbInfinityAndNAN"
+	echo >>generic.cf "#define UseDumbInfinityAndNAN 1"
+	echo >>generic.cf "#endif"
+fi
+
+if [ "$osname" = "OSF1" ]
+then
+	echo 1>&2 "Configure: we are on $osname"
+	OSFIncludePath cxx  CC .cc \
+		CPlusPlusCmd CPlusPlus DebugFlags \
+		CPlusPlusDependIncludePath
+
+	OSFIncludePath cc  cc .c \
+		AnsiCCmd AnsiC DebugFlags \
+		AnsiCDependIncludePath
+
+	echo >>generic.cf "#ifndef UseDumbInfinityAndNAN"
+	echo >>generic.cf "#define UseDumbInfinityAndNAN 1"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef InstallCmd"
+	echo >>generic.cf "#define InstallCmd /usr/ucb/installbsd -c"
+	echo >>generic.cf "#endif"
+
+	if [ -f /usr/lib/libX11.a ]
+	then
+		echo >>generic.cf "#ifndef X11LibraryPath"
+		echo >>generic.cf "#define X11LibraryPath /usr/lib"
+		echo >>generic.cf "#endif"
+	fi
+fi
+
+if [ "$osname" = "Linux" ]
+then
+	echo 1>&2 "Configure: we are on $osname"
+
+	# X11 is usually in /usr/include on Linux systems
+
+	# X11LibraryPath may already have been overridden, but ...
+
+	if [ -f /usr/lib64/libX11.a ]		# They changed it in FC5
+	then
+		echo >>generic.cf "#ifndef X11LibraryPath"
+		echo >>generic.cf "#define X11LibraryPath /usr/lib64"
+		echo >>generic.cf "#endif"
+	elif [ -d /usr/X11R6/lib64 ]		# Found on AMD x86_64 platforms eg. FC3
+	then
+		echo >>generic.cf "#ifndef X11LibraryPath"
+		echo >>generic.cf "#define X11LibraryPath /usr/X11R6/lib64"
+		echo >>generic.cf "#endif"
+	elif [ -d /usr/X11R6/lib ]		# NOT /usr/lib/X11 which contains configuration files
+	then
+		echo >>generic.cf "#ifndef X11LibraryPath"
+		echo >>generic.cf "#define X11LibraryPath /usr/X11R6/lib"
+		echo >>generic.cf "#endif"
+	elif [ -d /usr/X11/lib ]	# seen in XFree86
+	then
+		echo >>generic.cf "#ifndef X11LibraryPath"
+		echo >>generic.cf "#define X11LibraryPath /usr/X11/lib"
+		echo >>generic.cf "#endif"
+	fi
+
+	echo >>generic.cf "#ifndef UseDumbInfinityAndNAN"
+	echo >>generic.cf "#define UseDumbInfinityAndNAN 1"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef HasGetHostID"
+	echo >>generic.cf "#define HasGetHostID 1"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef HasGetHostIDPrototype"
+	echo >>generic.cf "#define HasGetHostIDPrototype 1"	# in <unistd.h>
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef ExtraFilesToClean"
+	echo >>generic.cf "#define ExtraFilesToClean *core.*"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef UseGlibcTimezone"
+	echo >>generic.cf "#define UseGlibcTimezone 1"
+	echo >>generic.cf "#endif"
+fi
+
+isCygwin=`echo "$osname" | egrep -i '^cygwin_nt'`
+if [ ! -z "${isCygwin}" ]
+then
+	echo 1>&2 "Configure: we are on $osname"
+
+	echo >>generic.cf "#ifndef UseDumbInfinityAndNAN"
+	echo >>generic.cf "#define UseDumbInfinityAndNAN 1"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef HasGetHostID"
+	echo >>generic.cf "#define HasGetHostID 1"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef HasGetHostIDPrototype"
+	echo >>generic.cf "#define HasGetHostIDPrototype 1"	# in <unistd.h>
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef UseGlibcTimezone"
+	echo >>generic.cf "#define UseGlibcTimezone -2"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef HasStdNameSpaceForStreamPos"
+	echo >>generic.cf "#define HasStdNameSpaceForStreamPos 1"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef ExecutableSuffix"
+	echo >>generic.cf "#define ExecutableSuffix .exe"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef X11LibraryPath"
+	echo >>generic.cf "#define X11LibraryPath /usr/X11R6/lib"
+	echo >>generic.cf "#endif"
+fi
+
+if [ "$osname" = "ULTRIX" ]
+then
+	echo 1>&2 "Configure: we are on $osname"
+	if [ -f /usr/lib/libX11.a ]
+	then
+		echo >>generic.cf "#ifndef X11LibraryPath"
+		echo >>generic.cf "#define X11LibraryPath /usr/lib"
+		echo >>generic.cf "#endif"
+	fi
+	echo >>generic.cf "#ifndef UseDumbInfinityAndNAN"
+	echo >>generic.cf "#define UseDumbInfinityAndNAN 1"
+	echo >>generic.cf "#endif"
+fi
+
+if [ "$osname" = "Darwin" ]
+then
+	echo 1>&2 "Configure: we are on $osname ($osmajorversion.$osminorversion)"
+
+	if [ -d /usr/X11R6/lib ]
+	then
+		echo >>generic.cf "#ifndef X11LibraryPath"
+		echo >>generic.cf "#define X11LibraryPath /usr/X11R6/lib"
+		echo >>generic.cf "#endif"
+	fi
+
+	if [ -d /usr/X11R6/include ]
+	then
+		echo >>generic.cf "#ifndef X11IncludePath"
+		echo >>generic.cf "#define X11IncludePath /usr/X11R6/include"
+		echo >>generic.cf "#endif"
+	fi
+
+	echo >>generic.cf "#ifndef HasGetHostID"
+	echo >>generic.cf "#define HasGetHostID 1"
+	echo >>generic.cf "#endif"
+	echo >>generic.cf "#ifndef HasGetHostIDPrototype"
+	echo >>generic.cf "#define HasGetHostIDPrototype 1"	# in <unistd.h>
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef UseDumbInfinityAndNAN"
+	echo >>generic.cf "#define UseDumbInfinityAndNAN 1"
+	echo >>generic.cf "#endif"
+
+	echo >>generic.cf "#ifndef UseGlibcTimezone"
+	echo >>generic.cf "#define UseGlibcTimezone 1"
+	echo >>generic.cf "#endif"
+	
+	if [ "$gplusplusmajorversion" -ge 4 -a `uname -p` = 'i386' ]
+	then
+		echo 1>&2 "Configure: building Darwin universal binaries for intel and ppc"
+		echo >>generic.cf "#ifndef CPlusPlusDefaultOptions"
+		echo >>generic.cf "#define CPlusPlusDefaultOptions -force_cpusubtype_ALL -arch 'i386' -arch 'ppc' -mmacosx-version-min=10.0"
+		echo >>generic.cf "#endif"
+	
+		echo >>generic.cf "#ifndef AnsiCDefaultOptions"
+		echo >>generic.cf "#define AnsiCDefaultOptions -force_cpusubtype_ALL -arch 'i386' -arch 'ppc' -mmacosx-version-min=10.0"
+		echo >>generic.cf "#endif"
+	fi
+fi
+
+# ---------------------- After OS dependent stuff -----------------------
+
+# this should probably be elsewhere ...
+
+echo >>generic.cf "#ifndef NeedMissingPrototypes"
+echo >>generic.cf "#define NeedMissingPrototypes"
+echo >>generic.cf "#endif"
+
+echo >>generic.cf "#ifndef UseXMitShmExtension"
+echo >>generic.cf "#define UseXMitShmExtension 1"
+echo >>generic.cf "#endif"
+
+echo >>generic.cf "#ifndef HasGetHostID"
+echo >>generic.cf "#define HasGetHostID 0"
+echo >>generic.cf "#endif"
+
+echo >>generic.cf "#ifndef HasStdNameSpaceForStreamPos"
+echo >>generic.cf "#define HasStdNameSpaceForStreamPos 0"
+echo >>generic.cf "#endif"
+
+echo >>generic.cf "#ifndef SystemIncludeOption"
+echo >>generic.cf "#define SystemIncludeOption -I" 
+echo >>generic.cf "#endif"
+
+echo >>generic.cf "#ifndef UseGlibcTimezone"
+echo >>generic.cf "#define UseGlibcTimezone 0"
+echo >>generic.cf "#endif"
+
+echo >>generic.cf "#ifndef ExecutableSuffix"
+echo >>generic.cf "#define ExecutableSuffix"
+echo >>generic.cf "#endif"

@@ -1,0 +1,13 @@
+MANSUFFIX = 1
+
+all::
+
+InstallManPage(dcintro,$(INSTALLMANDIR)/man1)
+
+InstallManSource(optin,$(INSTALLMANDIR)/man1)
+InstallManSource(optout,$(INSTALLMANDIR)/man1)
+InstallManSource(genin,$(INSTALLMANDIR)/man1)
+InstallManSource(genout,$(INSTALLMANDIR)/man1)
+InstallManSource(binin,$(INSTALLMANDIR)/man1)
+InstallManSource(binout,$(INSTALLMANDIR)/man1)
+

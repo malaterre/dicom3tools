@@ -1,0 +1,160 @@
+.TH DCBRIGGS 1 "15 February 2000" "DICOM PS3" "Create DICOM Briggs pattern"
+.SH NAME
+dcbriggs \- ACR/NEMA DICOM PS3 ... Create DICOM Briggs pattern
+.SH SYNOPSIS
+.HP 10
+.B dcbriggs
+[
+.B \-columns|\-cols|\-x " columns"
+]
+[
+.B \-rows|\-y " rows"
+]
+[
+.B \-bits|\-depth|\-d " bits"
+]
+[
+.B \-minval " i"
+]
+[
+.B \-maxval " i"
+]
+[
+.B \-signed
+]
+[
+.B \-inverted|\-invert|\-monochrome1
+]
+[
+.B \-contrast " value"
+]
+[
+.B \-surround " percent"
+]
+[
+.B \-background " percent"
+]
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcbriggs
+writes a grayscale MONOCHROME2 or MONOCHROME1 Briggs 8-target pattern (BPT#4)
+as a DICOM
+Secondary Capture Image Storage SOP Class instance stored in a DICOM file. The
+format, rationale, use and scoring of a Briggs pattern are described in Boeing Technical
+Report D180-25066-1 by S.J. Briggs, January 1979. Basically a set of checkerboard
+patterns of varying spatial and contrast resolution are created in order to visually
+evaluate the quality of the system displaying the pattern.
+.LP
+During the creation, specific attributes may be deleted, added or
+replaced, class and instance unique identifiers generated or removed,
+group lengths added, or private attributes removed, as specified by
+the replacement options described in dcintro(1). This allows the
+specification of additional DICOM attributes, such as the patient's
+name, necessary to make a complete and useful SC instance.
+.SH OPTIONS
+The verbose output goes to standard error.
+.PP
+.PP
+The basic switches are described in dcintro(1). Options specific to this program are:
+.TP
+.BI \-columns|\-cols|\-x " columns"
+.RS
+Defaults to 512.
+.RE
+.TP
+.BI \-rows|\-y " rows"
+.RS
+Defaults to 512.
+.RE
+.TP
+.BI \-bits|\-depth|\-d " bits"
+.RS
+Defaults to 8.
+.RE
+.TP
+.BI \-minval " i"
+.RS
+Defaults to 0. Specifies the pixel value to store for the 0% gray value in the Briggs pattern.
+.RE
+.TP
+.BI \-maxval " i"
+.RS
+Defaults to (2^bits)-1. Specifies the pixel value to store for the 100% gray value in the Briggs pattern.
+(Note this does not have to be (2^bits)-1).
+.RE
+.TP
+.BI \-signed
+.RS
+Treat the minval and maxval as signed and set the Pixel Representation
+in the DICOM image to signed.
+.RE
+.TP
+.BI \-inverted|\-invert|\-monochrome1
+.RS
+Invert the grayscale range and set the Photometric Interpretation
+to MONOCHROME1 (zero is white) rather than the default MONOCHROME2 (zero
+is black). The image should display the same in a DICOM viewer that
+correctly handles Photometric Interpretation.
+.RE
+.TP
+.BI \-contrast " value"
+.RS
+Optional. Specifies the target command contrast between light and dark checkers. Defaults
+to a value of 7. This corresponds to Briggs' C value.
+.RE
+.TP
+.BI \-surround " percent"
+.RS
+Optional. Specifies percent of maxval-minval used for the target surround. Should be an
+integer. Divided by 100, this corresponds to Briggs' S value. Defaults to 70%.
+.RE
+.TP
+.BI \-background " percent"
+.RS
+Optional. Specifies percent of maxval-minval used for the background and spacing
+between targets. Should be an
+integer. Defaults to 30%.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+# Create an 8 bit pattern from 0 to 255, ie. BPT#4(7,.7,256)
+.RE
+# and make a PGM and a GIF file from it using netpbm tools  ...
+.RE
+% dcbriggs -bits 8 -minval 0 -maxval 255 briggs.dc3
+.RE
+% dctopnm  briggs.dc3 briggs.pgm
+.RE
+% ppmtogif briggs.pgm > briggs.gif
+.RE
+\ 
+.RE
+# Create a 12 bit pattern from 0 to 4095 with a C of 112 and S of .55, ie. BPT#4(13,.55,4096) ...
+.RE
+% dcbriggs -bits 12 -minval 0 -maxval 4095 -contrast 112
+.RE
+\ 
+.RE
+# Create a 16 bit pattern from -1024 to 3071 with a C of 112 and S of .55 ...
+.RE
+% dcbriggs -bits 16 -minval ' -1024' -maxval 3071 -signed -contrast 112 -surround 55
+.RE
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR dciodvfy(1) ,
+.BR dcsmpte(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

@@ -1,0 +1,30 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBDCONVERTEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = imtndc.cc imtnconv.cc imtnmpln.cc \
+		 imtnmmsc.cc imtnmdt.cc \
+		 imtndmp.cc imtndmpf.cc \
+		 imtnhdrc.cc imtn.cc
+
+OBJS = 		 imtndc.o  imtnconv.o  imtnmpln.o  \
+		 imtnmmsc.o  imtnmdt.o  \
+		 imtndmp.o  imtndmpf.o  \
+		 imtnhdrc.o  imtn.o
+
+LibraryTarget($(PROJECTLIBDIR)/libdimtn.a,$(OBJS))
+
+ProjectInstallOnMakeUpdatedLibraryHeader(imtn,dconvert)
+
+ProjectConvertTemplate(imtnhdrp.h,imtn,convert,prefix=IMTN_ role=headerpart)
+ProjectConvertTemplate(imtnhdrw.h,imtn,convert,prefix=IMTN_ role=wholeheader)
+ProjectConvertTemplate(imtnhdrc.h,imtn,convert,prefix=IMTN_ role=constructheader)
+ProjectConvertTemplate(imtnconv.h,imtn,convert,prefix=IMTN_ role=dicom)
+ProjectConvertTemplate(imtndmpf.h,imtn,convert,prefix=IMTN_ role=dump)
+
+imtndmpf.o: imtndmpf.cc
+	$(CCC) -c $(CPLUSPLUS_UNOPTIMIZEDFLAGS) $(CPLUSPLUS_OPTIONS) \
+		  $(CPLUSPLUS_ALLDEFINES) imtndmpf.cc
+
+DependCCTarget()
+

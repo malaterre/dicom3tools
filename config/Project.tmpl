@@ -1,0 +1,38 @@
+/* Put things common to ALL projects here */
+
+XCOMM -------------------------------------------------------------------------
+
+/*****************************************************************************
+ *                                                                           *
+ *                            DEFAULT DEFINITONS                             *
+ *                                                                           *
+ * The following section contains defaults for things that can be overridden *
+ * in the various *.cf and site.def files.                                   *
+ *                                                                           *
+ ****************************************************************************/
+
+#ifndef PrivConfigDir
+#define PrivConfigDir $(TOP)/config
+#endif
+
+   PRIVCONFIGDIR = PrivConfigDir
+
+#ifndef InstallBinDir
+#define InstallBinDir /usr/local/bin
+#endif
+#ifndef InstallIncDir
+#define InstallIncDir /usr/local/include
+#endif
+#ifndef InstallLibDir
+#define InstallLibDir /usr/local/lib
+#endif
+#ifndef InstallManDir
+#define InstallManDir /usr/local/man
+#endif
+
+          PATHSEP = /			/* for building filenames */
+    INSTALLBINDIR = InstallBinDir
+    INSTALLINCDIR = InstallIncDir
+    INSTALLLIBDIR = InstallLibDir
+    INSTALLMANDIR = InstallManDir
+

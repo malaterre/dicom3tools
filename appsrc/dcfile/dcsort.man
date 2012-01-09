@@ -1,0 +1,121 @@
+.TH DCSORT 1 "22 December 2006" "DICOM PS3" "DICOM PS3 - Make sorted list of images"
+.SH NAME
+dcsort \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Make sorted list of images
+.SH SYNOPSIS
+.HP 10
+.B dcsort
+" inputfile1 [ inputfile2 ... ]"
+[
+.B \-v|verbose
+]
+[
+.B \-vv|veryverbose
+]
+[
+.B \-vvv|veryveryverbose
+]
+[
+.B \-index
+]
+[
+.B \-show
+]
+[
+.B \-interval
+]
+[
+.B \-tolerance mm
+]
+[
+.B \-check
+]
+[
+.B \-checkFoR
+]
+[
+.B \-descending
+]
+[
+.B \-sortby|k " attributename"
+]
+.SH DESCRIPTION
+.LP
+.B dcsort
+reads the named dicom input files and sorts them by the specified sort
+key.
+.LP
+The sort key should be a single valued numeric attribute, with the
+exception of ImageOrientationPatient and ImagePositionPatient which
+are handled as special cases.
+.LP
+There is no output by default unless the index or verbose options are
+specified.
+.SH OPTIONS
+The output and errors go to standard error.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-index
+.RS
+Creates a first column of output that is the index in the sort order, starting
+from 0, and a second column that is the filename.
+.RE
+.TP
+.B \-show
+.RS
+Show the value of the sort key after the file name with the \-index option
+.RE
+.TP
+.B \-interval
+.RS
+Show the interval between values of the sort key, or an error if not equal
+.RE
+.TP
+.B \-tolerance mm
+.RS
+The tolerance value in mm to use when comparing intervals between slices; defaults to +/- 0.01 mm if unspecified
+.RE
+.TP
+.B \-check
+.RS
+Check that all the images are from the same series.
+.RE
+.TP
+.B \-checkFoR
+.RS
+Check that all the images have the same Frame of Reference (UID).
+.RE
+.TP
+.B \-descending
+.RS
+Sort in descending, rather than the default ascending, order.
+.RE
+.TP
+.B \-sortby|k " attributename"
+.RS
+Specify attributename as the sort key.
+.RE
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcsort -index -sortby SliceLocation ./1/[0-9]*
+.RE
+0	./1/1
+.RE
+1	./1/2
+.RE
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

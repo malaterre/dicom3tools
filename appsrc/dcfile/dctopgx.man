@@ -1,0 +1,73 @@
+.TH DCTOPGX 1 "04 March 1999" "DICOM PS3" "DICOM PS3 - DICOM image to PGX file"
+.SH NAME
+dctopgx \- ACR/NEMA DICOM PS3 ... DICOM PS3 - DICOM image to PGX file
+.SH SYNOPSIS
+.HP 10
+.B dctopgx
+[
+.B \-v|verbose
+]
+[
+.B \-quiet|silent
+]
+.so man1/optin.so
+.so man1/binout.so
+.SH DESCRIPTION
+.LP
+.B dctopgx
+reads the named dicom or acr-nema input file and copies the raw image
+pixel data to a PGX file as used for the JPEG 2000 Verification Model.
+.LP
+A PGX file contains of a single text header line of the form
+"PG <byte order> [+|-]<bit-depth> <cols> <rows>\n", followed
+immediately by the raw binary data. There may be 1, 2 or
+4 bytes per sample corresponding to bit depths from 1 to 32.
+Byte order is "LM" (little endian) or "ML" (big endian). The
+signed or unsigned pixel representation is indicated by '+'
+or '-' character before the bit depth. If the '+' is omitted,
+unsigned is implied.
+.LP
+The input file must be unencapsulated.
+.LP
+PGX supports big or little endian
+byte order in the case of > 8 bit data. The output byte order is always 
+in the same as the input, since the raw bytes
+are copied from input to output without any conversion. Use dccp(1)
+first to change the encoding if necessary.
+.LP
+PGX also supports signed data, so the Pixel Representation of the
+input is used to specify whether the output is signed or unsigned.
+.LP
+.SH OPTIONS
+The PGX output goes where it is specified or standard out.
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-quiet|silent
+.RS
+Suppress the normal description of image parameters.
+.RE
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR pnmtodc(1) ,
+.BR dctopnm(1) ,
+.BR rawtodc(1) ,
+.BR dctoraw(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

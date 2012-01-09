@@ -1,0 +1,24 @@
+/* Copyright (c) 2001-2007, David A. Clunie DBA Pixelmed Publishing. All rights reserved. */
+
+// Automatically generated from template - EDITS WILL BE LOST
+
+package com.pixelmed.dicom;
+
+import java.util.HashMap;
+import java.util.TreeSet;
+import java.util.Iterator;
+
+/**
+ * <p>The {@link com.pixelmed.dicom.DicomDictionary DicomDictionary} class
+ * is a complete standard dictionary of DICOM attributes and associated information.</p>
+ *
+ * <p>The accessor methods that an application would normally use are defined in the
+ * {@link com.pixelmed.dicom.DicomDictionaryBase DicomDictionaryBase} class.</p>
+ *
+ * @author	dclunie
+ */
+
+public class DicomDictionary extends DicomDictionaryBase {
+
+	private static final String identString = "@(#) $Header: /userland/cvs/dicom3tools/libsrc/support/DicomDictionary_header.txt,v 1.1 2007/03/21 22:12:34 dclunie Exp $";
+

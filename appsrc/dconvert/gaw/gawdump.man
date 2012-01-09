@@ -1,0 +1,70 @@
+.TH GAWDUMP 1 "05 April 1998" "DICOM PS3" "GE Advantage Windows to DICOM"
+.SH NAME
+gawdump \- ACR/NEMA DICOM PS3 ... GE Advantage Windows to DICOM
+.SH SYNOPSIS
+.HP 10
+.B gawdump
+[
+.B \-awmr|\-awct|\-offset " filehdr suitehdr examhdr serieshdr imghdr [\-lengthpresent]"
+]
+.I inputfilename
+.SH DESCRIPTION
+.LP
+.B gawdump
+reads the named GE Advantage Windows input file and dumps its contents.
+.LP
+.SH OPTIONS
+The dump output goes to standard error.
+.PP
+The basic switches are described in dcintro(1).
+.LP
+The options that select the header layout of the Advantage Windows file are as follows. Note that one must be specified and there is no default.
+.TP
+.BI \-awct
+.RS
+The input file is a CT.
+.RE
+.TP
+.BI \-awmr
+.RS
+The input file is an MR.
+.RE
+.TP
+.BI \-offset " filehdr suitehdr examhdr serieshdr imghdr"
+.RS
+The input file layout is explicitly specified by the byte offsets from 0 to the corresponding header.
+.RE
+.TP
+.BI \-lengthpresent
+.RS
+The image pixel data is preceded by a 4 byte length field that should be skipped. This is only usually encountered with Genesis DAT and tape formats, and hasn't been encountered with Advantage Windows formats. Only valid when the offsets are explicitly specified.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% gawdump -awct test
+.RE
+\ 
+.RE
+[block:offset] Description        <value>
+.RE
+\ 
+.RE
+ ...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1) ,
+.BR gawtodc(1) ,
+.BR gendump(1) ,
+.BR gentodc(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+The header layout was derived by guesswork by comparing the known Genesis layout to the similar Advantage Windows layout, but may not be reliable.

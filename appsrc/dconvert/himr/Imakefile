@@ -1,0 +1,36 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTAPPDCONVERTEXTRAINCLUDES)
+
+SRCSTODC = himrtodc.cc
+OBJSTODC = himrtodc.o
+
+SRCSDUMP = himrdump.cc
+OBJSDUMP = himrdump.o
+
+CPLUSPLUS_SRCS = $(SRCSDUMP) $(SRCSTODC)
+OBJS = $(OBJSDUMP) $(OBJSTODC)
+
+AllTarget(himrtodc)
+NormalCCProgramTarget(himrtodc,$(OBJSTODC),$(TOP)/libsrc/lib/libdhimr.a $(PROJECTDCONVERTDEPLIBS),-ldhimr $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(himrtodc,$(INSTALLBINDIR))
+InstallManPage(himrtodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(himrdump)
+NormalCCProgramTarget(himrdump,$(OBJSDUMP),$(TOP)/libsrc/lib/libdhimr.a $(PROJECTDCONVERTDEPLIBS),-ldhimr $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(himrdump,$(INSTALLBINDIR))
+InstallManPage(himrdump,$(INSTALLMANDIR)/man1)
+
+InstallScript(himrunid,$(INSTALLBINDIR))
+InstallManPage(himrunid,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./himrdump "" $(TOP)/images/himr $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./himrtodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/himr $(TOP)/test/$(CURRENT_DIR) compare todc
+
+test.create::
+	@$(TOP)/support/testapp testlist ./himrdump "" $(TOP)/images/himr $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./himrtodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/himr $(TOP)/test/$(CURRENT_DIR) create todc
+

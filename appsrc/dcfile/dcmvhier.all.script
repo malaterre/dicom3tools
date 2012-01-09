@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# Usage: dcmvhier.all dirname
+#
+# where dirname is the directory name where .dcm images are
+#
+
+DCMSUFFIX="dcm"
+
+DCMVHIER="dcmvhier"
+
+if [ ! $# = 1 ]
+then
+	echo 1>&2 "Usage: `basename $0` dirname"
+	exit 1
+fi
+
+FINDARG='*.'"$DCMSUFFIX"
+
+"$DCMVHIER" `find "$1" -name "$FINDARG" -print`
+
+exit 0
+

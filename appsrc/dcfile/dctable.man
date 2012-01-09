@@ -1,0 +1,128 @@
+.TH DCTABLE 1 "23 March 2010" "DICOM PS3" "DICOM PS3 - Make tables of attribute values"
+.SH NAME
+dctable \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Make tables of attribute values
+.SH SYNOPSIS
+.HP 10
+.B dctable
+" inputfile1 [ inputfile2 ... ]"
+[
+.B \-ignorereaderrors
+]
+[
+.B \-v|verbose
+]
+[
+.B \-r|recurse
+]
+[
+.B \-describe
+]
+[
+.B \-nofilename
+]
+[
+.B \-noembeddedquotes
+]
+[
+.B \-key|k " elementname|(0xgggg,0xeeee) ] ..."
+[
+.B \-input-nometa
+]
+[
+.B \-input-ts " uid"
+]
+[
+.B \-input-default
+]
+[
+.B \-input-byteorder|-input-endian " big|little"
+]
+[
+.B \-input-vr " implicit|explicit"
+]
+.SH DESCRIPTION
+.LP
+.B dctable
+reads the named dicom input files and creates a tab delimited table of
+the values of the selected attributes, with each value enclosed in double
+quotes.
+.LP
+Binary attributes are written in hexadecimal with a preceding
+"0x". Numeric string attributes are written in decimal.
+.LP
+The first column always contains the filenames.
+.LP
+A header is a added only if the -describe option is specified.
+.LP
+If a specified attribute is not present in a file, then it the corresponding
+entry in the table will be empty (i.e. two consecutive quotes" but this
+is not reported as an error.
+.SH OPTIONS
+The table of attribute values go to standard output, and the verbose
+output and errors go to standard error.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-describe
+.RS
+Add a first line of output that is a header describing the attributes in each column.
+.RE
+.TP
+.B \-nofilename
+.RS
+Do not include the filename in the table.
+.RE
+.TP
+.B \-noembeddedquotes
+.RS
+Remove embedded quotes (") from within displayed values to allow them to be parsed consistenty later; also has the
+side effect of displaying numeric binary values as decimal rather than hexadecimal.
+.RE
+.TP
+.B \-k|key " elementname|(0xgggg,0xeeee)"
+.RS
+Add a key to the list of attributes to be extracted. The attribute may also be specified
+as a hexadecimal pair of the form (0xgggg,0xeeee), which also allows private attributes to be fetched.
+.RE
+.TP
+.B \-r|recurse
+.RS
+If any attribute is not found in the top level dataset, recurse through sequence attribute items until
+the first instance is found.
+.RE
+.TP
+.B \-ignorereaderrors
+.RS
+Attempt to extract key values even if errors encountered whilst parsing DICOM file.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dctable -k Rows -k Columns
+.RE
+        -describe test.dc3
+.RE
+"Filename"	"Rows"	"Columns"
+.RE
+"test.dc3"	"0x0100"	"0x0100"
+.RE
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1), dckey(1)
+.SH AUTHOR
+Copyright (C) 2010. David A. Clunie. All rights reserved.
+.SH BUGS
+.LP
+Attempts to extract sequences or OB,OW attributes may fail nastily.
+.LP
+The order in which the attributes are extracted and written is not the same
+order as they are specified on the command line, and should not be depended
+on.

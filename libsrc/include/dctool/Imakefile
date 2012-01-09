@@ -1,0 +1,12 @@
+all::	depend
+
+ProjectToolLibraryHeaderTemplate(transynu,transyn,transyn,role=extern outname=transynu)
+ProjectToolLibraryHeaderTemplate(sopclu,sopcl,sopcl,role=extern outname=sopclu)
+ProjectToolLibraryHeaderTemplate(elmconst,elmdict,elmdict,role=constant outname=elmconst)
+
+ProjectToolLibraryHeaderTemplate(strvalc,strval,strval,role=declare outname=strvalc)
+ProjectToolLibraryHeaderTemplate(binvalc,binval,binval,role=declare outname=binvalc)
+ProjectToolLibraryHeaderTemplate(tagvalc,tagval,tagval,role=declare outname=tagvalc)
+ProjectToolLibraryHeaderTemplate(condnc,condn,condn,role=declare outname=condnc)
+ProjectToolLibraryHeaderTemplate(modulec,module,module,role=declare outname=modulec)
+ProjectToolLibraryHeaderTemplate(iodcompc,iodcomp,iodcomp,role=declare outname=iodcompc)

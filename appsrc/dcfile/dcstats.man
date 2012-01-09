@@ -1,0 +1,109 @@
+.TH DCSTATS 1 "6 March 2007" "DICOM PS3" "DICOM PS3 - DICOM image statistics"
+.SH NAME
+dcstats \- ACR/NEMA DICOM PS3 ... DICOM PS3 - DICOM image statistics
+.SH SYNOPSIS
+.HP 10
+.B dcstats
+[
+.B \-v|verbose
+]
+[
+.B \-filename
+]
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B dcstats
+reads the named dicom or acr-nema input file and describes the statistics
+of the image pixel data. The primary intent is to determine if the pixel
+representation is unsigned or signed (regardless of what other attributes
+may specify).
+.LP
+The description and verbose output go to standard error.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-v|verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading and once read.
+.RE
+.TP
+.B \-filename
+.RS
+Show the name of the file supplied in the arguments; a hyphen will be reported if no filename was supplied.
+.RE
+.TP
+.B \-filename
+.RS
+Show the name of the file supplied in the arguments; a hyphen will be reported if no filename was supplied.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcstats expmeta.dc3
+.RE
+Signed minimum value = 0x0      (0 dec)
+.RE
+Signed maximum value = 0x6e9    (1769 dec)
+.RE
+Unsigned minimum value = 0x0    (0 dec)
+.RE
+Unsigned maximum value = 0x6e9  (1769 dec)
+.RE
+Signed range = 0x6e9    (1769 dec)
+.RE
+Unsigned range = 0x6e9  (1769 dec)
+.RE
+.RE
+Signed mean = 0x158     (344 dec)       (19.446%)
+.RE
+Unsigned mean = 0x158   (344 dec)       (19.446%)
+.RE
+Bits Stored = 16
+.RE
+Significant unsigned bits = 11
+.RE
+\ 
+.RE
+% dcstats impnone.dc3
+.RE
+Signed minimum value = 0xfa24   (64036 dec)
+.RE
+Signed maximum value = 0x638    (1592 dec)
+.RE
+Unsigned minimum value = 0x0    (0 dec)
+.RE
+Unsigned maximum value = 0xffff (65535 dec)
+.RE
+Signed range = 0xc14    (3092 dec)
+.RE
+Unsigned range = 0xffff (65535 dec)
+.RE
+Signed mean = 0xfec2    (65218 dec)     (38.2277%)
+.RE
+Unsigned mean = 0x1cdd  (7389 dec)      (11.2749%)
+.RE
+Bits Stored = 16
+.RE
+Significant positive bits = 11
+.RE
+Significant negative bits = 11
+.RE
+Offset to make unsigned in hex is = 0x5dc
+.RE
+Offset to make unsigned in dec is = 1500
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dchist(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

@@ -1,0 +1,68 @@
+[
+.B \-d|\-delete " deletekeyword"
+] ...
+[
+.B \-r|\-replace|\-rb|\-replace\-before " replacekeyword values"
+] ...
+[
+.B \-ra|\-replace\-after " replacekeyword values"
+] ...
+[
+.B \-of|\-output-file|> " name"
+]
+[
+.B \-n|\-nometa|\-output-nometa
+]
+[
+.B \-n|\-justmeta|\-output-justmeta
+]
+[
+.B \-n|\-implicitmeta|\-output-implicitmeta
+]
+[
+.B \-ts|\-output-ts|\-output-transfersyntax " uid"
+]
+[
+.B \-output-default
+]
+[
+.B \-output-byteorder|-output-endian " big|little"
+]
+[
+.B \-output-vr " implicit|explicit"
+]
+[
+.B \-s|\-stamp " uiddatetimestamp"
+]
+[
+.B \-instancecreationdate " date"
+]
+[
+.B \-instancecreationtime " time"
+]
+[
+.B \-timezoneoffsetfromutc " offset"
+]
+[
+.B \-addlengths
+]
+[
+.B \-addlengthtoend
+][
+.B \-tiff|tif
+]
+[
+.B \-removeprivate
+]
+[
+.B \-removeinstanceuid
+]
+[
+.B \-noadddicom
+]
+[
+.B \-nodisclaimer
+]
+[
+.B \-disambiguateseriesbydescription
+]

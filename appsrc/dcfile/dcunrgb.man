@@ -1,0 +1,32 @@
+.TH DCUNRGB 1 "13 January 2011" "DICOM PS3" "DICOM PS3 - Convert RGB to grayscale file"
+.SH NAME
+dcunrgb \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Convert RGB to grayscale file
+.SH SYNOPSIS
+.HP 10
+.B dcunrgb "infile" "outfile"
+.SH DESCRIPTION
+.LP
+.B dcunrgb
+reads the named dicom input file that has 3 sample per pixel 8 bit per component RGB pixel data,
+and copies the header information and pixel data converted to a single channel 8 bit grayscale MONOCHROME2 to a new dicom file,
+in the explicit VR little endian uncompressed transfer syntax with a meta information
+header prepended.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+There are no options.
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+\ 
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcunjpeg(1)
+.SH AUTHOR
+Copyright (C) 1993-2011. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+Requires that netpbm utilities, and in particular ppmtopgm, are installed and in the PATH.

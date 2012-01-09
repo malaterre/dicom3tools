@@ -1,0 +1,132 @@
+.TH DCUNCAT 1 "13 December 2011" "DICOM PS3" "DICOM PS3 - Split into concatenation instances"
+.SH NAME
+dcuncat \- ACR/NEMA DICOM PS3 ... DICOM PS3 - Split multiframe image into concatenation
+.SH SYNOPSIS
+.HP 10
+.B dcuncat
+.B \-framesper " n "
+[
+.B \-unenhance
+]
+[
+.B \-noprivateseq
+]
+[
+.B \-noprivateattr
+]
+[
+.B \-sameseries
+]
+[
+.B \-instancenumber
+]
+[
+.B \-instancenumberstart " n "
+]
+[
+.B \-frameincrementpointerinstancenumber
+]
+[
+.B \-noconcat
+]
+[
+.B \-v|verbose
+]
+[
+.B \-ignorereaderrors
+]
+" inputfile1 "
+.B \-of " outputprefix "
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcuncat
+reads the named dicom multi frame input file, and splits it into a concatenation
+of smaller instances, which will be written to files in the specified output path with the
+InstanceNumber or InConcatenationNumber appended.
+.LP
+The concatenation instances will be placed in a new series generated from the old
+series number plus 7000, unless specified otherwise.
+.SH OPTIONS
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-v|verbose
+.RS
+List sort order and which file contributes to which frame as it is written.
+.RE
+.TP
+.B \-framesper n
+.RS
+Required. Specifies the number of frames per concatenation instance.
+.RE
+.TP
+.B \-unenhance
+.RS
+Convert enhanced IODs to old unenhanced by removing per-frame and shared functional group sequences and moving their contents to the top level dataset. Implies framesper of 1.
+Also adds NumberOfFrames based on SOP Class. May be specified even if source not enhanced, to avoid (empty) functional group sequences being added.
+.RE
+.TP
+.B \-noprivateseq
+.RS
+When unenhancing, do not examine private functional group sequences. If not specified, default is to copy all attributes (standard or private) from within private functional group sequences,
+which in the case of some vendors who hide "fallback" unenhanced object attributes in private functional groups may give better results.
+.RE
+.TP
+.B \-noprivateattr
+.RS
+When unenhancing, do not copy private attributes from within functional groups (private or standard). Does not suppress examination of private functional groups. Note that
+the use of \-removeprivate may also be required, if any existing top level private attributes are to be removed as well.
+.RE
+.TP
+.B \-sameseries
+.RS
+Do not create a new series but rather add to the existing series.
+.RE
+.TP
+.B \-instancenumber
+.RS
+Replace InstanceNumber with an incrementing value starting with 1.
+.RE
+.TP
+.B \-instancenumberstart n
+.RS
+Replace InstanceNumber with an incrementing value starting with n (do not need to specify \-instancenumber); will be reflected in the output filename as well.
+.RE
+.TP
+.B \-frameincrementpointerinstancenumber
+.RS
+Replace FrameIncrementPointer with a value pointing to InstanceNumber, removing any related vectors.
+.RE
+.TP
+.B \-vectorupdate
+.RS
+If FrameIncrementPointer is present in source and output is one frame per instance, extract single frame-specific vector value for all
+vectors referenced by FrameIncrementPointer and replace those vectors.
+.RE
+.TP
+.B \-noconcat
+.RS
+Do not insert concatenation related attributes (always removes old ones whether this option is specified or not).
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+ ...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1), 
+.BR dcmulti(1)
+.SH AUTHOR
+Copyright (C) 1993-2011. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+.LP
+The unehance option is supported for copying of CT and MR attributes only at this time.
+.LP
+Only MR objects are currently "cleaned up" to populate missing or incomplete required attributes at this time.

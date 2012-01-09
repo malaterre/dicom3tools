@@ -1,0 +1,141 @@
+.TH DCSMPTE 1 "15 February 2001" "DICOM PS3" "Create DICOM SMPTE pattern"
+.SH NAME
+dcsmpte \- ACR/NEMA DICOM PS3 ... Create DICOM SMPTE pattern
+.SH SYNOPSIS
+.HP 10
+.B dcsmpte
+[
+.B \-columns|\-cols|\-x " columns"
+]
+[
+.B \-rows|\-y " rows"
+]
+[
+.B \-bits|\-depth|\-d " bits"
+]
+[
+.B \-minval " i"
+]
+[
+.B \-maxval " i"
+]
+[
+.B \-signed
+]
+[
+.B \-inverted|\-invert|\-monochrome1
+]
+.so man1/optout.so
+.SH DESCRIPTION
+.LP
+.B dcsmpte
+writes a grayscale MONOCHROME2 or MONOCHROME1 SMPTE RP 133-1991 pattern as a DICOM
+Secondary Capture Image Storage SOP Class instance stored in a DICOM file.
+.LP
+During the creation, specific attributes may be deleted, added or
+replaced, class and instance unique identifiers generated or removed,
+group lengths added, or private attributes removed, as specified by
+the replacement options described in dcintro(1). This allows the
+specification of additional DICOM attributes, such as the patient's
+name, necessary to make a complete and useful SC instance.
+.SH OPTIONS
+The verbose output goes to standard error.
+.PP
+.PP
+The basic switches are described in dcintro(1). Options specific to this program are:
+.TP
+.BI \-bits|\-depth|\-d " bits"
+.RS
+Defaults to 8.
+.RE
+.TP
+.BI \-columns|\-cols|\-x " columns"
+.RS
+Defaults to 512.
+.RE
+.TP
+.BI \-rows|\-y " rows"
+.RS
+Defaults to 512.
+.RE
+.TP
+.BI \-minval " i"
+.RS
+Defaults to 0. Specifies the pixel value to store for the 0% gray value in the SMPTE pattern
+(may be a negative value eg. ' -1024').
+.RE
+.TP
+.BI \-maxval " i"
+.RS
+Defaults to (2^bits)-1. Specifies the pixel value to store for the 100% gray value in the SMPTE pattern.
+.RE
+.TP
+.BI \-signed
+.RS
+Treat the minval and maxval as signed and set the Pixel Representation
+in the DICOM image to signed.
+.RE
+.TP
+.BI \-inverted|\-invert|\-monochrome1
+.RS
+Invert the grayscale range and set the Photometric Interpretation
+to MONOCHROME1 (zero is white) rather than the default MONOCHROME2 (zero
+is black). The image should display the same in a DICOM viewer that
+correctly handles Photometric Interpretation.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+# Create an 8 bit pattern from 0 to 100 ...
+.RE
+% dcsmpte -rows 512 -cols 512 -bits 8 -minval 0 -maxval 100 smpte.dc3
+.RE
+\ 
+.RE
+# Create an 8 bit pattern from 0 to 255 ...
+.RE
+% dcsmpte -rows 512 -cols 512 -bits 8 -minval 0 -maxval 255 smpte.dc3
+.RE
+# or using the defaults which give the same result ...
+.RE
+% dcsmpte smpte.dc3
+.RE
+\ 
+.RE
+# Create a 12 bit pattern from 0 to 4095 ...
+.RE
+% dcsmpte -rows 512 -cols -bits 12 -minval 0 -maxval 4095 smpte.dc3
+.RE
+\ 
+.RE
+# Create a signed 12 bit pattern from -1024 to 3071 ...
+.RE
+% dcsmpte -rows 512 -cols -bits 12 -minval ' -1024' -maxval 3071 -signed
+.RE
+\ 
+.RE
+# Create a signed 16 bit pattern from -1024 to 3071 ...
+.RE
+% dcsmpte -rows 512 -cols -bits 16 -minval ' -1024' -maxval 3071 -signed
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR dciodvfy(1) ,
+.BR dcbriggs(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+The crosshatch lines are covered by the grayscales squares rather than
+over the top of them as is usually implemented and implied by the
+illustrations in SMPTE RP 133-1991. This is a deliberate choice that
+seems to make it easier to compare adjacent squares to determine whether
+or not they are distinguishable.

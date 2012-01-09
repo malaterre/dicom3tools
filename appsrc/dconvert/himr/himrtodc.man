@@ -1,0 +1,52 @@
+.TH HIMRTODC 1 "05 April 1998" "DICOM PS3" "himr to DICOM"
+.SH NAME
+himrtodc \- ACR/NEMA DICOM PS3 ... himr to DICOM
+.SH SYNOPSIS
+.HP 10
+.B himrtodc
+[
+.B \-v|verbose
+]
+.I inputfilename
+.I outputfilename
+.SH DESCRIPTION
+.LP
+.B himrtodc
+reads the named himr input file and converts it to a dicom output file.
+.LP
+.SH OPTIONS
+The verbose output goes to standard error.
+.PP
+The basic switches are described in dcintro(1).
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% himrtodc \-v test test.dc3
+.RE
+\ 
+.RE
+Converting ...
+.RE
+******** As read ... ********
+.RE
+(0x0008,0x0008) CS Image Type ...
+.RE
+******** As written ... ********
+.RE
+(0x0002,0x0001) OB File Meta Information Version ...
+.RE
+ ...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1) ,
+.BR himrdump(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

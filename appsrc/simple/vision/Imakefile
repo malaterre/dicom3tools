@@ -1,0 +1,24 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBGENERICEXTRAINCLUDES)
+
+SRCSTOPGM = vsntopgm.cc
+OBJSTOPGM = vsntopgm.o
+
+CPLUSPLUS_SRCS = $(SRCSTOPGM)
+OBJS = $(OBJSTOPGM)
+
+AllTarget(vsntopgm)
+
+NormalCCProgramTarget(vsntopgm,$(OBJSTOPGM),NullParameter,NullParameter,NullParameter)
+
+InstallProgram(vsntopgm,$(INSTALLBINDIR))
+InstallManPage(vsntopgm,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./vsntopgm "" $(TOP)/images/vision $(TOP)/test/$(CURRENT_DIR) compare filter
+
+test.create::
+	@$(TOP)/support/testapp testlist ./vsntopgm "" $(TOP)/images/vision $(TOP)/test/$(CURRENT_DIR) create filter

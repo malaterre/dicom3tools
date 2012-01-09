@@ -1,0 +1,52 @@
+.TH GE9800TODC 1 "02 May 2010" "DICOM PS3" "ge9800 to DICOM"
+.SH NAME
+ge9800todc \- ACR/NEMA DICOM PS3 ... ge9800 to DICOM
+.SH SYNOPSIS
+.HP 10
+.B ge9800todc
+[
+.B \-v|verbose
+]
+.I inputfilename
+.I outputfilename
+.SH DESCRIPTION
+.LP
+.B ge9800todc
+reads the named ge9800 input file and converts it to a dicom output file.
+.LP
+.SH OPTIONS
+The verbose output goes to standard error.
+.PP
+The basic switches are described in dcintro(1).
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% ge9800todc \-v test.YV test.dcm
+.RE
+\ 
+.RE
+Converting ...
+.RE
+******** As read ... ********
+.RE
+(0x0008,0x0008) CS Image Type ...
+.RE
+******** As written ... ********
+.RE
+(0x0002,0x0001) OB File Meta Information Version ...
+.RE
+ ...
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcintro(1) ,
+.BR ge9800dump(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

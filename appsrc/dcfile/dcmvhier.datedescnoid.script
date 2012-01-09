@@ -1,0 +1,77 @@
+#!/bin/sh
+#
+# usage: dcmvhier.datedescnoid "file"
+#
+# this script moves a single dicom file into a patient/study/series/image
+# hierarchy of the form:
+#
+#	PatientName [PatientID]/StudyDate StudyTime/Series SeriesNumber [Series Description]/SOPInstanceUID.dcm
+#
+# Typically used as
+#
+#	find . -type f -exec dcmvhier.datedescnoid '{}' ';'
+#
+
+DCMSUFFIX=".dcm"
+
+DCKEY="dckey -ignoreoutofordertags -ignorereaderrors -noerror"
+MV="mv"
+MKDIRHIER="mkdir -p"
+CMP="cmp"
+RM="rm"
+
+srcfile="$*"
+	#echo "$srcfile"
+
+	patientid=`$DCKEY -k PatientID "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^A-Za-z0-9 ]/_/g' -e 's/^[ _]*//g' -e 's/[ _]*$//g' -e 's/[ ][ ]*/ /g' -e 's/[_][_]*/_/g' -e 's/[_][ ]/ /g'`
+	if [ -z "$patientid" ]; then patientid="NOID"; fi
+	patientname=`$DCKEY -k PatientName "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^A-Za-z0-9 ^=,.]/_/g' -e 's/^[ _]*//g' -e 's/[ _]*$//g' -e 's/[ ][ ]*/ /g' -e 's/[_][_]*/_/g' -e 's/[_][ ]/ /g' -e 's/^[.]/_/'`
+	if [ -z "$patientname" ]; then patientname="NONAME"; fi
+	patientlabel="$patientname [$patientid]"
+
+	studydate=`$DCKEY -k StudyDate "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^A-Za-z0-9 ]/_/g' -e 's/^[ _]*//g' -e 's/[ _]*$//g' -e 's/[ ][ ]*/ /g' -e 's/[_][_]*/_/g' -e 's/[_][ ]/ /g'`
+	if [ -z "$studydate" ]; then studydate="19000101"; fi
+	studytime=`$DCKEY -k StudyTime "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^A-Za-z0-9 ]/_/g' -e 's/^[ _]*//g' -e 's/[ _]*$//g' -e 's/[ ][ ]*/ /g' -e 's/[_][_]*/_/g' -e 's/[_][ ]/ /g' -e 's/^\([0-9][0-9][0-9][0-9][0-9][0-9]\).*$/\1/'`
+	if [ -z "$studytime" ]; then studytime="000000"; fi
+	studylabel="$studydate $studytime"
+
+	seriesnum=`$DCKEY -k SeriesNumber "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9]//g' -e 's/^[ _]*//g' -e 's/[ _]*$//g' -e 's/[ ][ ]*/ /g' -e 's/[_][_]*/_/g' -e 's/[_][ ]/ /g' -e 's/^\([0-9]\)$/00\1/' -e 's/^\([0-9][0-9]\)$/0\1/' `
+	if [ -z "$seriesnum" ]; then seriesnum="000"; fi
+	seriesdesc=`$DCKEY -k SeriesDescription "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^A-Za-z0-9 ]/_/g' -e 's/^[ _]*//g' -e 's/[ _]*$//g' -e 's/[ ][ ]*/ /g' -e 's/[_][_]*/_/g' -e 's/[_][ ]/ /g'`
+	serieslabel="Series $seriesnum [$seriesdesc]"
+
+	instanceuid=`$DCKEY -k SOPInstanceUID "$srcfile" 2>&1 | egrep -v 'Error|Warning' | sed -e 's/[^0-9a-zA-Z_.-]//g' -e 's/^[ _]*//g' -e 's/[ _]*$//g' -e 's/[ ][ ]*/ /g' -e 's/[_][_]*/_/g' -e 's/[_][ ]/ /g'`
+	if [ -z "$instanceuid" ]
+	then
+		echo "$srcfile: No SOP Instance UID - doing nothing" 1>&2
+	else
+		instancelabel="$instanceuid"
+
+		newdir="$patientlabel/$studylabel/$serieslabel"
+		if [ ! -d "$newdir" ]
+		then
+			#echo $MKDIRHIER "$newdir"
+			$MKDIRHIER "$newdir"
+		fi
+		newfile="$newdir/$instancelabel$DCMSUFFIX"
+		if [ ! -f "$newfile" ]
+		then
+			echo $MV "$srcfile" "$newfile"
+			$MV "$srcfile" "$newfile"
+		else
+			if [ `ls -i "$srcfile" | awk '{print $1}'` = `ls -i "$newfile" | awk '{print $1}'` ]
+			then
+				echo "$srcfile: Same file (inode) as $newfile" 1>&2
+				# move anyway, in case we want to rename it
+				$MV "$srcfile" "$newfile"
+			else
+				if $CMP "$srcfile" "$newfile"
+				then
+					echo "$srcfile: removing, same content as existing $newfile" 1>&2
+					$RM "$srcfile"
+				else
+					echo "$srcfile: leaving, not overwriting different $newfile" 1>&2
+				fi
+			fi
+		fi
+	fi

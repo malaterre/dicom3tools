@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# usage: dcdeflate infile outfile
+#
+#
+DCCP=dccp
+GZIP=gzip
+
+$DCCP $1 -justmeta -ra TransferSyntaxUID "1.2.840.10008.1.2.1.99" >$2
+$DCCP $1 -nometa -output-vr explicit -output-endian little | $GZIP -x --best >>$2
+

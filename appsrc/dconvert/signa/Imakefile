@@ -1,0 +1,35 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTAPPDCONVERTEXTRAINCLUDES)
+
+SRCSTODC = sgntodc.cc
+OBJSTODC = sgntodc.o
+
+SRCSDUMP = sgndump.cc
+OBJSDUMP = sgndump.o
+
+CPLUSPLUS_SRCS = $(SRCSDUMP) $(SRCSTODC)
+OBJS = $(OBJSDUMP) $(OBJSTODC)
+
+AllTarget(sgntodc)
+NormalCCProgramTarget(sgntodc,$(OBJSTODC),$(TOP)/libsrc/lib/libdsgn.a $(PROJECTDCONVERTDEPLIBS),-ldsgn $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(sgntodc,$(INSTALLBINDIR))
+InstallManPage(sgntodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(sgndump)
+NormalCCProgramTarget(sgndump,$(OBJSDUMP),$(TOP)/libsrc/lib/libdsgn.a $(PROJECTDCONVERTDEPLIBS),-ldsgn $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(sgndump,$(INSTALLBINDIR))
+InstallManPage(sgndump,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	#./testy2k.sh $(TOP)/images/signa $(TOP)/test/$(CURRENT_DIR) compare
+	@$(TOP)/support/testapp testlist ./sgndump "" $(TOP)/images/signa $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./sgntodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/signa $(TOP)/test/$(CURRENT_DIR) compare todc
+
+test.create::
+	#./testy2k.sh $(TOP)/images/signa $(TOP)/test/$(CURRENT_DIR) create
+	@$(TOP)/support/testapp testlist ./sgndump "" $(TOP)/images/signa $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./sgntodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/signa $(TOP)/test/$(CURRENT_DIR) create todc
+

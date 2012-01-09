@@ -1,0 +1,62 @@
+#!/bin/sh
+
+# check for (60xx,xxxx), (50xx,xxxx) or (0070,xxxx)
+# check for any private annotation data elements (e.g. Agfa/Mitra)
+# check for any non-zero high bits above BitsStored that might be overlays
+# check for any non-zero bits in OverlayData
+
+TMPFILE="/tmp/`basename $0`.$$.tmp"
+
+echo "$1"
+dcdump -ignoreoutofordertags "$1" 2>&1 | egrep -iv '(warning|error)' | egrep '^[(]0x([5-6]0[0-9a-fA-F][0-9a-fA-F]|0070)'
+dcdump -ignoreoutofordertags "$1" 2>&1 | egrep -iv '(warning|error)' | grep 'MITRA MARKUP 1.0'
+
+isEncapsulated=`dcfile "$1" 2>&1 | grep 'Data: Encapsulated' | awk '{print $3}'`
+if [ -z "${isEncapsulated}" -o "${isEncapsulated}" = "No" ]
+then
+	bitsStored=`dckey -noerror -decimal -k BitsStored "$1" 2>&1 | egrep -iv '(warning|error)'`
+	bitsAllocated=`dckey -noerror -decimal -k BitsAllocated "$1" 2>&1 | egrep -iv '(warning|error)'`
+	#echo "bitsStored    = <${bitsStored}>"
+	#echo "bitsAllocated = <${bitsAllocated}>"
+	if [ ! -z "${bitsStored}" -a ! -z "${bitsAllocated}" ]
+	then
+		if [ "${bitsStored}" -ne "${bitsAllocated}" ]
+		then
+			#echo "Checking for non-zero high bits"
+			rm -f "${TMPFILE}"
+			dcarith -maskhighbits "${bitsStored}" "$1" "${TMPFILE}" 2>&1 | egrep -iv '(warning|error)'
+			comparison=`dccmp "$1" "${TMPFILE}" 2>&1`
+			if [ ! -z "${comparison}" ]
+			then
+				echo "######### Contains non-zero high bits"
+			fi
+			rm -f "${TMPFILE}"
+		fi
+	#else
+	#	echo "Warning: not a (valid) DICOM image file, so not checking high bits"
+	fi
+else
+	echo "Warning: An encapsulated (compressed) file, so not checking high bits"
+fi
+
+overlaydataattributesarepresent=`dcdump -ignoreoutofordertags "$1" 2>&1 | egrep -iv '(warning|error)' | egrep '^[(]0x60[0-9a-fA-F][0-9a-fA-F],0x3000[)]'`
+if [ ! -z "${overlaydataattributesarepresent}" ]
+then
+	nonzerooverlaydata=`dckey -noerror \
+		-k '(0x6000,0x3000)' \
+		-k '(0x6002,0x3000)' \
+		-k '(0x6004,0x3000)' \
+		-k '(0x6006,0x3000)' \
+		-k '(0x6008,0x3000)' \
+		-k '(0x600A,0x3000)' \
+		-k '(0x600C,0x3000)' \
+		-k '(0x600E,0x3000)' "$1" 2>&1 \
+		| grep -v '0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000' | egrep -v '^[ ]*$'`
+	if [ ! -z "${nonzerooverlaydata}" ]
+	then
+		echo "######### Overlay Data contains non-zero bits"
+	else
+		echo "######### Overlay Data contains only zero bits"
+	fi
+fi
+

@@ -1,0 +1,38 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTAPPDCONVERTEXTRAINCLUDES)
+
+SRCSTODC = gentodc.cc
+OBJSTODC = gentodc.o
+
+SRCSDUMP = gendump.cc
+OBJSDUMP = gendump.o
+
+CPLUSPLUS_SRCS = $(SRCSDUMP) $(SRCSTODC)
+OBJS = $(OBJSDUMP) $(OBJSTODC)
+
+AllTarget(gentodc)
+NormalCCProgramTarget(gentodc,$(OBJSTODC),$(TOP)/libsrc/lib/libdgen.a $(PROJECTDCONVERTDEPLIBS),-ldgen $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(gentodc,$(INSTALLBINDIR))
+InstallManPage(gentodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(gendump)
+NormalCCProgramTarget(gendump,$(OBJSDUMP),$(TOP)/libsrc/lib/libdgen.a $(PROJECTDCONVERTDEPLIBS),-ldgen $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(gendump,$(INSTALLBINDIR))
+InstallManPage(gendump,$(INSTALLMANDIR)/man1)
+
+InstallScript(gentodc.dat.all,$(INSTALLBINDIR))
+InstallManPage(gentodc.dat.all,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	./testy2k.sh $(TOP)/images/genesis $(TOP)/test/$(CURRENT_DIR) compare
+	@$(TOP)/support/testapp testlist ./gendump "" $(TOP)/images/genesis $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./gentodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/genesis $(TOP)/test/$(CURRENT_DIR) compare todc
+
+test.create::
+	./testy2k.sh $(TOP)/images/genesis $(TOP)/test/$(CURRENT_DIR) create
+	@$(TOP)/support/testapp testlist ./gendump "" $(TOP)/images/genesis $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./gentodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/genesis $(TOP)/test/$(CURRENT_DIR) create todc
+

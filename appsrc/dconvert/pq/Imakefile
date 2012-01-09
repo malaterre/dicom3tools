@@ -1,0 +1,41 @@
+MANSUFFIX = 1
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTAPPDCONVERTEXTRAINCLUDES)
+
+SRCSTODC = pqtodc.cc
+OBJSTODC = pqtodc.o
+
+SRCSDUMP = pqdump.cc
+OBJSDUMP = pqdump.o
+
+SRCSSPLIT = pqsplit.cc
+OBJSSPLIT = pqsplit.o
+
+CPLUSPLUS_SRCS = $(SRCSDUMP) $(SRCSTODC)
+OBJS = $(OBJSDUMP) $(OBJSTODC)
+
+AllTarget(pqtodc)
+NormalCCProgramTarget(pqtodc,$(OBJSTODC),$(TOP)/libsrc/lib/libdpq.a $(PROJECTDCONVERTDEPLIBS),-ldpq $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(pqtodc,$(INSTALLBINDIR))
+InstallManPage(pqtodc,$(INSTALLMANDIR)/man1)
+
+AllTarget(pqdump)
+NormalCCProgramTarget(pqdump,$(OBJSDUMP),$(TOP)/libsrc/lib/libdpq.a $(PROJECTDCONVERTDEPLIBS),-ldpq $(PROJECTDCONVERTLIBS),-lm)
+InstallProgram(pqdump,$(INSTALLBINDIR))
+InstallManPage(pqdump,$(INSTALLMANDIR)/man1)
+
+AllTarget(pqsplit)
+NormalCCProgramTarget(pqsplit,$(OBJSSPLIT), , ,-lm)
+InstallProgram(pqsplit,$(INSTALLBINDIR))
+InstallManPage(pqsplit,$(INSTALLMANDIR)/man1)
+
+DependCCTarget()
+
+test::
+	@$(TOP)/support/testapp testlist ./pqdump "" $(TOP)/images/pq $(TOP)/test/$(CURRENT_DIR) compare dump
+	@$(TOP)/support/testapp testlist ./pqtodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/pq $(TOP)/test/$(CURRENT_DIR) compare todc
+
+test.create::
+	@$(TOP)/support/testapp testlist ./pqdump "" $(TOP)/images/pq $(TOP)/test/$(CURRENT_DIR) create dump
+	@$(TOP)/support/testapp testlist ./pqtodc "-v -stamp 9999 -instancecreationdate 20030314 -instancecreationtime 145912 -timezoneoffsetfromutc +0100" $(TOP)/images/pq $(TOP)/test/$(CURRENT_DIR) create todc
+

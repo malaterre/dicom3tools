@@ -1,0 +1,116 @@
+.TH DCHIST 1 "20 August 2007" "DICOM PS3" "DICOM PS3 - DICOM image statistics"
+.SH NAME
+dchist \- ACR/NEMA DICOM PS3 ... DICOM PS3 - DICOM image statistics
+.SH SYNOPSIS
+.HP 10
+.B dchist
+[
+.B \-h|histogram
+]
+[
+.B \-csv
+]
+[
+.B \-withhighbits|highbitsonly
+]
+[
+.B \-v|verbose
+]
+[
+.B \-filename
+]
+.so man1/optin.so
+.SH DESCRIPTION
+.LP
+.B dchist
+reads the named dicom or acr-nema input file and describes the statistics
+of the image pixel data. The primary intent is to determine the zero
+order entropy of the image.
+.LP
+The description and verbose output go to standard error.
+.PP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-h|histogram
+.RS
+Display table of pixel value, frequency, probability, contribution to zero order entropy, and cumulative zero order entropy. May generate a LOT of output !
+.RE
+.TP
+.B \-csv
+.RS
+Display only a comma separated value pair of pixel value and frequency, one line per value, e.g., for import into a statistical program or spreadsheet
+.RE
+.TP
+.B \-withhighbits
+.RS
+Include as well the values that are above Bits Stored and within Bits Allocated, such as might be overlay bits
+(regardless of whether or not there are any 60xx group elements).
+.RE
+.TP
+.B \-highbitsonly
+.RS
+Use instead the values that are above Bits Stored and within Bits Allocated, such as might be overlay bits,
+and treat all valid pixel values below Bits Stored inclusive as zero
+(regardless of whether or not there are any 60xx group elements).
+.RE
+.TP
+.B \-v|verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading and once read.
+.RE
+.TP
+.B \-filename
+.RS
+Show the name of the file supplied in the arguments; a hyphen will be reported if no filename was supplied.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dchist expmeta.dc3
+.RE
+9.02366 Zero order entropy (bits per pixel)
+.RE
+0x0     Smallest symbol value
+.RE
+0       Smallest symbol length (bits)
+.RE
+0x6e9   Largest symbol value
+.RE
+11      Largest symbol length (bits)
+.RE
+\ 
+.RE
+% dchist -h expmeta.dc3
+.RE
+[0x0]   392 p=0.00598145  e=0.0441747   cum=0.0441747
+.RE
+ ...
+.RE
+[0x6e9] 1   p=1.52588e-05 e=0.000244141 cum=9.02366
+.RE
+\ 
+.RE
+9.02366 Zero order entropy (bits per pixel)
+.RE
+0x0     Smallest symbol value
+.RE
+0       Smallest symbol length (bits)
+.RE
+0x6e9   Largest symbol value
+.RE
+11      Largest symbol length (bits)
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dcstats(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

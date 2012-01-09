@@ -1,0 +1,121 @@
+#!/bin/sh
+
+if [ $# = 1 ]
+then
+	fromprefix="xxxx"
+	toprefix=$1
+	dstsubdir="$1"
+elif [ $# = 3 ]
+then
+	fromprefix="$1"
+	toprefix="$2"
+	dstsubdir="$3"
+else
+	echo "Usage: $0 toprefix | (fromprefix toprefix dstsubdir)"
+	exit 1
+fi
+
+echo "Converting files \"$fromprefix"'*'"\" to \"$toprefix"'*'"\""
+
+LIBSRCDIR="libsrc/src/dconvert/$fromprefix"
+LIBDSTDIR="libsrc/src/dconvert/$dstsubdir"
+APPSRCDIR="appsrc/dconvert/$fromprefix"
+APPDSTDIR="appsrc/dconvert/$dstsubdir"
+
+if [ ! -d "$LIBSRCDIR" ]
+then
+	echo "No source directory \"$LIBSRCDIR\""
+	exit 1;
+fi
+
+if [ ! -d "$APPSRCDIR" ]
+then
+	echo "No source directory \"$APPSRCDIR\""
+	exit 1;
+fi
+
+if [ ! -d "$LIBDSTDIR" ]; then mkdir "$LIBDSTDIR"; fi
+if [ ! -d "$APPDSTDIR" ]; then mkdir "$APPDSTDIR"; fi
+
+toalllower()	# Usage: toalllower src > from
+(
+	echo $1 | tr '[A-Z]' '[a-z]'
+)
+
+toallupper()	# Usage: toallupper src > from
+(
+	echo $1 | tr '[a-z]' '[A-Z]'
+)
+
+tofirstupper()	# Usage: tofirstupper src > from
+(
+	first=`echo $1 | sed 's/\(.\)\(.*\)/\1/' | tr '[a-z]' '[A-Z]'`
+	echo $first`echo $1 | sed 's/\(.\)\(.*\)/\2/'`
+)
+
+LALLFROM="$fromprefix"
+UALLFROM=`toallupper "$fromprefix"`
+UFSTFROM=`tofirstupper "$fromprefix"`
+LALLTO="$toprefix"
+UALLTO=`toallupper "$toprefix"`
+UFSTTO=`tofirstupper "$toprefix"`
+
+echo "Translating \"$LALLFROM\" to \"$LALLTO\""
+echo "Translating \"$UALLFROM\" to \"$UALLTO\""
+echo "Translating \"$UFSTFROM\" to \"$UFSTTO\""
+
+convertit() # srcdir dstdir
+(
+	srcdir="$1"
+	dstdir="$2"
+
+	echo "Converting in $srcdir to $dstdir"
+
+	for i in $srcdir/*
+	do
+		src=`basename $i`
+		if [ "$src" = "Imakefile" ]
+		then
+			echo "Ignoring Imakefile"
+			dst=""
+		elif [ "$src" = "Imakefile.tmpl" ]
+		then
+			echo "Converting Imakefile.tmpl to Imakefile"
+			dst=Imakefile
+		else
+			dst=`echo "$src" | sed "s/^$fromprefix/$toprefix/"`
+		fi
+		if [ -f "$i" -a ! -z "$dst" ]
+		then
+			echo "$i -> $dstdir/$dst"
+			sed <$i >"$dstdir/$dst" \
+				-e "s/$LALLFROM/$LALLTO/g" \
+				-e "s/$UALLFROM/$UALLTO/g" \
+				-e "s/$UFSTFROM/$UFSTTO/g"
+		fi
+	done
+)
+
+convertit $LIBSRCDIR $LIBDSTDIR
+convertit $APPSRCDIR $APPDSTDIR
+
+for f in libsrc/src/dconvert/Imakefile appsrc/dconvert/Imakefile
+do
+	if [ -f "$f" ]
+	then
+		if egrep "^[ 	]*SUBDIRS[ 	]*=.*$dstsubdir" \
+			< "$f" >/dev/null
+		then
+			echo "$f: already contains $dstsubdir in SUBDIRS"
+		else
+			echo "$f: adding $dstsubdir to SUBDIRS"
+			mv -f $f $f.bak
+			sed <$f.bak >$f  \
+				"/^[ 	]*SUBDIRS[ 	]*=/s/=.*/& $dstsubdir/"
+		fi
+	fi
+done
+
+echo
+echo
+echo "Directories and Imakefiles done ... now you need to remake Makefiles"

@@ -1,0 +1,3133 @@
+111219:	libsrc/src/dctool/attrmxrd.cc: check for HighBit being more than one less than BitsStored and correct BitsStored accordingly (otherwise will create zero pixel values on copy) (000408)
+
+111213:	appsrc/dcfile/dcuncat.cc: add option to replace instance number starting with a specific number to allow scripts to extend a series with successive invocations
+
+111212:	libsrc/standard/condn.tpl/module,strval/base.tpl,dx.tpl: improve animal versus human conditions to check SRT homo sapiens, and make view position and body part examined human versus animal specific
+
+111212:	libsrc/standard/elmdict/other.tpl: add more Sound private elements
+
+111117:	libsrc/standard/strval/base.tpl: add CSD for 99NCIAIM
+
+111109:	appsrc/dcfile/dcuncat.cc: add options to replace instance number, frame increment pointer and frame increment pointer vectors, as well as add number of frames during unenhance based on SOP class
+
+111106:	libsrc/standard/elmdict/other.tpl: add Vepro private elements
+
+111031:	libsrc/standard/elmdict/other.tpl: add CTP private elements
+
+111030:	libsrc/standard/elmdict/other.tpl: add Segami private elements
+
+111029:	libsrc/standard/elmdict/dicom3.tpl: add (restore from trial) Observation UID (per CP 1147)
+
+111028:	libsrc/standard/elmdict/other.tpl: add NeuroQuant private elements
+
+111024:	libsrc/standard/elmdict/other.tpl: update fuji private attributes with descriptions
+
+110918:	libsrc/standard/elmdict/diconde.tpl: update with new or modified data elements with cleanup from Patrick
+
+110918:	libsrc/standard/elmdict/siemens.tpl: update some private elements based on Artis conformance statement
+
+110916:	libsrc/standard/elmdict/gems.tpl: resolve inconsistencies in GE PET conformance statement VRs SS/SL/FL for private elements by choosing those most commonly seen in the field (still some inconsistencies between models)
+
+110904:	libsrc/standard/elmdict/camtron.tpl: add private data elements encountered in DICOMDIR, as well as QCA private data elements from GEMS/Camtronics CRS conformance statement
+
+110901:	libsrc/standard/sopcl.tpl,elmdict/dicom3.tpl: Sup 152 FT ophthalmic thickness map (dictionary and SOP class only; not IOD yet)
+
+110822:	libsrc/standard/elmdict/dicom3.tpl: update data dictionary (only) for CPs for FT Aug 2011 WG 6 meeting
+
+110714:	libsrc/standard/elmdict/dicom3.tpl: remove 'unified' from names of various attributes (per Sup 96 FT)
+
+110716:	libsrc/standard/strval/base.tpl: add 99PMP CSD
+
+110714:	libsrc/standard/elmdict/dicom3.tpl: exposure index etc are DS not FD (CP 1024)
+
+110709:	libsrc/standard/elmdict/dicom3.tpl: change (0018,9430) from US to FL per Sup 139
+
+110612:	libsrc/standard/elmdict/diconde.tpl: update for DICONDE eddy current standard
+
+110612:	libsrc/standard/elmdict/dicondep.tpl: correct case of DICONDE DX (Dx) private owner for E2699
+
+110609:	libsrc/standard/elmdict/dicom3.tpl: add Sup 151 FT data elements
+
+110608:	libsrc/standard/elmdict/elscint.tpl: update Elscint private elements
+
+110531:	libsrc/standard/elmdict/other.tpl: update Hitachi CT private elements
+
+110531:	libsrc/standard/elmdict/siemens.tpl: update mammo private elements
+
+110529:	libsrc/standard/condn.tpl,iodcomp/dx.tpl,module/base.tpl,dx.tpl,xaxrf.tpl,strval/dx.tpl,xaxrf.tpl: add breast tomosynthesis IOD, refactoring 3D XRay accordingly
+
+110529:	libsrc/standard/elmdict/other.tpl: more private data elements for Hologic 
+
+110528:	appsrc/dcfile/dciodvfy.cc: do not complain about SCOORD without child IMAGE when SELECTED FROM is by reference (000406)
+
+110527:	appsrc/dcfile/dciodvfy.cc,libsrc/src/locale/mesgtext.tpl: check that references to instances in content tree are in top level evidence sequences in SR (000405)
+
+110526:	libsrc/standard/elmdict/gems.tpl: add names for CT iterative reconstruction private data elements
+
+110522:	libsrc/src/dctool/attrothr.cc: do not throw assertion if computed length is equal (which may occur for single bit images)
+
+110522:	libsrc/standard/iodcomp/base.tpl,libsrc/standard/condn.tpl: permit FoR Module in Segementation (and do CP to standard to allow may be present otherwise)
+
+110522:	appsrc/dcfile/dciodvfy.cc,libsrc/src/locale/mesgtext.tpl: detect SCOORD without child IMAGE (000403)
+
+110522:	appsrc/dcfile/dciodvfy.cc,libsrc/src/locale/mesgtext.tpl: detect quotes in code meaning of measurement units (000404)
+
+110522:	libsrc/src/dctool/attrtypv.cc,locale/mesgtext.tpl: permit PN with multiple carets in multiple component groups (000402)
+
+110521:	libsrc/standard/elmdict/acuson.tpl,agfa.tpl,isg.tpl,other.tpl,siemens.tpl,strval/base.tpl: more private elements and coding scheme designators
+
+110517:	libsrc/standard/module/base.tpl: correct type (1->2) and number of items (1->0-n) in SourceImageSequence in DerivationImageMacro
+
+110517:	libsrc/standard/elmdict/siemens.tpl: yet more syngo private elements
+
+110516:	libsrc/standard/cond.tpl: no longer require version for UCUM codes (CP 1060)
+
+110516:	libsrc/standard/strval/base.tpl: add 99_MI private coding scheme designator
+
+110516:	libsrc/include/dctool/attr.h,attrseq.h,generic/listsimp.h,src/dctool/attrseq.cc,attrvrfy.cc,standard/condn.tpl,module/softcopy.tpl,sr.tpl,support/module.awk:
+		though VM for sequences number of items was being specified in modules, it was not being applied;
+		apply it (000256), as well as make it work (since number of items was not being computed correctly
+		in SequenceAttribute::verifyVM()); also add support for conditional check of VM, for example for
+		GraphicData depending on Grahic Type (000401)
+
+110516:	libsrc/standard/elmdict/toshiba.tpl: update CT private elements from conformance statement for V4.70 or later version
+
+110514:	libsrc/standard/elmdict/siemens.tpl: add more syngo private elements, and update guessed VRs of existing ones with observed explicit VRs
+
+110511:	libsrc/standard/elmdict/gems.tpl,toshiba.tpl: add more encountered explicit VR private elements
+
+110511:	libsrc/standard/elmdict/other.tpl: update/add McKesson private elements from conformance statement
+
+110511:	libsrc/standard/transyn.tpl: recognize ALI Wavelet private transfer syntax (though cannot decompress it)
+
+110510:	appsrc/misc/jpegdump.cc: add JPEG 2000 COD marker segment dump in order to detect whether trabsform is reversible or irreversible
+
+110506:	libsrc/include/dctool/attrmxls.h,src/dctool/attrmxrd.cc,locale/mesgtext.tpl: allow fixed length pixel data within sequence in encapsulated transfer syntaxes (000400)
+
+110504:	libsrc/support/elmtojava_TagFromName.awk,elmtojava_DicomDictionary_CreateTagByName.awk: include aliases for old keywords (pre CP 850) in generated Java dictionary
+
+110501:	appsrc/dcfile/dcdirdmp.cc,libsrc/src/dctool/dicomdir.cc: add option to control inclusion of descriptions, and include SeriesDescription in series level record display (000399)
+
+110430:	libsrc/standard/elmdict/diconde.tpl,dicondep.tpl: add DICONDE standard and private elements
+
+110423:	libsrc/standard/elmdict/siemens.tpl: add more private elements
+
+110422:	libsrc/standard/elmdict/gems.tpl.other.tpl: add more private elements
+
+110406:	libsrc/standard/transyn.tpl,sopcl.tpl,elmdict/dicom3.tpl,module/vl.tpl: update data elements, sop classes and transfer syntaxes after WG 6 2011/04
+
+110222:	appsrc/dcfile/dcsrdiff.script: change "==" to "=" operator, since former doesn't work in Solaris Bourne shell
+
+110207:	appsrc/dconvert/ge9800/Imakefile: remove commented out references to non-existent ge98unid script (else causes problems with Solaris imake/make at install)
+
+110207:	libsrc/include/pixeldat/srcsink.h: fix incorrect zero constant assigned as const char padding (clean up warning)
+
+110207:	libsrc/include/dctool/attrval.h,libsrc/src/dctool/strval.cc,appsrc/acrnema/ancp.cc,ancreate.cc: start cleanup of assignment of "const char*" to "char*" (g++ 4.2 warning)
+
+110128:	libsrc/standard/elmdict/dicom3.tpl: add sup 96 FT data elements
+
+110128:	libsrc/standard/elmdict/dicom3.tpl: correct data element tag for ImplantTemplateGroupName (sup131_ft3)
+
+110127:	libsrc/standard/sopcl.tpl: correct plurality of spectacle report(s) storage
+
+110124:	libsrc/standard/elmdict/dicom3.tpl: add data elements to dictionary for CP 1037 and 1080
+
+110119:	libsrc/standard/module,strval/base.tpl,elmdict/dicom3.tpl: Add Sup 142 data elements to dictionary and IODs
+
+110116:	libsrc/standard/elmdict/other.tpl: change VR of Sound Elkin private tag (f001,0006) as requested by vendor
+
+110113:	appsrc/dcfile/dcunrgb.script: add script to convert 8 bit RGB to MONOCHROME2
+
+101204:	appsrc/dcfile/dctopgm8.cc: correct problem windowing MONOCHROME1 images (000398)
+
+101204:	appsrc/dcfile/dctopgm8.cc,.man: add command line options to select and override VOI LUTs,
+		override any VOI LUT if window values explicitly specified on command line, use center
+		instead of level throughout but allow level as synonym on command line, and populate man page (000397)
+
+101117:	libsrc/standard/elmdict/elscint.tpl: more private tags encountered
+
+101117:	libsrc/standard/iodcomp,module/sr.tpl: add IHE REM profile variant of RDSR to check of additinal required attributes; also fix KOS RequestAttributesSequence, which was not current
+
+101116:	appsrc/dcfile/dcsrdiff.script: make use of -identifier an option rather than the only choice
+
+101115:	libsrc/standard/elmdict/other.tpl: add emageon private attributes
+
+101115:	appsrc/dcfile/dcunjpeg.script: extend to support multi-component 8 bit J2K files
+
+101110:	libsrc/standard/elmdict/dicom3.tpl: add CP 1036 data element (not IOD yet)
+
+101106:	appsrc/dcfile/dcsrdiff.script: add script to compare dumps of SR files
+
+101101:	libsrc/standard/elmdict/dicom3.tpl: add Sup 131 and 134 and RT UPS data elements (not IOD yet)
+
+101031:	appsrc/dcfile/dcj2k.script: do not add disclaimer or additional dicom attributes
+
+101031:	appsrc/dcfile/dcj2k.script: add lossy image compression parameters when not reversible (000360)
+
+101030:	libsrc/standard/elmdict/other.tpl: add Terarecon private elements
+
+101026:	appsrc/dcfile/dcckovly.script: check for Agfa/Mitra private annotation data elements
+
+101026:	libsrc/standard/elmdict/other.tpl: add Etiam DICOMDIR private element
+
+101026:	libsrc/standard/elmdict/toshiba.tpl: Add private data elements encountered in RSNA 2010 dose demo Toshiba samples
+
+101014:	libsrc/standard/condn.tpl,module/base.tpl: detect illegal TBD code values and meaning, and supress laterality errors in segmentation objects
+
+101014:	libsrc/standard/elmdict/elscint.tpl: add Philips dose phantom type private element
+
+100910:	libsrc/include/generic/basetype.h,src/dctool/attrothr.cc: allow dcuncat to handle large files by using unsigned long long intermediate precision in number of bytes calculation (000396)
+
+100908:	libsrc/standard/sopcl,tpl,elmdict/dicom3.tpl: add SOP Classes and data elements (not IOD yet) for Sup 144 and 146
+
+100824:	libsrc/standard/sopcl,tpl,elmdict/dicom3.tpl: add SOP Class and data elements (not IOD yet) for Sup 145 whole slide imaging
+
+100815:	appsrc/dcfile/dcsrdump.cc: show FL SCOORDs with greater precision in dump (000395)
+
+100803:	appsrc/dcfiler/dcanon.script: use ls rather than find when doing hierarchical move to avoid removing stuff already done (000394)
+
+100801:	libsrc/standard/Imakefile,sopcl.tpl,elmdict/dicos.tpl,Imakefile: Add DICOS data elements to dictionary (only) as per post-LB draft prior to final text
+
+100707:	libsrc/standard/elmdict/other.tpl: add some private tags encountered in Intelerad presentation states related to annotations
+
+100608:	appsrc/dcfile/dcckovly.script: add detection of energy (or not) in OverlayData element
+
+100530:	libsrc/standard/elmdict/elscint.tpl: add keyword and description for private DLP attribute as observed in samples of dose info screens
+
+100518:	appsrc/dcfile/dcacqmap.script: add ability to split by ImageOrientationPatient to handle multiple angulations in same series (000393)
+
+100409:	libsrc/include/pixeldat/srcsink.h: handle needed extra byte for odd rows*columns single byte copy that affects pnmtodc and rawtodc (000136),(000185)
+
+100405:	libsrc/standard/elmdict/agfa.tpl: add/change some private agfa *(mitra) annotation data elements
+
+100402:	appsrc/dconvert,libsrc/src/dconvert/ge9800: port old dicom3tools GE CT9800 convertor to new toolkit
+
+100415:	appsrc/dcfile/dciodvfy.cc: handle incorrect zero value for number of frames when computing pixel data length (000393)
+
+100325:	libsrc/standard/elmdict/dicom3.tpl: add Sup 120 extended presentation state data elements
+
+100323:	libsrc/standard/elmdict/*.tpl: add more private elements from IHE 2010 NA connectathon samples from explicit VR or conformance statements available
+
+100323:	appsrc/dcfile/dctable.cc: add option to remove quotes in tabulated values (000392)
+
+100319:	appsrc/dcfile/dciodvfy.cc,libsrc/src/locale/mesgtext.tpl: check presentation state displayed area selection sequence coordinate consistency (000391)
+
+100310:	appsrc/dcintro/dcintro.man,optout.so,libsrc/include/dctool/attrmxls.h,dcopt.h,libsrc/src/dctool/attrmxls.cc,dcoptc.cc,dcopto.cc: add disambiguateseriesbydescription option (000390)
+
+100214:	libsrc/standard/elmdict/other.tpl: add DR Systems private tags
+
+100211:	*.man: updated copyright notice to include 2010 and DBA PixelMed to match COPYRIGHT file
+
+100211:	appsrc/dcfile/dcdirdmp.cc,.man: add -filename option for use in scripts to be consistent with other dump tools (000201)
+
+100206:	libsrc/standard/condn.tpl,elmdict/dicom3.tpl,module,strval/mr.tpl: Add Arterial Spin Labeling attributes for Enhanced MR Images per CP 981 FT2
+
+100206:	libsrc/standard/condn.tpl,module,strval/mr.tpl: Changes to diffusion defined terms and sequence conditions per CP 984
+
+100206:	appsrdc/dcfile/dcmulti.cc,libsrc/standard/condn.tpl,module/mr.tpl: Add separate, multiple, velocity encoding directions for reconstruction versus acquisition in Enhanced MR per CP 998
+
+100206:	libsrc/standard/iod,module/vl.tpl: Add Angle of View and Acquisition Context Module to Ophthalmic Photography IODs per CP 999
+
+100206:	libsrc/standard/module/base.tpl: add Patient Size Code Sequence to Patient Study Module per CP 650
+
+100204:	libsrc/standard/elmdict/dicom3.tpl,support/elmdict.awk: per CP 950, LUT Data is never SS
+
+100204:	libsrc/standard/iod/vl.tpl: ophthalmic photography images should not complain when number of frames more than one (000389)
+
+100131:	appsrc/dcfile/dcmulti.cc: do not add empty FrameVOILUTSequence when no window or minimal attributes, since changed from Type 2 to Type 1 by Sup 83, but is U macro in CT and MR
+
+100131:	appsrc/dcfile/dcanon.script,dcdirmk.cc,dcmkpres.cc,dcmulti.cc,libsrc/src/dconvert/gaw/gaw.tpl,gen/gen.tpl,himr/himr.tpl,imtn/imtn.tpl,pace/pace.tpl,pace/pacemmsc.cc,pq/pqmmsc.cc,signa/signa.tpl,somp/somp.tpl,
+		dctool/attrmxvr.cc,dicomdir.cc,standard/condn.tpl,elmdict/dicom3.tpl,module/*.tpl,strval/softcopy.tpl,support/elmtojava_DicomDictionary_CreateIEByTag.awk:
+		update keywords, descriptions and VRs to match CP850 modified 2009 edition of standard
+
+100131:	appsrc/dcfile/dcuncat.cc: add SOPInstanceUIDOfConcatenationSource per CP 809
+
+100127:	libsrc/standard/elmdict/dicom3.tpl: add elements to dictionary from Jan 2010 WG 6 FT CPs and Sups
+
+100119:	libsrc/standard/condn.tpl,module.vl.tpl: handle derived versus no-derived ImageType value 3 defined terms (000388)
+
+100119:	libsrc/standard/condn.tpl,module.vl.tpl: nest mydriatic stuff within sequence as per Sup 110 (Ophthalmic Tomography) which also affects all OP image IODs (000387)
+
+100103:	libsrc/standard/sopcl.tpl: add colon CAD and macular grid thickness SOP Classes
+
+100101:	libsrc/standard/condn.tpl,elmdict/dicom3.tpl,iodcomp/*.tpl,module/mr.tpl,specimen.tpl,xaxrf.tpl,strval/base.tpl,mr.tpl: add Sup 122 specimen module and retire specimen identification, add Sup 141 enhanced color MR image, add device module to all IODs per CP 613
+
+091230:	libsrc/standard/condn.tpl,elmdict/dicom3.tpl,iodcomp/*.tpl,module/base.tpl: add module and data elements for Sup 119
+
+091230:	libsrc/support/elmdict.awk: handle parsing of dictionary VM of 2-2n etc. from template as VMUNLIMITED (000386)
+
+091229:	libsrc/support/iodcomp.awk,module.awk,appsrc/dcfile/dciodvfy.cc: add verbose success status, correct sense of success when macro invoked to restore correct dciodvfy return status (000385)
+
+091228:	appsrc/dcfile/dcanon.script: remove RequestedProcedureID during de-identification (000384)
+
+091228:	appsrc/dcfile/dciodvfy.cc: should not report missing composite model attribute values for DICOMDIR when not a composite IOD, e.g., for hanging protocol and color palette storage (000383)
+
+091228:	libsrc/include/dctool/ie.h,standard/condn.tpl,sopcl.tpl,iodcomp/softcopy.tpl,module/base.tpl,softcopy.tpl; Add color palette IOD per Sup 133 FT2
+
+091228:	libsrc/standard/module/rt.tpl: add AccessoryCode to patient setup per CP 939
+
+091228:	libsrc/src/dctool/condn.cc,support/condn.awk,standard/condn.tpl,module/rt.tpl,strval/rt.tpl: add mechanism to check number of items in conditions and use it to support MULTI_PLAN DoseSummationType as per CP 938
+
+091228:	libsrc/standard/module/rt.tpl: add General Accessory in RT Image per CP 937
+
+091228:	libsrc/standard/condn.tpl: include enhanced color MR SOP Class in patient position condition per CP 920 (which is otherwise already implemented)
+
+091228:	appsrc/dcfile/dciodvfy.cc,libsrc/standard/elmdict/dicom3.tpl,module/base.tpl,strval/base.tpl: add quadruped orientation per CP 919
+
+091228:	libsrc/standard/condn.tpl,module/rt.tpl,strval/rt.tpl: add FluenceMode stuff from CP 805 and CP 916
+
+091227:	libsrc/standard/condn.tpl,module/dx.tpl: make PatientOrientation for DX conditional upon view not being specimen CP 911
+
+091227:	libsrc/standard/module/base.tpl: allow PatientOrientation to be present if condition unsatisfied per CP 894
+
+091224:	appsrc/dcfile/dcanon.script: allow selective removal of descriptions at patient, study, seriese (PPS) and image levels (000382)
+
+091224:	appsrc/dcfile/dcanon.script: always remove Original and Modified Attributes Sequence (000381)
+
+091222:	appsrc/dcfile/dcsort.cc: add a tolerance factor when comparing slice intervals and make it a command line option (000380)
+
+091222:	appsrc/dcfile/dciodvfy.cc,libsrc/include/dctool/ie.h,iodcomp.h,src/locale/mesgtext.tpl,standard/iodcomp/base.tpl,module/base.tpl,support/iodcomp.awk: 
+		restore the retired standalone curve, overlay and LUT IODs and related modules and flag these IODs as retired in the dciodvfy report (000374)
+
+091222:	appsrc/dcfile/dcentvfy.cc: remove unnecessary check for recognized composite IOD (000378)
+
+091221:	libsrc/standard/elmdict/siemens.tpl: add some ultrasound private attributes (as encountered and per ACUSON S2000 R1.5 conformance statement, guessing at some VRs)
+
+091220:	libsrc/standard/module,strval/dx.tpl: add stereotactic image type for mammo per CP 889
+
+091219:	libsrc/standard/module/rt.tpl: Move OperatorName to series level in RT per CP 829
+
+091219:	libsrc/standard/strval/base.tpl: Add more responsible person role defined terms per CP 826
+
+091219:	libsrc/standard/condn.tpl,module/softcopy.tpl: Tidy up PS bounding box and anchor point conditions per CP 821
+
+091219:	libsrc/standard/module/xaxrf.tpl: Add enhanced XA/XRF FrameType per CP 819
+
+091219:	libsrc/standard/elmdict/dicom3.tpl,module/base.tpl: Add SOPInstanceUIDOfConcatenationSource per CP 809
+
+091216:	libsrc/standard/module/base.tpl,strval/base.tpl: do not report error for RGB in RLE (000377)
+
+091216:	libsrc/standard/condn.tpl,module/base.tpl,strval/base.tpl: detect inconsistent MONOCHROME1 Photometric Interpretation and Presentation LUT Shape not INVERSE (000376)
+
+091216:	libsrc/standard/elmdict/agfa.tpl: add some more private tag VRs encountered
+
+091121:	libsrc/support/strval.awk,strval/charset.tpl,dx.tpl,vl.tpl: support comments and explicit empty values in string value templates (silences warnings and errors when parsing template)
+
+091121:	libsrc/standard/condn.tpl,module/pet.tpl,strval/pet.tpl: add missing Randoms Correction Method condition and correct defined terms for enhanced PET
+
+091121:	libsrc/standard/condn.tpl,module/sr.tpl,strval/sr.tpl: CP 931 Verification, completion, preliminary, final and amended SR status
+
+091121:	libsrc/standard/condn.tpl,module/base.tpl,strval/base.tpl: CP 942 Consent for distribution and ethics committee approval
+
+091121:	libsrc/standard/condn.tpl,module/base.tpl,strval/base.tpl: CP 953 extend Content Item Macro to include IMAGE and COMPOSITE
+
+091117:	libsrc/standard/condn.tpl,elmdict/dicom3.tpl,module/base.tpl,ct.tpl,rt.tpl,sr.tpl,vl.tpl,xaxrf.tpl,strval/base.tpl,ct.tpl: incorporate Oct 2009 CP FT
+
+091114:	appsrc/dcfile/dcpost.cc: correct segmentation fault (000375)
+
+091113:	Imakefile: add dcdirdmp to executable packages
+
+091029:	libsrc/standard/sopcl.tpl,/elmdict/dicom3.tpl: add new data elements and SOP class from Oct 2009 WG6
+
+090917:	appsrc/dcfile/dcsrdump.cc: display presentation state UIDs etc. in image reference (000372)
+
+090831:	libsrc/standard/elmdict/dicom3.tpl: add new data elements from CPs, change case of some tags
+
+090831:	appsrc/dcfile/dcmvhier.*.script: Make dcmvhier scripts more robust against read errors during dckey (000371)
+
+090809:	libsrc/standard/sopcl.tpl, elmdict/dicom3.tpl,module/dx.tpl: rename ImplantPresent to BreastImplantPresent and add breast tomo UID (Sup 125)
+
+090718:	appsrc/dcfile/dcsrdump.cc: add -showidentifier option to dump identifier of content items (000370)
+
+090718:	appsrc/dcfile/dcunjpeg.script: remove data elements after pixel data like DataSetTrailingPadding and DigitalSignaturesSequence prior to adding decompressed pixel data (000368)
+
+090716:	Imakefile: add dcsort to win and mac binary distributions (000367)
+
+090716:	appsrc/dcfile/dcsort: show interval between each slice when also showing sort key value (000366)
+
+090709:	libsrc/src/dctool/attrmxrd.cc: if Overlay Data VR is OX use OW not OB, so as to handle Overlay Data correctly for implicit VR per PS 3.5 (as before changing from OW to OX); leave Curve Data as OB per PS 3.5 (000364)
+
+090709:	libsrc/include/dctool/attrtag.h,src/dctool/attrmxls.cc: correct erroneous warnings about unused repeating group elements during validation (000365)
+
+090709:	libsrc/standard/elmdict/dicom3.tpl: VR of Overlay Data can be OB, not just OW (000364)
+
+090520:	libsrc/stndard/elmdict/dicom3.tpl: change VM of (0040,0001) Scheduled AET Title to "1-m" to match part 6
+
+090514: libsrc/standard/condn.tpl,module/base.tpl: Do not complain about missing R-R Interval Nominal when Cardiac Synchronization Technique is NONE (000363)
+
+090514: libsrc/standard/condn.tpl,module/base.tpl: Correct condition on color palettes for monochrome Photometric Interpretaion but Pixel Presentation of COLOR or MIXED (enhanced with supplemental palette color) (000362)
+
+090514:	libsrc/standard/strval/base.tpl: add PixelMed Publishing NEMA MRMF private coding scheme
+
+090514:	libsrc/include/dctool/module.h,src/dctool/condn.cc,support/iodcomp.awk,module.awk: correct absent method to verify conditions in rootlist passed through modules and macros (000361)
+
+090502:	libsrc/standard/condn.tpl: correct condition on PETTableDynamicsSequence (000359)
+
+090430:	libsrc/standard/module/base.tpl: allow coding scheme version even if condition unsatisfied, per CP 887
+
+090430:	libsrc/standard/elmdict/elscint.tpl,gems.tpl,other.tpl,philips.tpl,siemens.tpl,toshiba.tpl: Add private data elements encountered in IHE Connectathon 2009 NA
+
+090429:	appsrc/dcfile/dciodvfy.cc: Fix bus error if target of FrameIncrementPointer not an attribute in the list (000358)
+
+090429:	libsrc/standard/module/base.tpl: add CP 898 Operator information to Contributing Equipment Sequence
+
+090428: libsrc/standard/module/pet.tpl: add mbpo to Acquisition Datetime; allow MIXED in ImageType (Sup 117 Enhanced PET)
+
+090419:	appsrc/dcfile/dcjpeg.man: add note that only single frames are supported (000357)
+
+090419:	appsrc/dcfile/dcencap.cc: add ability to write compressed stream as single item, e.g., for MPEG (000356)
+
+090419:	libsrc/src/dctool/condn.cc,standard/condn.tpl,module/base.tpl: add check for conditions on MPEG2 MP@HL, and check conditions on MP@HL regardless of IOD (since specific to Transfer Suntax, not IOD) (000355)
+
+090415: libsrc/standard/condn.tpl,elmdict/dicom3.tpl,iodcomp/pet.tpl,module/base.tpl,pet.tpl,strval/base.tpl,ct.tpl,mr.tpl,pet.tpl: add Sup 117 Enhanced PET IOD
+
+090415:	libsrc/include/dctool/attrtyps.h,src/dctool/attrtyps.cc,attrtypv.cc: check for illergal trailing space in UI, DA, AS VRs (000353),(000354)
+
+090414:	libsrc/standard/elmdict/dicom3.tpl: fix VL of (0018,9510)
+
+090412:	libsrc/standard/sopcl.tpl,elmdict/dicom3.tpl: add sup 43 Volume US data elements and UIDs
+
+090408:	libsrc/standard/sopcl.tpl: add sup 141 Enhanced MR Color sop class UID
+
+090408:	libsrc/standard/transyn.tpl: add sup 137 MPEG2 MP@HL transfer syntax to list of transfer syntaxes
+
+090408:	libsrc/standard/sopcl.tpl,elmdict/dicom3.tpl: add sup 133 Color Palette data elements and UIDs
+
+090408:	libsrc/standard/sopcl.tpl,elmdict/dicom3.tpl: add Sup 130 Ophthalmic Refractive Measurements Storage data elements and UIDs
+
+090408:	libsrc/standard/sopcl.tpl,elmdict/dicom3.tpl,module/ct.tpl,mr.tpl: add Sup 123 structured display data elements and UIDs
+
+090408:	libsrc/standard/elmdict/dicom3.tpl: add Sup 122 ft2 revised pathology identification data elements
+
+090408:	libsrc/standard/sopcl.tpl,elmdict/dicom3.tpl: add Sup 117 ft2 enhanced PET data elements and UIDs
+
+090404:	libsrc/standard/strval/base.tpl: add 99PDL-rad coding scheme designator
+
+090403:	libsrc/standard/strval/base.tpl: add 99GEMS coding scheme designator
+
+090403:	libsrc/standard/elmdict/gems.tpl: add DEXA private elements from enCORETM 11.3 conformance statement
+
+090402:	libsrc/standard/strval/base.tpl,sr.tpl:	add 99RPH as mapping resource, and other 99RPH related coding scheme designators
+
+090318:	libsrc/standard/strval/base.tpl:	add 99RPH as private coding scheme
+
+090317:	libsrc/standard/elmdict/other.tpl:	add "private" data elements for WG 12 testing of US 3D
+
+090305: libsrc/standard/condn.tpl,module/base.tpl: do not complain about palette color LUT data
+	missing in Image Pixel Module when segmented LUT present in US image (000352)
+
+090303:	libsrc/standard/condn.tpl,module/base.tpl: do not report modality as required for SC objects (000349)
+
+090303:	libsrc/standard/condn.tpl,module/base.tpl,ct.tpl,mr.tpl,vl.tpl,xaxrf.tpl: report when lossy transfer syntax does not match lossy image compression method in dciodvfy (000348)
+
+090303:	libsrc/include/dctool/attrtyps.h,src/dctool/attrtyps.cc,attrtypv.cc,locale/mesgtext.tpl:
+	report null embedded or trailing byte in string in dciodvfy (000347)
+
+090226:	libsrc/standard/elmdict/dicom3.tpl: add Sup 132 Surface Segmentation data dictionary (with Surface Number of Points corrected)
+
+090209:	libsrc/src/dctool/transyn.cc,standard/transyn.tpl,elmdict/elscint.tpl: do not abort if meta header contains
+	unrecognized transfer syntax, instead assume EVRLE, also add specific transfer syntax for Algotec compression (000346)
+
+090209:	libsrc/standard/elmdict/other.tpl,philips.tpl: add some more private tags for Philips and Hermes NM
+
+090204:	libsrc/standard/module/base.tpl: do not report Referenced Performed Procedure Step Sequence as missing in Enhanced Series (000345)
+
+090204:	libsrc/standard/condn.tpl,module/xaxrf.tpl: correct XA 3D, including X-Ray 3D Frame Type Macro (000342b),
+	optional Pixel Value Transformation Sequence (000343) and FrameType value 4 enumerated value (000344)
+
+090204:	libsrc/standard/condn.tpl: Patient Orientation is not required for Segmentation if Plane Position Macro used (000342a)
+
+090204:	libsrc/standard/condn.tpl,iodcomp/base.tpl,module/base.tpl: make Referenced Series Sequence in
+	Common Instance Reference Module conditional on there being references (per CP 926 LB), and make
+	module inclusion in Segmentation IOD conditional on Derivation Image functional group being present (000341)
+
+090201:	libsrc/standard/condn.tpl,sopcl.tpl,iodcomp/base.tpl,module/base.tpl,strval/base.tpl: add support for validating segmentation IOD (000208)
+
+090126:	appsrc/dcfile/dcacqmap.script: add TemporalPositionIdentifier as acquisition parameter (000340)
+
+090123:	appsrc/dcfile/dciodvfy.cc: add check that nuclear medicine vectors match number of frames and number of vector values (000339)
+
+090123:	libsrc/standard/elmdict/other.tpl: add McKesson private tag observed with UI VR
+
+090120:	libsrc/standard/module/softcopy.tpl: move RelativeOpacity to correct location in PresentationStateBlending
+	Module, and add NoCondition to ReferencedImageSequence in SoftcopyVOILUTSequence (000338)
+
+090119:	libsrc/standard/condn.tpl,module/base.tpl: do not report that PixelPaddingValue should not be present for non-images if it is not actually present (!) (000337)
+	
+090106:	libsrc/standard/elmdict/philips.tpl,appsrc/dcfile/Imakefile,antodc.cc: label (2005,xx33,"Philips MR Imaging DD 001") as Acquisition Duration,
+	based on observation that value is the same as (0018,9073) in enhanced MR IODs, describe some other Philips MR attributes similarly,
+	and use Philips Acqisition Duration and known GE private scan time tag in antodc to derive standard attribute, and add DICOM
+	as well as ACR-NEMA files to antodc test suite (000336)
+
+081122:	libsrc/standard/module/base.tpl,xaxrf.tpl: detect when 'wrong' x-ray technique attributes are used in not just DX images but also CR, XA/XRF and CT (000334)
+
+081119:	appsrc/dcfile/dckey.cc,dctable.cc: add ignorereaderrors option to try to extract key even if parsing fails (000333)
+
+081106:	libsrc/standard/condn.tpl.module/waveform.tpl,elmdict/dicom3.tpl: rename WaveformAnnotationSequence (was inconsistent between PS 3.3 and 3.6)
+
+081027:	appsrc/dcfile/dciodvfy.cc: check length of PixelData with bytes rather than bits
+	else overflows 32 bit integer (000332)
+
+080929: appsrc/dcfile/dcentvfy.cc: set failure if error, relax errors about different attributes and
+	IEs in instances to warnings, warn about equal numeric value but different string encoding
+	(including times), error if different VRs, check VM difference for special case when missing
+	value and warn rather than error, tidy up different IE message
+
+080928:	appsrc/dcfile/Imakefile,dciodvfy.cc,dcentvfy.cc,libsrc/include/dctool/attr.h,attrmxls.h,
+	attrothr.h,attrseq.h,attrtype.h,attrtypf.h,attrtypn.h,attrtypo.h,attrtyps.h,
+	attrtypt.h,ie.h,iodcomp.h,module.h,src/dctool/Imakefile,attr.cc,attrmxls.cc,attrothr.cc,
+	attrseq.cc,attrtypo.cc,locale/mesgtext.tpl,support/iodcomp.awk,module.awk:
+	Add dcentvfy utility to check consistency of IE-level attributes (000229); requires adding IE
+	enumeration, extending attributes to store IE information acquired from validation; also added
+	option to dciodvfy to dump this information with attribute list
+
+080928:	libsrc/standard/elmdict/other.tpl: add SoundTech vet private tags from conformance statement
+
+080924:	libsrc/standard/elmdict/other.tpl: add SoundTech vet private tags from conformance statement
+
+080909:	libsrc/standard/elmdict/elscint.tpl: add Philips private attribute encountered in explicit VR CT dataset
+
+080908:	appsrc/dcfile/dcdirmk.cc: update to use new method call for validateVR() with null value for character set
+
+080908:	libsrc/include/dctool/attr.h,attrlist.h,attrtype.h,charset.h,src/dctool/Imakefile,attrlist.cc,attrmxls.cc,attrtypv.cc,charset.cc,locale/mesgtext.tpl:
+	improve validation of character sets, including detection of illegal characters outside ASCII (7-bit)
+	range for default character set (000325), allowing escape character in appropriate VRs (000105),
+	detecting illegal control characters other than CR, LF, FF and ESC (including C1 high bit
+	set control characters) (000326) and validating UT VR (000327)
+
+080904:	appsrc/dcfile/dcuncat.cc,libsrc/include/generic/errclass.h,libsrc/src/dctool/attrmxls.cc: change dcuncat to not re-read the input file
+	multiple times to prevent running out of memory when "unenhancing" large number of frames; need to relax some assertions to allow repeated
+	re-writing of same attribute list (000324)
+
+080902:	Imakefile,config/Configure: Build Mac apps as universal binaries for intel and ppc, and add target for Mac executable files corresponding to same files as Windows target
+
+080830:	libsrc/standard/condn.tpl,module/dx.tpl: detect when view position is present but view code sequence is not, for DX objects (000323)
+
+080828:	libsrc/standard/elmdict/other.tpl: add Imaging Dynamics veterinary private tags
+
+080824:	libsrc/standard/condn.tpl: add SNOMED code for "skeletal" (not in DICOM but seen in Siemens bone scan NM images) as unpaired for laterality condition check
+
+080823: libsrc/src/dctool/condn.cc,support/condn.awk,standard/condn.tpl: add mechanism to check string values of
+	elements within sequences, and use it to check SNOMED code values for paired body parts to assist check of
+	condition for Laterality (more work on (000298))
+
+080823:	appsrc/dcfile/dciodvfy.cc: check that SpacingBetweenSlices is not negative unless NM image (000314)
+
+080823:	appsrc/dcfile/dciodvfy.cc: check that direction cosines are orthogonal (000321)
+
+080822:	libsrc/standard/support/Imakefile: add missing elements in repeating groups to Java dictionary (000320)
+
+080817:	libsrc/standard/condn.tpl,module/base.tpl: warn about deprecated 99SDM and SNM3 (rather than SRT) coding scheme designator, as per CP 730 (000319)
+
+080814:	libsrc/include/dctool/attr.h,attrothr.h,attrseq.h,attrtypf.h,attrtypn.h,attrtypo.h,attrtyps.h,attrtypt.h,src/dctool/attrmxrd.cc,locale/mesgtext.tpl:
+		do not give up parsing dataset when one bad attribute with VL mismatch for VR (000318)
+
+080814:	appsrc/dcfile/dcmvhier.datedescnoid.script,dcmvhier*.man: add script to use simpler form of hierarchy without Study ID/Description and Modality, and tidy up man pages
+
+080811:	libsrc/standard/condn.tpl,module/base.tpl: report presence of Pixel Padding Value as being incorrect when not an image (000317)
+
+080811:	libsrc/standard/condn.tpl: require Patient Position for Enhanced CT Image SOP Class (000316)
+
+080808:	libsrc/standard/strval/base.tpl: add FID (Fiducials) to Modality used in General Series (000315)
+
+080808:	libsrc/standard/module/base.tpl: warn about zero patient weight and height (000313)
+
+080723:	libsrc/standard/condn.tpl,module/dx.tpl: detect when 'wrong' x-ray technique attributes are used in DX images (000312)
+
+080718:	libsrc/src/dctool/attrmxrd.cc: check that waveform data is OW when 16 bit and OB when 8 bit whether explicit or implicit VR, and override if incorrect explicit VR (000309)
+
+080718:	libsrc/standard/elmdict/other.tpl: add Mortara ECG tags based on observed VR and conformance statement names
+
+080712:	libsrc/standard/condn.tpl,module/base.tpl: detect empty Type 2 Antatomic Region Sequence when Body Part Examined has a value (000307)
+
+080706:	libsrc/standard/module/dx.tpl: ImageType should be Type 1, not 3, in DX Image Module (000306)
+
+080701:	libsrc/standard/module/base.tpl: improve message for empty Laterality (000298)
+
+080701:	libsrc/standard/condn.tpl,module/base.tpl: make code meaning optional and require 99SDM for NM/PET codes (000304) and (000305)
+
+080630:	Imakefile: add dchist an dcstats to archive.winexe target
+
+080628:	libsrc/standard/elmdict/other.tpl: add some private element VRs encountered in Nordion RT Structure Sets
+
+080628:	libsrc/standard/condn.tpl: do not report PatientOrientation missing for RT Dose (000303)
+
+080628:	appsrc/dcfile/dcanon.script: remove issuers
+
+080628:	libsrc/standard/condn.tpl,elmdict/dicom3.tpl,module/base.tpl,sr.tpl,xaxrf.tpl,strval/base.tpl: update with FT CPs from June 2008 WG6
+
+080626:	libsrc/src/dctool/attrmxls.cc: report error for unrecognized even group element (000299)
+
+080626:	libsrc/standard/condn.tpl,module/base.tpl: report absence of Laterality for paired body parts as an error, and warn when empty (000298)
+
+080624:	libsrc/standard/elmdict/other.tpl: add/update Brit Systems private elements with names and VRs
+
+080623:	libsrc/standard/elmdict/dicom3.tpl: add Sup 23 frozen draft data elements as trial (except where conflict with standard elements)
+
+080623:	libsrc/standard/elmdict/other.tpl: add some VRs for Brit Systems private elements encountered in instances
+
+080621:	libsrc/standard/elmdict/gems.tpl: add some descriptions for GE/Applicare private elements related to annotations used in presentation states, deduced from samples and old conformance statements
+
+080609:	libsrc/standard/cond.tpl: include DX Positioning module when some optional attributes are present that are not included else where, like View Code Sequence (000296)
+
+080609:	libsrc/standard/cond.tpl: use ValuePresent rather than not string value of "", which doesn't work; encountered in ResponsiblePersonRole check (000295) (more on 000277)
+
+080608:	appsrc/dcfile/dciodvfy.cc: check that UIDs begin with reasonable root (000293)
+
+080608:	appsrc/dcfile/dciodvfy.cc: check consistency of scaled values for same concept, e.g., Exposure in uAs - allow for either rounding or trunction (000292)
+
+080608:	appsrc/dcfile/dciodvfy.cc: check for invalid enumerated values and illegal combinations for Patient Orientation, including identical (non-zero length) values (000118)
+
+080531:	libsrc/standard/elmdict/others.tpl: more private attributes encountered in veterinary showdown 2007
+
+080530:	appsrc/dcfile/dcanon.script: preserve known safe private tags (e.g., Philips PET SUV factor) but remove all others (000291)"
+
+080530:	libsrc/standard/elmdict/philips.tpl: add more Philips PET private tags, including activity concentration factor
+
+080526:	libsrc/standard/condn.tpl: do not presume animal just because sex neutered is present (000290)
+
+080526:	appsrc/dcfile/dciodvfy.cc: do not stop checking for specific errors after first failure (000288) and check that all orientation vectors are unit vectors (000289)
+
+080524:	libsrc/standard/module/dx.tpl:	for IHE Mammo profile, allow Gantry ID to be mbpo if condition of Detector Type STORAGE not satisfied (000287)
+
+080524:	libsrc/src/dctool/attrmxrd.cc: detect and recover from incorrect explicit (rather than implicit) vr inside fixed length sequence encoded as unknown VR (000286)
+
+080521:	libsrc/standard/elmdict/*.tpl: add some more private elements with VR encountered as explicit VR
+
+080521:	libsrc/src/dctool/attrmxrd.cc: do not abort parsing but skip incorrectly encoded fixed length UN VR known to be sequence from dictionary (000286)
+
+080521:	libsrc/src/dctool/attrmxrd.cc: recurse into fixed length UN VR known from dictionary to be sequences (000285)
+
+080521:	appsrc/acrnema/andump.cc,libsrc/include/dctool/attrmxls.h,libsrc/src/dctool/attrmxls.cc,attrmxrd.cc,src/locale/mesgtext.tpl:
+	Do not warn about overriding UN with dictionary when reading attribute list (000282) and
+	do not report error when UN SQ contents contain elements as implicit VR (000283)
+
+080430: appsrc/dcfile/dcunjpeg.script: fix typo to support both J2K transfer syntaxes (000280)
+
+080506:	appsrc/dcfile/dcanon.script: add option to remove clinical trial attributes (000281)
+
+080430:	appsrc/dcfile/dcunjpeg.script: decompress JPEG 2000 with Kakadu (000280)
+
+080420:	libsrc/standard/elmdict/*.tpl: add private elements with explicit VR encountered in 2008 European Connectathon
+
+080420:	appsrc/dcfile/dciodvfy.cc: report expected and actual lengths when pixel data incorrect length (000278)
+
+080419:	libsrc/src/dctool/attrvrfy.cc: when reporting warnings and errors, include value number (000153)
+
+080419:	libsrc/standard/condn.tpl,module/*.tpl: add check for missing or empty value 3 for ImageType in modality-specific images (000276)
+
+080419:	libsrc/support/condn.awk,libsrc/src/dctool/condn.cc:  correctly perform empty string value checks in conditions and add valuepresent mechanism (000277)
+
+080418:	appsrc/dcfile/dcarith.cc: add option to fix PixelPaddingValue to match changed stored pixel values (000275)
+
+080418: appsrc/dcfile/dcarith.cc: fix PixelPaddingValue to match changed stored pixel values for -makeidentityrescale option (000274)
+
+080409:	ppsrc/dcfile/dciodvfy.cc: check that PixelSpacing matches ImagerPixelSpacing or NominalScannedPixelSpacing
+	if PixelSpacingCalibrationType not present (000273) 
+
+080409:	libsrc/standard/condn.tpl,module/dx.tpl: check that PixelSpacing is not present for IHE Mammo Profile (000272)
+
+080407:	support/gzip-1.3.12-patchfornoheader: update gzip noheader patch to support 1.3.12 version (000271)
+
+080407:	appsrc/dcfile/dcsrdump: show qualifier in numeric content items if present, for NaN, etc., as per CP 260 (000270)
+
+080307:	libsrc/standard/module/base.tpl: FoR UID and image references may both be present in spatial registration
+
+080307:	libsrc/standard/elmdict/elscint.tpl,other.tpl: add some private tags encountered in IHE-RO datasets
+
+080203:	libsrc/standard/elmdict/*.tpl: add VR of private tags encountered in 2008 IHE NA Connectathon
+
+080203:	libsrc/src/dctool/attrmxrd.cc: improve error messages for bad private owner
+
+080202: appsrc/dcfile/dcuncat.cc: Add option to convert enhanced to old style CT and MR SOP Classes (000267)
+
+080202: appsrc/dcfile/dcuncat.cc: Fix incorrect SeriesInstanceUID that was not the same for all split files (000266)
+
+080131:	libsrc/standard/module/base.tpl: allow AcquisitionDateTime in US images when condition not satisfed (000265)
+
+080129:	libsrc/standard/module/base.tpl,dx.tpl,pet.tpl,strval/base.tpl: correct various string zero and
+	one checks to use binary values to be independent of precision (000264)
+
+080129: libsrc/standard/condn.tpl,module/dx.tpl: do not report missing DateOfLastDetectorCalibration
+	for DetectorType STORAGE in IHEMammo profile (000263)
+
+080129:	libsrc/standard/elmdict/gems.tpl: add some private NM VRs encountered
+
+080129:	libsrc/standard/condn.tpl: show error if empty ShutterShape in image or
+	presentation states supporting shutters (000262)
+
+080129:	libsrc/standard/condn.tpl,module/base.tpl: do not warn about non-grayscale photometric
+	interpretation when Modality or VOI LUT present in presentation state (000261)
+
+080118:	libsrc/standard/condn.tpl,module/base.tpl: fix broken mutually exclusive pixel aspect ratio
+	vs. pixel spacing check (000260)
+
+080116:	appsrc/dcfile/dcanon.script: use Allergies instead of ContrastAllergies (name changed in CP) (000259)
+
+080114: appsrc/dcfile/dcarith.cc,libsrc/include,src/dctool/attrothr.h,.cc: add feature to force rescale slope
+	and intercept to identity, converting pixel values appropriately; also need to have better control
+	over the automatic scaling that was happening when bit depth change in pixel data writes (000258) 
+
+080112:	libsrc/standard/*.tpl,libsrc/src/dctool/attrtypv.cc,elmdict.cc,libsrc/dconvert/*.tpl,pq/pqmmsc.cc,
+	appsrc/dcfile/antodc.cc,dcdirmk.cc,dcmkpres.cc,dcmulti.cc: add all 2007 to 2008 supplements (107,110,114,116,127) and CPs
+
+080102:	appsrc/dcfile/dcdirmk.cc: add support for encapsulated CDA (Sup 114) when creating directory records
+
+080102:	libsrc/standard/sopcl.tpl,iod.module/base.tpl: add deformable registration (Sup 112)
+
+071201:	appsrc/dcfile/dcanon.script: do not remove protocol name unless removing descriptions
+
+071201:	appsrc/dcfile/dcanon.script: remove gantry, plate, cassette, generator, detector ID (000255)
+
+071201:	libsrc/standard/elmdict/agfa.tpl: add some private tags encountered in CR images (with
+	help from Agfa ADC PRID conformance statement)
+
+071125:	libsrc/src/dconvert/signa,appsrc/dconvert/signa: port Signa conversion from old tools
+
+071125:	libsrc/src/dconvert/gen,gaw/g*mmsc.cc: use OTHER rather than MPR for third value of Image
+	Type in MR images (000254)
+
+071125: libsrc/include/dctool/fltype.h: add support for DG floats (for Signa)
+
+071125:	libsrc/support/convert.awk: add support for DG floats (for Signa); use dummy structure name
+	when missing in template; correct filename in generated header
+
+071124:	appsrc/acrnema/ancp.cc: do not add private owner (or change transfer syntax) if empty value
+
+071112:	libsrc/standard/strval/base.tpl: Add RADLEX CSD and UID from CP 751.
+
+071110:	appsrc/dcfile/dcpatmpl.script: add script to apply patient and study attributes from one file
+	to a bunch of other files
+
+071109:	libsrc/include,src/generic/getoptns.h,.cc: add support for "long long" type, as used for delta
+	value in dcdtchg delta command line argument
+
+071109:	appsrc/dcfile/dcdtchg.cc: try to use first image's Study Date to set delta from epoch time, since
+	otherwise too commonly wraps study date to previous day if a later attribute processed first; also
+	report and allow as command line parameter the delta, so it can be applied to a separate set
+
+071105: libsrc/standard/condn.tpl,module/base.tpl: check for grayscale Photometric Interpretation
+	when window or rescale values present (000253)
+
+071105:	libsrc/standard/condn.tpl: include General Equipment Module if any optional attributes present,
+	not just the one mandatory attribute, since is type U module in SC IOD (000252)
+
+071011:	appsrc/dcfile/dcacqmap.script: remove dependence on external CSS, which PDI forbids (000251)
+
+071010:	appsrc/dcfile/dcacqmap.script: add support for creating XHTML (000246), short ISO filenames (000247),
+	sort by ScanOptions (000248), supress generation of dump report (000249) and fix incorrect combining of
+	positions caused by unescaped period fed to grep string (000250)
+
+071005:	appsrc/dcfile/dcanon.script: in dcanon do not add zero length Requesting Physician (000245)
+
+071005:	appsrc/dcfile/dcanon.script: make dcanon follow symbolic links in srcdir (000244)
+
+071002:	libsrc/standard/strval/base.tpl: update modality list per CP 713, 749, Sup 110 with BDUS,BMD,DOC,OPT
+
+070828:	libsrc/standard/elmdict/dicom3.tpl,module/base.tpl,ct.tpl: CP 764 CTDI Phantom Type Code Sequence
+
+070828:	libsrc/standard/elmdict/dicom3.tpl,module/base.tpl,ct.tpl: CP 763 CT Calibration Factors for the Mass Score of the Calcium Scoring
+
+070828:	libsrc/standard/elmdict/dicom3.tpl,module/base.tpl: CP 747 Clinical Trial Series attributes
+
+070828:	libsrc/standard/condn.tpl,elmdict/dicom3.tpl,module/mr.tplstrval/mr.tpl: CP 744 Diffusion b-matrix
+
+070820:	appsrc/dcfile/dchist.cc,dcuncat.cc,dcmulti.cc,libsrc/include,src/dctool/attrothr.h,.cc: extend dchist to detect
+	energy in high bits (potential embedded overlay bits) (000243)
+
+070809:	appsrc/dcfile/dcdirmk: Add command line option to generate test bad missing LowerLevelDirectoryOffset (000242)
+
+070729:	appscr/dcfile/dcj2k.script: add script to compress as JPEG 2000 (needs Kakadu kdu_compress present)
+
+070726:	libsrc/standard/elmdict/other.tpl: add Sirona private elements from ADA 2007 and fix some Fuji elements
+
+070726:	libsrc/standard/module/vl.tpl: in VL Image, Anatomic Regions Sequence and Referenced Image Sequence may
+	be present otherwise (000240) and (000241)
+
+070707: appsrc/dcfile/dcdirmk.cc: clean up "bad" Decimal String attribute values copied from source images (000237)
+
+070707: appsrc/dcfile/dcdirmk.cc: do not include ReferencedImageSequence twice when -position option used (000238)
+
+070707: appsrc/dcfile/dcdirmk.cc: use ST rather than SH for Document Title for encapsulated documents (000236)
+
+070621: appsrc/dcfile/dcckovly.script: add script to check for overlays, curves, graphics
+	annotations and non-zero high bits (000235)
+
+070621: appsrc/dcfile/dccmp.script: stop script failing when files same but warning or error
+	during parsing of one and not the other (000234)
+
+070602: libsrc/standard/condn.tpl,module/base.tpl,strval/base.tpl: fix limited subset of photometric
+	interpretations allowed for multi-frame true-color SC to include compressed values,
+	and match against transfer syntax (000232)
+
+070423:	libsrc/standard/elmdict/*.tpl: add IHE-E connectathon encountered private tags with explicit VR
+
+070423:	libsrc/standard/elmdict/dicom3.tpl: Fix VR of some retired attributes to match standard (000228)
+
+070421:	libsrc/standard/strval/base.tpl: add new modality types from standard
+
+070421:	libsrc/src/dctool/attrmxrd.cc,locale/mesgtext.tpl: during parsing, distinguishing between overriding
+	unrecognized tag VR with explicit, or explicit being UN (000227)
+
+070404:	support/elmtojava_DicomDictionary_CreateIEByTag.awk: change java dictionary generation
+	to set Institution Name back to series instead of instance (000225)
+
+070327:	config/Configure: fix failure on Solaris since Cygwin on XP check added (000224)
+
+070326:	libsrc/standard/module/base.tpl,libsrc/standard/condn.tpl: detect illegal or
+	deprecated code values in view code sequence (000223)
+
+070326: libsrc/support/module.awk: show attribute value in verify message (000222)
+
+070321:	libsrc/support/DicomDictionary_header.txt,DicomDictionary_trailer.txt,
+	elmtojava_DicomDictionary_CreateFullNameByTag.awk,standard/Imakefile: add full name not just
+	keyword to java dictionary (pixelmed 000294)
+
+070318:	appsrc/dcfile/dciodvfy.cc: check EstimatedRadiographicMagnificationFactor matches ratio of
+	DistanceSourceToDetector and DistanceSourceToPatient(000221)
+
+070318:	appsrc/dcfile/dciodvfy.cc: fix PixelApectRatio check - was checking the first value against
+	itself (000220)
+
+070317:	appsrc/dconvert/toshiba/: add script to assemble separate header and pixel data for Toshiba images
+
+070317:	appsrc/dcfile/antodc.cc: make wrong Y sign on Toshiba CT work for prone images as well
+
+070317:	libsrc/standard/Imakefile,module/base.tpl,ct.tpl,mr.tpl,xaxrf.tpl,
+	support/elmtojava_DicomDictionary_CreateIEByTag.awk,inserttagumberbeforekeyword.sh:
+	When generating IE by tag, null module at end of IE/IOD to prevent carrying over
+	first macro/module definition as SOP common (e.g., for CodeValue, etc.), treat
+	frame as instance in macros unless explicitly in functional group, add role to
+	generate CSV file
+
+070315: libsrc/include/dctool/attrmxls.h,dcopt.h,src/dctool/attrmxls.cc,attrmxrd.cc,dcopti.cc,
+	appsrc/dcdisp/dcdisp.cc,dcfile/*.cc: add option during read to use US rather than OW VR
+	for LUT Data (000219)
+
+070315:	libsrc/standard/module/vl.tpl: Acquisition Datetime in Ophthalmic Photography
+	Image Module may be present otherwise when condition not satisifed
+
+070315:	libsrc/src/dctool/attrothr.cc: Avoid throwing assertion for images whose bits
+	allocated is not a multiple of 8, introduced when fixing truncation of value
+	length for large (multi-frame) images (000218)
+
+070315:	: Handle bad images that have explicit VR encoded data elements in implicit VR
+	datasets, but only if ignoreoutofordertags flag set (000217)
+
+070315:	config/Configure: make Cygwin detection less dependent on specific version of
+	operating system included in uname -s string (000216)
+
+070315:	config/Configure: add date of cvs version to header generated by Configure,
+	rather than manually inserted date that has not been kept current
+
+070314:	libsrc/standard/condn.tpl,iod/dx.tpl,module/dx.tpl: distinguish between Partial
+	View Option present or not in IHE Mammo Profile, by adding separate named profile
+	and reporting warning rather than error on missing ParialView if not requested (000215)
+
+070311:	libsrc/module/base.tpl: add missing optional attributes to Request Attributes macro
+
+070311:	libsrc/standard/elmdict/other.tpl: add IMS private mammo tags from examples
+
+070311:	libsrc/module/dx.tpl,elmdict/dicom3.tpl: add IDs in CP 649
+
+070311:	appsrc/dcfile/dcuidchg.cc: add -map option to store file containing map of original
+	to replacement UIDs (000215)
+
+070311:	libsrc/standard/condn.tpl,module/sr.tpl: stop incorrect complaints about missing concept
+	name in SR (000214), also add series date, time and description as per CP 703 (000213)
+
+070311: appsrc/acrnema/andump.cc: Prevent or fail when andump in ancreate mode will otherwise
+	truncate dump of values when VL is long (000212)
+
+070309: libsrc/standard/module/file.tpl: refactor to use macros instead of shared conditions
+	for each directory record (000123), (000134), (000140)
+
+070309:	libsrc/standard: extensive cleaning up to make use of mbpo condition modifier (000202),
+	improve various conditions accordingly, emit specific messages (000203),
+	add CP 692 Pixel Padding Range Limit to dictionary and module,
+	and add segmentation data elements (not yet IODs), implement content
+	identification macro, and extend SpatialLocationsPreserved with REORIENTED_ONLY (CP 665)
+
+070309:	appsrc/dcfile/dciodvfy.cc,libsrc/src/locale/mesgtext.tpl: object when pixel aspect ratio present when 1:1 (000211)
+
+070309:	libsrc/support/module.awk,libsrc/src/dctool/modulev.cc,libsrc/src/locale/mesgtext.tpl:
+	add mbpo (may be present otherwise) to condition mechanism and make non-mbpo presence
+	an error rather than warning (000202), and add generic mechanism to be able to issue
+	specific messages on certain conditions (000203)
+
+070309:	libsrc/src/dctool/attrothr.cc: Correct truncation of value length for large (multi-frame) images (000210)
+
+070308:	appsrc/dcfile/dcuidchg.cc: add -descriptor option to update De-identification Method (000209)
+
+070306:	libsrc/include/dctool/dcopt.h,src/dctool/dcopti.cc,dcopto.cc,appsrc/dcfile/dcdump.cc,
+	dcfile.cc,dchist.cc,dciodvfy.cc,dckey.cc,dclutdmp.cc,dcposn.cc,dcsrdump.cc,dcstats.cc,
+	appsrc/acrnema/andump.cc: make dump and verify utilities display filename to simplify scripts (000201)
+
+070302: libsrc/support/elmtojava_DicomDictionary_CreateIEByTag.awk: revise java dictionary generation
+	to better handle series/instance/frame conflicts and supress descent into sequences (000200)
+
+070302: libsrc/standard/module/dx.tpl: specify Image IE for DigitalXrayDetectorMacro (for Java dict)
+
+070302: libsrc/standard/module/base.tpl: add GantryID to General Equipment Module
+
+070227:	libsrc/standard/elmdict/philips.tpl: update Philips private MR based on conformance statement
+	"http://www.medical.philips.com/main/company/connectivity/assets/docs/dicomcs/mr91.pdf" (which is
+	a good reference because it has descriptions and defined terms)
+
+070227:	libsrc/src/dctool/attrmxls.cc: validation of which attributes are used in IOD should not descend
+	into private sequences (000199)
+
+070224:	libsrc/standard/elmdict/gems.tpl: update PET data dictionary from Discovery conformance statement
+
+070204:	config/Configure: make dcdisp link properly on cygwin (000198)
+
+070202:	config/Configure: remove dependency on libX11.a regardless of OS and version -
+	fixes (000197) dcdisp fails to compile on Solaris 10
+
+070202:	appsrc/misc/bmpdump.cc: add utility to dump header of BMP file in readable form
+
+070202:	appsrc/misc/pgmtobmp.cc: correct number of padding bytes when width is odd, and
+	include padding bytes in file length (000196)
+
+070126: libsrc/standard/condn.tpl: Amend coding scheme version condition to check for known coding
+	schemes that require version as per PS 3.16 (000195)
+
+070121:	libsrc/standard/condn.tpl,module/base.tpl,strval/base.tpl: update Coding Scheme Designator list and
+	add cross-check against UID in Coding Scheme Identification Sequence
+
+070121:	libsrc/src/dctool/attrmxrd.cc: make private creator LO under all circumstances, even if explicit
+	VR is not LO, so as to recognize subsequent private tags (000194)
+
+070120:	libsrc/standard/elmdict/*.tpl: update private data elements to handle IHE 2007 connectathon objects
+
+070119:	appsrc/dcfile/dclutdmp.cc: add ancreate option to dclutdmp (000191)
+
+070119:	appsrc/acrnema/ancreate.cc: allow longer input lines for ancreate (partial fix for 000192)
+
+070119:	libsrc/standard/cond.tpl,module/dx.tpl: check GantryID for CR detector type for IHE Mammo profile (000193)
+
+070118:	libsrc/standard/module/dx.tpl,iodcomp/dx.tpl: validate IHE Mammo profile for processing images (000189)
+
+070118:	libsrc/standard/elmdict/dicom3.tpl: add GantryID
+
+070115:	libsrc/standard/elmdict/siemens.tpl: update Siemens private tags based on encountered
+	CR gateway images (changed VR for some attributes already known)
+
+070115:	appsrc/dcfile/dcanon.script: removed retired attribute Manipulated Image (000188)
+
+070115:	libsrc/standard/sopcl.tpl,cond.tpl,strval/base.tpl,elmdict/dicom3.tpl: spell fluoroscopy
+	correctly (000187)
+
+070113:	libsrc/standard/elmdict/other.tpl: add Fuji private tags from CR conformance statement
+
+070113:	libsrc/standard/elmdict/other.tpl: add Hologic private tags with from bone density
+	conformance statement
+
+070112:	libsrc/standard/elmdict/siemens.tpl: update Siemens private tags with from Fluorospot Compact
+	conformance statement
+
+070112:	libsrc/standard/elmdict/gems.tpl: update GE IIS tags with names from Centricity 3.0
+	conformance statement
+
+070111:	libsrc/standard/elmdict/gems.tpl: update GE IIS tags
+
+070110:	appsrc/misc/pgmtobmp.cc: add utility to convert 8 bit grayscale PGM images into BMP files
+	with a fixed 256 grayscale palette (unlike netpbm ppmtobmp that actually tunes palette to
+	number of values)
+
+070105:	libsrc/support/module.awk,standard/module/base.tpl: add ability to supress setting used flag
+	on element use in module; use it to supress use flagging on check of number of frames in
+	SC image (000186)
+
+061226:	appsrc/dcfile/dcdirmk.cc: use null values when no content date, etc, since type 2, rather than
+	throwing assertion failure
+
+061226:	libsrc/include,src/dctool/attrtypo.h,.cc: pad large non-pixel data OB read from file to even
+	length with zero byte when necessary (e.g. when encapsulating PDF) (000183)
+
+061224:	libsrc/standard/iodcomp.tpl.module.tpl: modality values are defined terms not enumerated values
+	in secondary capture and encapsulated documents (000182)
+
+061214:	appsrc/dcfile/dcanon.script: add PatientIdentityRemoved and DeidentificationMethod based on options
+
+061210:	libsrc/standard/elmdict/dicom3.tpl: correct BeamDosePointEquivalentDepth name entry
+
+061127:	libsrc/standard/elmdict/dicom3.tpl: Correct spelling of "Operators' Name" to match standard
+
+061120:	appsrc/dcfile/dcacqmap.script: Add a script to create a visual map of pattern of CT acquisition
+	in space and time as an html page (000180)
+
+061109:	libsrc/standard/elmdict/dicom3.tpl,module/base.tpl: Add CP 526 original attribute sequence
+
+061107: libsrc/src/dctool/attrmxrd.cc,appsrc/acrnema/andump.cc: tolerate (grudgingly) a TransferSyntaxUID
+	that occurs outside the meta information header (encountered in GE ultrasound which uses this in
+	sequence items with small images) (000179)
+
+061022:	appsrc/dcfile/dcmulti.cc: do not insert Trigger Window in cardiac macro - it is not (yet) standard,
+	and often is present in non-cardiac single frame source images with a value of 0, and its presence without
+	the other cardiac sequence and module attributes creates an invalid IOD
+
+061021:	appsrc/dcfile/dcmulti.cc: minimal attributes should not force anatomic region sequence to be empty
+
+061021:	appsrc/dcfile/dcmulti.cc: correct wrong tag in shared functional group sequence - should be
+	RRIntervalTimeMeasured not TriggerWindow
+
+061021:	libsrc/include,src/uidgen.cc,.h,appsrc/dcfile/dcmulti.cc: generate IrradiationEventUID
+	and BurnedInAnnotation == NO when not supplied
+
+061020:	libsrc/standard/elmdict/philips.tpl: add VRs observed for private attributes in Philips
+	Achieva release 2 enhanced MR and spectroscopy objects
+
+061014:	libsrc/standard/elmdict/picker.tpl: add some VRs encountered for Picker MR private tags
+
+061007:	appsrc/dcfile/dcanon.script: do not look in Mac .DS_Store file (very slow if large)
+
+061005:	config/Imake.p-rules: make install is broken on Solaris (or 2.95 ?) due to executable suffix concatenation
+
+061005:	libsrc/standard/module/*.tpl: check for inappropriate zero values
+
+061005:	libsrc/include/dctool/attr.h,src/dctool/attrvrfy.cc,src/locale/mesgtext.tpl,standard/module/vl.tpl,,
+	support/module.awk: add mechanism to check for value of zero during validation and use with ophthalmology IOD
+
+061004:	libsrc/standard/elmdict/dicom3.tpl,module,strval/base.tpl,cond.tpl: add veterinary
+	stuff from CP 643 (and avoid conflict with coding scheme ResponsibleOrganization
+	by renaming it)
+
+061004:	libsrc/support/condn.awk,src/condn.cc: extend conditions to allow nested boolean
+	operations in conditions and add sequence has items condition test
+
+060922:	libsrc/standard/elmdict/gems.tpl: update GE MR tags for 14.0
+
+060918:	libsrc/support/strval.awk: fix trailing space removal code that was failing on FC5
+
+060918:	libsrc/include/dctool/attrtypf.h: mask low word in FD extraction else incorrect
+	on 64 bit platform
+
+060918:	libsrc/src/dctool/uidgen.cc: mask integer values to 16 bits, otherwise gives
+	different results on 64 bit platforms when value is large
+
+060917:	config,libsrc,appsrc: make compilable under Cygwin - involves allowing for .exe
+	extensions on binaries, changes to log2 invocation (which lead to factoring out math.h
+	into basetype.h)
+
+060909:	libsrc/standard: add script to build spreadsheets of use of elements in modules and IODs
+
+060905:	libsrc/standard/iod/rt.tpl: provide condition for Frame of Reference Module in
+	RT Plan (000167)
+
+060817:	appsrc/dcfile/dciodvfy.cc: do not check DICOMDIR instances for attributes needed
+	to build DICOMDIR (000176)
+
+060810:	appsrc/dcfile/dcjls.script,dcunljs.script: add scripts to make DICOM encapsulated
+	JPEG-LS images
+
+060809:	appsrc/dcfile/dcmulti.cc: Start adding composite body part detection for coded anatomy
+
+060803:	appsrc/dcfile/dciodvfy.cc: Report on missing attributes or values in instance
+	needed to build DICOMDIR (000173)
+
+060801:	appsrc/dcfile/dcmulti.cc: add Irradiation Event UID and Sequence
+
+060801:	libsrc/standard/condn.tpl,iod,module,strval/dx.tpl,file.tpl: add dental media profile
+
+060801:	libsrc/standard/elmdict/other.tpl: add more Schick private attributes
+
+060728:	appsrc/dcfile/dcdtchg.cc: add utility to consistently change dates and times
+	within a set of files for de-identification purposes (similar to dcuidchg)
+
+060727:	libsrc/src/dctool/attrtypv.cc,locale/mesgtext.tpl: change group length verification
+	from retired to undesirable (000172)
+
+060725:	libsrc/standard/support/module.awk,module/*.tpl,libsrc/src/modulev.cc: specify and
+	check number of sequence items (000169)
+
+060720:	appsrc/dcfile.dcanon,script,dcuidchg.cc: update list of UIDs to remove/preserve (000168)
+
+060717:	libsrc/src/dctool/attrothr.cc: remove assertion failures on zero value for rows
+	etc, to allow empty pixel data in standard extended SOP classes (000166)
+
+060716:	libsrc/standard/*.tpl,appsrc/dcfile/dcdirmk.cc: update to 2006 standard + first
+	2007 CP packet,including retirements,RT Ion,enhanced XA/XRF,new presentation
+	states,encapsulated PDF,procedure log,dose SR
+
+060708:	appsrc/dcfile/dctable.cc: add option to recurse into sequences if key
+	not found at top level (000148)
+
+060704:	appsrc/dcfile/dciodvfy.cc,libsrc/include/dctool/attr.h,attrmxls.h,
+	libsrc/src/dctool/attr.cc,attrmxls.cc,libsrc/src/locale/mesgtext.tpl,
+	libsrc/support/module.awk: detect and report presence of standard extended
+	sop class attributes (000164)
+
+060704:	libsrc/standard/module/file.tpl: add Media Storage SOP Class UID (000165)
+
+060704:	appsrc/dcfile/dciodvfy.cc,libsrc/include/dctool/attr.h,attrmxls.h,elmdict.h,
+	libsrc/src/dctool/attrmxls.cc,attrtypv.cc,elmdict.cc,elmentry.h,
+	libsrc/src/locale/mesgtext.tpl,libsrc/standard/elmdict/dicom3.tpl,
+	libsrc/support/elmdict.awk: check for presence of retired attributes based
+	on data dictionary (000163)
+
+060704:	libsrc/standard/elmdict/dicom3.tpl,libsrc/standard/module/rt.tpl: update data
+	dictionary to 2006 standard
+
+060630:	libsrc/standard/elmdict/dicom3.tpl: change ImageType VM from 1-n to 2-n to detect when
+	too few values in dciodvfy (000162)
+
+060629:	libsrc/standard/elmdict/*.tpl: move all standard elmdict tags into single file
+
+060628:	libsrc/standard/module/vl.tpl: change SOPInstanceReference to ImageSOPInstanceReferenceMacro in
+	Ophthalmology image (000158)
+
+060627:	appsrc/dcfile/dcfile.cc,.man: add brief mode
+
+060627:	libsrc/strval/base.tpl,module/base.tpl,ct.tpl.mr.tpl.vl.tpl: add defined terms for
+	Lossy Image Compression
+
+060601:	appsrc/dcfile/dciodvfy: check values of frame increment pointer are in dataset (bug 000156)
+
+060427:	libsrc/standard/condn.tpl: fix ConceptNameCodeSequenceNotPresent to look for correct
+	attribute ... was erroneously flagging missing UnformattedTextValue in waveform annotations
+
+060425:	appsrc/dcfile/dcanon.script: add more control over hierarchical file rearrangement after
+	anonymizing
+
+060408:	config/Imake.tmpl,libsrc/standard/Imakefile,elmdict/Imakefile,docs/Imakefile: handle
+	FC5 change in POSIX arguments for coreutils like sort that causes them to break with
+	numeric field arguments (use _POSIX2_VERSION=199209'; see "info coreutils Standards")
+
+060324:	libsrc/standard/module/base.tpl,iod/base.tpl,dx.tpl,pet.tpl,vl.tpl: make dciodvfy detect
+	presence of multiple frames in single frame objects (bug 000154)
+
+060211:	libsrc/standard/cond.tpl,module/dx.tpl,strval/dx.tpl: update to validate public comment
+	draft of IHE mammo profile
+
+060205:	libsrc/standard/elmdict/mr.tpl,appsrc/dcfile/dcmulti.cc: add attributes from CP 593 and
+	draft CP to include trigger window (CP 593 not completely done yet)
+
+060122: libsrc/include,src/dctool/attrmxls.h,.cc,appsrc/dcfile/dccp.cc: add removecommandgroup option
+
+060105:	appsrc/dcfile/dcuidchg.cc: use strrchr() not rindex() else breaks on Solaris
+
+051220:	appsrc/dcfile/dcanon.script: remove additional attributes relating to admission
+
+051218:	appsrc/dcdisp/dcdisp.cc: add support for applying OW, not just US, VOI LUT a la dclutdmp.cc
+
+051216:	libsrc/include/dctool/attrtag.h,src/dctool/attrmxrd.cc: handle illegal private creators < 0x0010
+
+051215:	libsrc/standard/iodcomp/dx.tpl,module/dx.tpl,strval/base.tpl,dx,tpl: add draft IHE profile to validator
+
+051215:	appsrc/dcfile/dciodvfy.cc,libsrc/include/dctool/iodcomp.h,support/iodcomp.awk: add profile mechanism to validator
+
+051215:	libsrc/standard/elmdict/dicom3.tpl,module/base.tpl: Add CP 564 Spatial Locations Preserved
+
+051214:	appsrc/dcfile/dclutmix.cc: add utility to create VOI LUT and scramble pixels if LUT not used for displayif/Imake.tmpl
+051213:	appsrc/dcfile/dcarith.cc: add replacevalue (range)
+
+051212:	appsrc/dcfile/dcuidchg.cc: add utility to change all UIDs of a set of files
+
+051210:	appsrc/dcfile/dccp.cc: add option to copy only selected VOI LUT item and to remove others
+
+051209:	appsrc/dcfile/pnmtodc.cc,rawtodc.cc: add option to make only image pixel module attributes
+	and not all the other SC IOD mandatory attributes
+
+051207:	appsrc/dcfile/dclutburn.cc: add utility to burn selected voi lut into pixel data
+
+051203:	libsrc/standard/elmdict/toshiba.tpl: update some private Toshiba CT tags
+
+051123:	appsrc/simple/ge9800/ge98id.cc: dump a few more attributes like position and thickness and
+	add Data General real conversion
+
+051115:	libsrc/standard/cond.tpl,module/xaxrf.tpl,iodcomp/dx.tpl,xaxrf.tpl,elmdict/dicom3.tpl: change
+	therapy to intervention as per CP 159
+
+051115:	libsrc/standard/elmdict/softcopy.tpl: add Sup 100 Color presentation State elements
+
+051010:	appsrc/dcfile/dcsort.cc: add option to show interval along sort key, e.g., to find reconstruction
+	interval along position direction
+
+051009:	appsrc/dcfile/dctopdf.cc,pdftodc.cc: add utilities to encapsulate and unencapsulate PDF
+
+051009: libsrc/standard/condn.tpl,elmdict/dicom3.tpl,iodcomp/base.tpl,module/acqctx.tpl,base.tpl,
+	strval/base.tpl,file.tpl: implement validation of encapsulated PDF IOD
+
+051009: libsrc/include/dctool/attrtyp*.h,src/dctool/attrtypo.cc: implement writeData() using existing
+	writeValues()
+
+051006:	appsrc/dcfile/dckey.cc,dctable.cc: dump code sequence when any (not all) code sequence item attribute present
+
+051003:	libsrc/standard/strval/charset.tpl: allow empty string as legal defined term (meaning ISO-IR 6)
+
+051003:	libsrc/include/locale/msgtext.tpl,appsrc/dcfile/dciodvfy.cc: add specific check for empty Referenced
+	File ID components (assumes Referenced File ID is always type 1)
+
+051003:	libsrc/include,src/attr.h,attrtyps.*,modulev.cc: make check for Type 1 for string attributes
+	OK if any value is not empty (rather than all of them) - this has the side effect of no
+	longer detecting empty Referenced File ID components in DICOMDIRs, for which a specific
+	check needs to be added
+
+050913:	libsrc/standard/*/vl.tpl,cond.tpl,binval.tpl: add opthalmology and stereometric SOP classes
+
+050819:	libsrc/src/locale/mesgtext.tpl,libsrc/src/dctool/attrmxrd.cc,appsrc/acrnema/ancp.cc,andump.cc: detect when
+	UN is incorrectly encoded with short rather than long form of VL and tolerate (as has already been done for
+	UT VR)
+
+050805:	appsrc/dcfile/dcanon.script: Add more patient related attributes to remove (from detached patient mx modules)
+
+050804: libsrc/src/dctool/attrmxrd.cc,attrtypo.cc,include/dctool/attrmxls.h,appsrc/acrnema/andump.cc: Tolerate
+	DicomWorks bug during de-identification that inserts invalid implicit VR elements with odd lengths in
+	explicit VR files and allow copying without throwing assertion failure on odd length (and do this
+	without compromising andump functionality when tolerating GE endianness bug in item tags in encapsulated
+	pixel data)
+
+050721:	appsrc/dcfile/dcdirmk.cc: needs to include ctype.h for isspace() on Solaris
+
+050706:	libsrc/support/elmtojava_DicomDictionary_CreateIEByTag.awk: include ModalitiesInStudy, SOPClassesInStudy,
+	NumberOfPatient/Study/Series Related Studies/Series/Instances with appropriate informationEntityByTag
+
+050706:	libsrc/standard/elmdict/dicom3.tpl: add CP 397 SOP Classes in Study
+
+050703:	appsrc/dcfile/dcdirmk.cc: compare only significant parts of Patient's Name
+
+050628:	libsrc/standard/module/base.tpl,ct.tpl,mr.tpl,elmdict/dicom3.tpl: Add Lossy Image Compression Method
+	(CP 400 and CP 498)
+
+050625:	libsrc/include/dctool/attr.h,attrseq.h,include/generic/listsimp.h: detect empty type 1 or 1C
+	sequences correctly in dciodvfy, by making isEmptyOrHasAnyEmptyValue() and related methods
+	work properly for sequences by checking number of items rather than VM (which is always 1) - fixes
+	(000141) dciodvfy does not check number of sequence items
+
+050623:	appsrc/dcfile/dckey.cc,dctable.cc: dump sequences as triplet if code sequences
+
+050612:	appsrc/acrnema/andump.cc: add option to extract Siemens CSA header "attributes"
+
+050612:	appsrc/acrnema/andump.cc: add support for dumping FD properly (was only doing FL) (000146)
+
+050611:	libsrc/standard/elmdict/philips.tpl: add Digital Diagnost 1.4 private elements
+
+050531:	appsrc/dcfile/dclutdmp.cc: fix handling of multiple items (000145), add support for OW encoded LUT (000144)
+
+050530:	libsrc/standard/elmdict/softcopy.tpl,module/base,ct,mr,softcopy.tpl: CP 467 Sigmoid VOI LUT type
+
+050528:	appsrc/dcfile/dchist.cc: add option to generate CSV file of histogram
+
+050522:	appsrc/dcfile/dcdirmk.cc: add Number of Frames to spectroscopy directory record (is required)
+
+050520:	libsrc/include,src/dctool/dicomdir.h,.cc,appsrc/dcfile/dcdirdmp.cc: add option to display only
+	the paths of referenced files
+
+050505: libsrc/standard/module/dx.tpl,pet.tpl: make check of rescale slope/intercept use various string
+	equivalents of 0 and 1, e.g., to allow 0. and 1. etc. (don't use binary enum, since rounding
+	error)
+
+050505: libsrc/support/strval.awk: generalize characters allowed in string value codes to all but comma and equals
+
+050505: libsrc/standard/elmdict/other.tpl: update Dexis private tags to ADA 2005 demo values encountered
+
+050430:	libsrc/standard/elmdict/Imakefile: make dependencies for more granular java.install
+
+050430:	libsrc/standard/elmdict/mr.tpl: correct tag value of Parallel Reduction Factor In-plane (CP 319)
+
+050422:	libsrc/standard/elmdict/gems.tpl,other.tpl: Add some unknown GE PET Discovery private tags, and a few
+	Stentor private tags that were in a GE PET sample
+
+050419:	libsrc/standard/module/vl.tpl,strval/vl.tpl: CP 536 make YBR_FULL_420 YBR_PARTIAL_420 for MPEG2 in VL
+
+050411:	libsrc/standard/elmdict/dicom3.tpl,module/dx.tpl: Add CP 393
+
+050409:	libsrc/standard/elmdict/toshiba.tpl: add Toshiba Aplio US private elements
+
+050407:	libsrc/standard/cond.tpl,sopcl.tpl,binval.tpl,libsrc/standard/elmdict,iod,module,strval/softcopy.tpl:
+	add Sup 60 hanging protocols (dcdirmk not done yet)
+
+050406:	libsrc/standard/elmdict/dicom3.tpl: CP 507
+
+050406:	libsrc/standard/cond.tpl,sopcl.tpl,elmdict/dicom3.tpl,module/file.tpl,strval/file.tpl,appsrc/dcfile/dcdirmk.cc: 
+	add Sup 104 encapsulated documents (pdf)
+
+050310:	libsrc/standard/condn.tpl,module/base.tpl,strval/base.tpl: check photometric interpretation against
+	transfer syntax to detect bad RGB when JPEG, etc.
+
+050305:	appsrc/dcfile/dcmulti.cc: allow contrast bolus usage to be shared functional group (CP 503)
+
+050305:	appsrc/dcfile/dcmulti.*,libsrc/include/dctool/uidgen.h: add support for multiple dimension organizations
+
+050226:	libsrc/include,src/generic/txstream.*,appsrc/acrnema/andump.cc: Fix (000102) andump -showoffset-oct and -dec
+	still show offset in hex only
+
+050221:	appsrc/acrnema/ancp.cc,support/testapp: add utility to blank out elements without changing length
+
+050217:	libsrc/standard/condn.tpl,sopcl.tpl,elmdict/dicom3.tpl,iodcomp/base.tpl,module/base.tpl,strval/base.tpl:
+	add spatial registration and fiducials objects
+
+050214:	appsrc/dcfile/dciodvfy.cc: don't stop LUT Data checks after first failure but check all
+
+050214:	libsrc/standard/elmdict/elscint.tpl: update data dictionary with yet more VRs based on IHE PDI CD
+
+050212:	appsrc/dcfile/dciodvfy.cc: LUT Data checks need to not report error for length of zero used as 65536
+
+050212:	libsrc/src/dctool/attrmxrd.cc: don't check stream->fail() unless we have to, either at end of dataset
+	read or sequence read - seems to fail inappropriately on AMD 64 Linux with Siemens PDI 2004 demo DICOMDIR
+
+050209:	libsrc/src/dctool/modulev.cc: distinguish complaint about empty 1C values when condition satisfied or not
+
+050209:	libsrc/src/dctool/attrmxrd.cc: check for non-even VLs and incorrect explicit sequence and item lengths
+
+050206:	appsrc/dcfile/dciodvfy.cc: add specific check on maximum value in LUT Data
+
+050206:	libsrc/standard/cond.tpl,binval.tpl,module/base.tpl,softcopy.tpl,dx.tpl: check enum val for LUT Descriptor
+	value 3
+
+050121:	appsrc/dcfile/dcmulti.cc: add k-space filtering for all MR images (CP 379)
+
+050119:	appsrc/dcfile/dcmulti.cc: add CP570 (Mar 2005 VP) and other image derivation codes
+
+050119:	appsrc/dcfile/dcmulti.cc: include rescale type in shared versus per frame decision for pixel value
+	transformation sequence
+
+050115:	libsrc/src/dctool/condn.cc: fix (000133) dciodvfy curve module presence is incorrectly triggered
+	by private 50xx attributes 
+
+050115:	libsrc/standard/elmdict/*.tpl: update data dictionary with yet more VRs based on IHE PDI CD
+
+050116:	appsrc/dcfile/dcunjpeg.script: make more robust in the face of jpeg codec reporting components starting
+	at 0 or 1, also silence warnings from dccp
+
+050115:	libsrc/standard/elmdict/siemens.tpl,philips.tpl: update data dictionary with VRs based on IHE PDI CD
+
+050106:	libsrc/include/dctool/attrothr.h,src/dctool/attrothr.cc,attrmxrd.cc: detect a strange image bug that
+	swaps US VR bytes and pixel data bytes (only) and fix during reading
+
+050105:	libsrc/include/dctool/attrmxls.h,src/dctool/attrmxrd.cc: recognize illegal explicit OB with > 8 bits
+	allocated, report error and force OW during read to keep the peace
+
+050102:	appsrc/dcfile/dcmulti.cc: always use canonical time form hhmmss in case source content
+	or acquisition time uses fewer components
+
+050102:	libsrc/src/generic/datetime.cc: while parsing string times, allow for everything after
+	hour to be missing, and make sure missing values are intitialized to zero
+
+041227:	libsrc/src/dctool/attrmxrd.cc: work around platform-specific bug in implicit versus
+	explicit distinction (see [bugs.dicom3tools] (000130))
+
+041227:	appsrc/acrnema/ancreate.cc: add option to include preamble
+
+041224:	libsrc/standard/module/file.tpl: make group length type 1 in meta information header
+
+041224:	appsrc/acrnema/ancreate.cc: remove check during hex read from string - seems to fail on
+	trailing ']' delimiter with gcc 3; also allow spaces between numeric values
+
+041221:	libsrc/include/dctool/attrtypo.h,dcopt.h,libsrc/src/dctool/attrtypo.cc,dcoptc.cc,dcopto.cc,
+	appsrc/dcfile/dckey.cc,dctable.cc: factor out specifying element in command line argument by
+	hex values rather than name as used in dctable and dckey into getAttributeTagFromStringHexForm
+	in dcopt.h and dcoptc.cc, and make it available in -r, -rb and -d options, and add method to
+	add string values to UN since that is required for -r, -rb options that must have an argument
+
+041221:	appsrc/dcfile/dciodvfy.cc,libsrc/src/locale/mesgtext.tpl: check for illegal groups
+	0x0001,0x0003,0x0005 and 0x0007
+
+041210:	config/Configure: check for 64 bit X11R6 libraries for AMD x86_64 Linux FC3
+
+041208:	libsrc/src/dctool/attrmxrd.cc: do not override explicit UN with dictionary SQ since UN payload
+	is encoded implicit VR (encountered this with a Philips MR image with private sequences via
+	DJ2002 with fixed length UN payload)
+
+041207:	appsrc/dcfile/dcmvhier.8only.*: use Study Date in preference to Study ID for hierarchy
+
+041207:	libsrc/src/dctool/attr.cc,attrnew.cc: make dictionary XO VR create an OW, and check to make sure
+	that XO, XS and XO never get written in explicit VR just in case (need triggered by encountering
+	VOI LUT in implicit VR)
+
+041202:	appsrc/dcfile/dcmkpres.cc,dcmkpres.man: add selection of whether or not to use OW or US for LUTs,
+	and add capability to add VOI LUT to images rather than make presentation state
+
+041202:	libsrc/standard/elmdict/dicom3.tpl: LUT Data may be OW, US or SS
+
+041202:	libsrc/include/dctool/attrtypn.h: detect when someone tries to add more values than
+	will fit in the explicit value representation value length limit of 16 bits (65536 bytes)
+
+041124:	appsrc/dcfile/dccomb.cc,appsrc/dcfile/dcmulti.cc,appsrc/misc/binpatch.cc,
+	libsrc/include/generic/listfifo.h,listsort.h,libsrc/include/pixeldat/srcsink.h: update to support
+	g++ 3.4, in particular new ANSI C++ template wierdness
+
+041112:	appsrc/acrnema/ancreate.cc,appsrc/dcfile/antodc.cc,dckey.cc,dctable.cc,appsrc/dconvert/pq/pqsplit.cc,
+	appsrc/misc/dumpwhat.cc,jpegsplit.cc,config/Configure,libsrc/include/dctool/attrtag.h,attrtypb.h,
+	libsrc/include/generic/basetype.h,errclass.h,txstream.h,libsrc/src/dcdisp/lutextr.cc,
+	libsrc/src/dconvert/pq/pqhdrc.h,libsrc/src/dctool/attrtypd.cc,attrtyps.cc,binval.cc,strval.cc,
+	tagval.cc,uidgen.cc,libsrc/src/generic/getoptns.cc,libsrc/src/locale/mesgtext.cc,
+	libsrc/src/ourdisp/ourdisp.cc: update to support g++ 3.3, in particular strstream stuff
+
+041111:	libsrc/standard/strval/ct.tpl,mr.tpl: spell fluoroscopy correctly for Value 3 defined term
+
+041031:	appsrc/dcfile/dcuncat.cc,.man,libsrc/include/dctool/uidgen.h: include instance number in concatenation
+	UID and add sameseries option
+
+041031:	appsrc/dcfile/dcmulti.cc: if minimal attributes use zero length Acquisition Duration
+
+041030:	appsrc/dcfile/dcmulti.cc,.man: add ability to force derivation and referenced image sequences to
+	be encoded at per-frame level; also add some more derivation codes
+
+041030:	libsrc/src/dctool/attrmxls.cc,appsrc/dcfile/dcmulti.cc: move Synchronization FoR UID generation into
+	attribute list write, otherwise it may get removed with other UIDs if added earlier
+
+041029:	appsrc/dcfile/dcmulti.cc: portal venous phase precedes systemic venous phase in dimension sort order
+
+041029:	appsrc/dcfile/dcmulti.cc: allow more than one item in functional group sequence that is the
+	target of a dimension, and use the first item only (e.g. for ContrastBolusUsageSequence)
+
+041029:	appsrc/dcfile/antodc.cc: recognize "/1.4:1" pattern for GE spiral pitch factor
+
+041029:	appsrc/dcfile/dcmulti.cc,libsrc/include,src/dctool/uidgen.h,.cc: create Raw Data UID references
+	based on Acquisition Number
+
+041029:	libsrc/src/dctool/attrmxls.cc: include Synchronization FoR in UIDs removed
+
+041029:	appsrc/dcfile/antodc.cc,libsrc/standard/elmdict/elscint.tpl,libsrc/include/dctool/attrtag.h: add more
+	private Elscint CT support
+
+041026:	appsrc/dcfile/dcmulti.cc,libsrc/include,src/uidgen.*: add copy and creation of Synchronization Module
+	and related UID
+
+041026:	appsrc/dcfile/dcmulti.cc: add more convolution kernel group choices and detection when none and localizer
+
+041026:	appsrc/dcfile/dcmulti.cc: allow sort for dimensions on unrecognized non-numerics (hash-like)
+
+041026:	libsrc/standard/elmdict/gems.tpl: DeltaStartTime, RotationSpeed are in seconds, not milliseconds as
+	claimed in conformance statement
+
+041026:	appsrc/dcfile/andump.cc,.man: add -ancreate option to create item and delimiter tags for round trip
+
+041026:	appsrc/dcfile/ancreate.cc,.man: allow for white space, comments and create OB values properly,
+	as well as tidy up man page
+
+041024:	appsrc/dcfile/dcmulti.cc: make default ReconstructionAngle dependent on AcquisitionType
+
+041024:	appsrc/dcfile/dcmulti.cc: make DistanceSourceToDataCollectionCenter from DistanceSourceToPatient if present
+
+041024:	appsrc/dcfile/dcmulti.cc: make DistanceSourceToDataCollectionCenter default to half DistanceSourceToDetector
+
+041024:	appsrc/dcfile/dcmulti.cc: add Optiray/Ioversol to list of contrast agent codes
+
+041021:	libsrc/standard/elmdict/gems.tpl: fix spelling of PeristalticFlag
+
+041021:	appsrc/dcfile/dcmulti.cc: RescaleType HU if CT and !derived, rather than (!(MR and !derived)),
+	and replace equivalents of HU including incorrect spelling of Hounsfield
+
+041021:	appsrc/dcfile/antodc.cc: GEMS DeltaStartTime is in seconds, not milliseconds
+
+041019:	appsrc/dcfile/dcmulti.cc: track and add cardiac and respiratory position indices
+
+041017:	appsrc/dcfile/antodc.cc: add correct attribute for ExposureInuAs, handle string rather than
+	numeric GEMS SpiralPitchFactor, add GEMS DeltaStartTime to AcquisitionTime
+
+041017:	appsrc/dcfile/dcmulti.cc,.man: add IAC anatomic term, round rather than truncate reference datetime
+
+041016:	appsrc/dcfile/dcmvhier.*.script.cc: succeed even if tags are out of order
+
+041016:	appsrc/dcfile/dcmulti.cc,.man: add support to sort dimension of ContrastBolusAgentPhase
+
+041016:	appsrc/dcfile/antodc.cc: Also derive TableFeedPerRotation from Siemens private Feed per Rotation
+
+041016:	libsrc/standard/elmdict/philips.tpl: add some CT Aura private tags encountered
+
+041012:	appsrc/dcfile/dcmvhier.*.script: use mkdir -p not mkdirhier, to work on Solaris
+
+041012:	appsrc/dcfile/dcanon.script: correct fix to match entire UIDs in mapping file only,
+	not sub-strings, to work on Solaris
+
+040930:	libsrc/standard/elmdict/other.tpl: add Lodox Statscan private tags
+
+040929:	appsrc/dcfile/dcdirmk.cc: add manufacturer and model name to series directory record
+
+040925:	libsrc/standard/sopcl.tpl,appsrc/dcfile/dcdirmk.cc: add support for Key Object Selection
+	DICOMDIR record, rather than using generic SR ([bugs.dicom3tools] (000126))
+
+040921:	libsrc/standard/elmdict/dicom3.tpl,module/rt.tpl,strval/rt.tpl: update for final text of CP packet 27
+
+040917:	appsrc/dcfile/dcmulti.cc,.man: separate descending option for stack and main sort,
+	track and use TriggerDelayTime in preference to TriggerTime, track and use
+	TemporalPositionIndex if present rather than deriving it
+
+040917:	libsrc/standard/elmdict/dicom3.tpl: change Overlay Subtype VR from CS to LO (Sup 5)
+
+040916:	appsrc/dcfile/dcdirmk.cc: add additional image level directory keys for enhanced
+	CT, not just enhanced MR
+
+040916:	appsrc/dcfile/dcmulti.cc,.man: change rescale type extraction to not ignore that
+	in source images, and to not insist on HU for CT if derived
+
+040914:	appsrc/dcfile/dcdirmk.cc: look for Verification Datetime nested in Verifying
+	Observer Sequence (fix for [bugs.dicom3tools] (000125))
+
+040914:	libsrc/src/dctool/attrtypv.cc: don't flag timezone offset in DT as an error
+	(fix for [bugs.dicom3tools] (000124))
+
+040914:	libsrc/standard/cond.tpl,module,strval/file.tpl: add registration and key object directory records
+
+040914:	libsrc/standard/cond.tpl,module/softcopy.tpl: don't flag error when bounding box
+	and anchor point, or graphic and text, both present
+
+040914:	libsrc/standard/elmdict,module/softcopy.tpl,appsrc/dcfile/dcdirmk.cc,dcmkpres.cc: rename
+	presentation to content attributes as per Sup 72 registration
+
+040914:	libsrc/standard/elmdict/gems.tpl: add GE Applicare private tags from PDI demo
+
+040910:	libsrc/include,src/attr.h,attrtyps.h,.cc,modulev.cc: when checking Type 1 and 1C
+	attribute values, also check that if multi-valued any value is not zero length
+	once leading padding is removed (e.g., to detect empty values for Patient
+	Orientation, even though a delimiter is present hence VL != 0; counter example
+	is potentially valid empty values for Image Type, which will now be signalled
+	as an error) ([bugs.dicom3tools] (000117))
+
+040908:	appsrc/dcfile/dcmulti.cc,.man: change real world value LUT stuff to all attributes
+	specified on a per-frame basis (encoded in input files), rather than a command
+	line option; includes allowing for missing per frame based on absence of Units
+	(though this may generate illegal IODs since all per-frame functional group
+	macros have to be present for all frames)
+
+040908:	appsrc/dcfile/dcmulti.cc,.man: tidy up some measurement units code sequence stuff
+	related to unary (no units) and to elide braces in meaning derived from value
+
+040907:	appsrc/dcfile/dcmulti.cc,.man: option to add timing attributes to derived images, and
+	tidy up some man page formatting issues
+
+040903:	appsrc/dcdisp/dcdisp.cc: allow overlays in separate group that have odd expected
+	length but padded to even length (as they should be)
+
+040827:	libsrc/src/dctool/attrtypv.cc: report CodeStringFileComponentAttribute maximum length
+	as 8 not 16 (was checking correctly, just message was wrong)
+
+040826:	appsrc/dcfile/dcencap.cc: include SamplesPerPixel in frame size calculation; still
+	potentially problematic if compressed bytes stream larger than uncompressed !
+
+040821:	libsrc/standard: add CPs from Sep 2004 final text package
+
+040817:	libstrc/standard/elmdict/other.tpl: add some private dental tags from ADA demo CD
+
+040802:	appsrc/dcfile/antodc.cc: Solaris needs strchr() not index()
+
+040801:	appsrc/dcfile/dcmulti.cc: add support for enhanced contrast bolus module and
+	contrast usage sequence
+
+040731:	appsrc/dcfile/antodc.cc: create new CT table/pitch/collimation attributes from
+	GEMS private attributes
+
+040731:	appsrc/dcfile/dcmulti.cc: create CT Position Sequence, assuming no zoom and recon
+	and data collection centers equal
+
+040723:	appsrc/dcfile/dcunjpeg.script: add support for color and lossy JPEG, and use both PVRG & IJG codecs
+
+040723:	appsrc/misc/jpegdump.cc: fix hex offset display, and dump APP0 JFIF
+
+040721:	appsrc/dcfile/dcdirmk.cc: use default Instance Number if missing
+
+040721: appsrc/dcfile/dcanon.script: add options to keep uids, private tags and attributes for PET SUV
+
+040718:	libsrc/standard/elmdict/dicom3.tpl: correct VR for FilterMaterial to CS per CP 187
+
+040718:	appsrc/dcfile/dctable.cc: add nofilename option
+
+040718:	appsrc/dcfile/dckey.cc,.man,dctable.cc,.man: allow -k by hex pair
+
+040718: libsrc/standard/elmdict/gems.tpl: update GE CT private tags
+
+040716:	appsrc/dcfile/dcunjpeg.script: quote arguments to allow spaces, quieten, and nodisclaimer
+
+040716:	appsrc/dcfile/dcanon.script: fix to match entire UIDs in mapping file only, not sub-strings
+
+040713:	libsrc/standard/condn.tpl: fix condition on PatientOrientation (was wrong for PET)
+
+040713:	libsrc/standard/elmdict/philips.tpl: update Philips PET private tags
+
+040709:	config/Configure: specifically check for gcc-2.95, not just gcc2
+
+040709:	libsrc/src/dctool/attrmxrd.cc: improve message on in correct group lengths
+
+040709: libsrc/standard/elmdict/gems.tpl: update GE MG private tags
+
+040709:	libsrc/standard/elmdict/gems.tpl: update GE MR private tags
+
+040709:	libsrc/standard/elmdict/gems.tpl: update GE DX private tags as per Revolution XQ/i
+
+040709:	libsrc/standard/elmdict/agfa.tpl: update Agfa CR tags (old as well as new ADC Compact)
+
+040709:	libsrc/standard/elmdict/picker.tpl: update NM private tags as per Odyssey VP and FX Rev 4.1,
+	January 27, 1999,P/N 892086,DICOM software release 1.5 conformance statement from Philips
+
+040708:	appsrc/dcfile/dctopgm8.cc: remove restriction to only single frame images
+
+040708:	appsrc/dcfile/dcmvhier.8only.script: add script to make fileset 8 character limit hierarchy
+
+040708:	appsrc/dcfile/dcanon.script: add script to anonymize a directory of images
+
+040707:	appsrc/dcfile/dcmvhier.datedesc.script: add modality to series label
+
+040618:	libsrc/standard/module/acqctx.tpl,../condn.tpl,../strval/vl.tpl: tidy up conditions on
+	acquisition context value types and incorporate CP 368 (fixed as in 2004 standard)
+
+040617:	libsrc/standard/elmdict/elscint.tpl: add recent Philips/Elscint private data elements
+
+040616:	libsrc/standard/elmdict/gems3.tpl: add recent Lightspeed CT private data elements
+
+040616:	appsrc/dcfile/dcmulti.cc: copy multiframe modules when not recognized new MF SOP class
+
+040615:	libsrc/standard/elmdict/dicom3.tpl,../module/dx.tpl: add Sup 92 data elements
+
+040611:	appsrc/acrnema/andiff.script: quote filename argument strings to allow spaces in filenames
+
+040605:	appsrc/dcfile/dcmvhier.datedesc.script: add new script to build different hierarchy
+
+040529:	libsrc/standard/condn.tpl: correct MultiFrameIODAndNotSpecimen condition for VL
+	images (was incorrectly flagging Anatomic Region Sequence as missing for single
+	frame VLs)
+
+040508:	libsrc/src/dctool/attrtypv.cc: add check for UI with all components == 0 and flag error
+
+040505:	libsrc/standard/elmdict/gems.tpl: add latest NM (from eNTEGRA) and PET Discovery private
+	tags from conformance statement
+
+040505:	libsrc/src,include/dcfile/emdict.*,attrmxrd.cc: detect absence of private owner
+	when reading dataset and warn
+
+040429:	appsrc/dcfile/dcdirmk.cc: use default Modality of "OT" in series directory record
+	if no value found, rather than flagging an error (Type 1 in directory record
+	but not required in SC SOP Class instances)
+
+040423:	appsrc/dcfile/dciodvfy.cc: don't flag pixel data length error when odd length
+	padded ([bugs.dicom3tools] (000113))
+
+040406:	libsrc/standard/*: add CP 392,395,409
+
+040331:	libsrc/standard/*: add Sups 42 and 47 (MPEG and multiframe VL)
+
+040225:	libsrc/standard/sopcl.tpl: add old VL draft image storage SOP classes
+
+040212:	appsrc/dcfile/dckey.cc: stop after start of PixelData, add brief option
+
+040212:	libsrc/src/dctool/attrmxls.cc,attrmxrd.cc: add option to stop reading past a certain tag
+
+040122:	libsrc/src/dctool/attrmxrd.cc: don't just skip pixel data, actually read and discard
+	it, to be sure to detect truncated last attribute
+
+040122:	appsrc/dcfile/dciodvfy.cc: explicitly check that claimed VL for pixel data attributes
+	is appropriate for rows, columns and bits allocated ... does not actually try to read
+	the pixel data to see if the file is too short
+
+040122:	appsrc/dcfile/dciodvfy.cc: check number of waveform channels in waveform sequence matches
+	number of channel definition sequences
+
+040119:	libsrc/standard/elmdict/philips.tpl: remove private SQ elements that have been encountered
+	as SQ before, but don't always seem to be encoded as SQ ... allows the UN code to deal
+	with as fixed or variable as required - UNDO THIS CHANGE - the images causing a problem
+	had been corrupted during conversion with DJ
+
+040118:	appsrc/dcintro/optin.so: fix ignoreoutofordertags option description
+
+040101:	appsrc/misc/jpegsplit.cc: zero pad count value used to construct filenames
+
+031211:	appsrc/dcfile/dcdirmk.cc: add Photometric Interpretation as directory record key
+
+031211:	libsrc/standard/elmdict,module/mr.tpl,appsrc/dcfile/dcmulti.cc: add CP 353 new echo train
+	length attributes for MR, including generating them automatically based on computed value
+	of EchoPulseSequence
+
+031211:	appsrc/dcfile/dcdirmk.cc: add default values if Patient ID, Name or Series Number missing
+
+031206:	appsrc/dcfile/dcencap.cc: pad odd length items
+
+031206:	libsrc/include/pixeldat/unencap.cc: change fragment message to include VL
+
+031119:	appsrc/dcfile/dcmulti.cc: factor out CT from MR stuff and begin work on adding CT; checked
+	that it didn't break nemamfmr; only difference for MR is adding WindowCenterWidthExplanation
+
+031118:	libsrc/standard/*: add Sup 58 LB Enhanced CT, and refactor Enhanced MR accordingly
+
+031116:	appsrc/dcfile/antodc.cc: add some fixes for Toshiba CT images with incorrect column Y
+	sign, as well as detect head/feet first and supine/prone from Toshiba private attributes
+
+031116:	appsrc/dcfile/dcencap.cc: add multi-frame support, to handle the case when
+	pixel data is not compressed but needs to be encapsulated anyway
+
+031116:	libsrc/standard/transyn.tpl: add PixelMedEncapsulatedRawLittleEndian
+
+031015:	libsrc/standard/elmdict/siemens.tpl: update some VRs based on explicit VR from a Siemens
+	Volume Zoom CT MOD (SIEMENS_S5VA40A)
+
+030914:	appsrc/dcfile/dcmulti.cc: add support for inserting metabolite code sequence as per draft CP 386_02
+	and update dictionary accordingly
+
+030914:	appsrc/dcfile/dcdirmk.cc: add ImageComments to spectroscopy directory record 
+
+030913:	appsrc/dcfile/dcmulti.cc: add support for inserting metabolite map sequence
+
+030913:	appsrc/dcfile/dcdirmk.cc: don't assert on icon upsampling, just don't make the icon
+
+030913:	appsrc/dcfile/dcmulti.cc: add nowindow option to not include default values
+
+030806:	appsrc/dcfile/dcdirmk.cc: use name as well as ID to disambiguate patient entity in case ID is missing or empty
+
+030731:	libsrc/standard/strval/charset.tpl: add CP 155 korean, CP 194 thai, CP 252 UTF8 and GB18030
+
+030731:	libsrc/standard/strval/file.tpl: add CP 343 spectroscopy and raw data directory record types
+
+030725:	libsrc/src/dctool/attrmxrd.cc: workaround GE item/sequence delimiter encoding bug in mammo images
+
+030721:	libsrc/standard/elmdict/dicom3.tpl: add CP 340 Scheduled Procedure Step Modification Date and Time
+
+030710:	libsrc/standard/module/base.tpl: Make USImageModule PlanarConfiguration conditional
+	on SamplesPerPixel
+
+030620: libsrc/standard/elmdict/mr.tpl: Correct VR of TagSpacingSecondDimension
+
+030611: appsrc/dcfile/pgxtodc.cc: add pgx to dicom secondary capture tool
+
+030611:	appsrc/dcfile/dcjpeg.script: add JPEG compression script
+
+030611:	appsrc/dcfile/dckey.cc: add decimal output option
+
+030610:	libsrc/include/pixeldat/unencap.h: ignore bad VL in sequence delimitation items
+
+030609:	appsrc/dcfile/dcencap.cc: add encapsulation tool
+
+030531:	libsrc/include/pixeldat,srcsink.h,libsrc/include,src/dctool/attrtypo.*,
+	libsrc/include/dctool/attrtype.h,libsrc/src/dctool/attr.cc,attrmxrd.cc,attrnew.cc:
+	tidy up OF stuff, including swap byte order on write of large with different
+	endian; disable (unused) small OF stuff until swap byte order done there too
+
+030523:	appsrc/dcfile/dcpost.cc: fix cols and rows wrong way around when calculating lengths
+	of rows and cols to use for corners or rectangle
+
+030516:	libsrc/support/elmtojava_DicomDictionary_CreateIEByTag.awk: make sure SOPClassUID is
+	treated specially (i.e. at the instance level)
+
+030516:	appsrc/dcfile/dcdirmk.cc: add ImageOrientationPatient from SharedFunctionGroupsSequence
+	if doing position and MR multiframe (useful for specifying orientation when all
+	frames parallel in order to find reference images)
+
+030508:	libsrc/support/elmtojava_*.awk: update to handle new base class and javadoc 
+
+030501:	config/Configure: add " -Wno-deprecated" flag to g++ to shut up g++ 3
+	complaints about old style headers; still check for and use by
+	preference g++2, since shipped version of 3 with MacOSX is broken
+	and not everyone will have compiled and installed 3.2.3 (which works OK)
+
+030501:	appsrc/acrnema/ancreate.cc,andump.cc,libsrc/include/dctool/attrtypf.h,attrtypn.h,
+	libsrc/include/generic/txstream.h,libsrc/src/generic/txstream.cc,
+	libsrc/src/dctool/attr.cc,attrmxrd.cc,attrtag.cc,attrtypo.cc,attrtypt.cc:
+	because of g++ 3 "feature" that makes does not show "0x" for zero values
+	despite ios::showbase (apparently what the C++ standard says), factor out
+	all hex dumps of values into method in txstream.cc
+
+030501:	appsrc/acrnema/andump.cc: length of hex dump of binary values was incorrect,
+	was 1,2,4 and should have been 2,4,8 (already correct in dcdump.cc)
+
+030430:	libsrc/src/dctool/attrmxls.cc,libsrc/support/condn.awk: remove duplicate default
+	argument declarations (g++ 3 is finicky about this, and it has gone from a warning
+	to an error in 3.2.2, and the C++ standard says duplicates defaults are illegal)
+
+030425:	appsrc/dcfile/dccmp/dcdiff,dccmp.script: quote filename arguments since may contain
+	spaces
+
+030424:	appsrc/dcfile/dccmp/dccmp.script: compare pixel data of two files
+
+030424:	appsrc/dcfile/dcburn.cc: add utility to burn in (first) overlay (6000,xxxx) to pixel
+	data
+
+030424: appsrc/dcfile/dcarith.cc,libsrc/include/pixeldat/srcsink.h,libsrc/src/dctool/attrothr.cc:
+	factor out point filter into position independent and position dependent variants
+
+030412:	libsrc/src/dctool/attrmxvr.cc: add some more XS attributes to change using Pixel Representation
+
+030412: appsrc/dcfile/dcdiff.sh: add -ignoreoutofordertags to use of dccp while finding differences
+
+030403:	appsrc/dcfile/dcmulti.cc: add Referenced and Source Image Evidence Sequences
+
+030402:	appsrc/dcfile/dcmulti.cc: do not copy Laterality in General Series (CP 365) if MF MR
+
+030402:	libsrc/standard/elmdict/mr.tpl: Make LUT Label have VR of SH, as per the CP
+
+030402:	appsrc/dcfile/dcmulti.cc: only add venc stuff if -phasecontrast option
+
+030318:	libsrc/standard/elmdict/siemens.tpl,acrnema.tpl,spi.tpl: more VR updating based on
+	experience with MR sample images
+
+030318:	libsrc/src/attrmxrd.cc: more explicit (sic) message when explicit vr does not
+	match dictionary vr
+
+030315:	appsrc/dcfile/dcmulti.cc: uncouple real world value stuff from rescale stuff,
+	add velocity encoding stuff
+
+030315:	libsrc/include/dctool/attrmxls.h,dcopt.h,libsrc/src/dctool/attrmxls.cc,dcoptc.cc,
+	dcopto.cc,appsrc/dcfile,dconvert/*/Imakefile: add command line options to set values for
+	instance creation date and time and timezone offset to simplify regression testing
+
+030311:	libsrc/standard/elmdict/siemens.tpl,acrnema.tpl,compress.tpl,spi.tpl: update
+	dictionary based on explicit VR received from Leonardo Somatom conversions
+	as well as Leonardo conformance statement
+
+030301:	appsrc/dcfile/dcmulti.cc: add empty per-frame functional group macros
+	when derived frames
+
+030226: appsrc/dcfile/dcmulti.cc: add LUT Label and EXplanation arguments to
+	real world value mapping sequence; not that the VR for LUT Label as
+	added is SH, as per the CP, but the dictionary remains the incorrect
+	SS for now as a reminder
+
+030225:	libsrc/standard/strval/mr.tpl: correct spelling mistake in gradient output
+	type defined term
+
+030225:	appsrc/dcfile/dcdirmk.cc: add extra attributes to directory record for MR
+	multiframe including PixelPresentation and NumberOfFrames
+
+030225:	appsrc/dcfile/dcmulti.cc: add support for minimal attributes, adding just
+	position attributes to derived images anyway, sorting dimensions by Frame Type
+
+030223:	appsrc/dcfile/dc[un]bzip2.script,libsrc/standard/transyn.tpl: add support for
+	private PixelMed transfer syntax fort bzip2 compression along the same
+	principles as deflate (and without the 'BZ' file header bytes)
+
+030222:	appsrc/misc/rawarith.cc: add prediction and reversal based on previous pixel
+	value
+
+030201:	libsrc/src/dconvert/gen,gaw/*.tpl: have rescale type be HU or US, not longer
+	string values
+
+030201:	appsrc/dcfile/dcmulti.cc: add copying of actual rescale attributes into pixel
+	transformation sequence rather than always assuming 1 and 0
+
+030121:	libsrc/standard: add sup 70 clinical trials and 65 chest cad (just sop class)
+
+030114:	libsrc/standard: update code sequence macro to reflect CP324, and then
+	make sure it is used everywhere (note that this removes some of the
+	checks for particular enum/defined coding scheme designators)
+
+021123:	libsrc/include,src/attrmxrd.cc,attrmxls.h,attrype.h,attrtypo.*: add interim
+	OF VR the same as UN VR (probably not right for big endian copy though)
+
+021122:	libsrc/standard/*mr.tpl,cond.tpl,sopcl.tpl: add spectroscopy
+
+021122:	libsrc/standard: tidy up dictionary and modules as per draft 2003
+
+021116:	libsrc/standard/elmdict/dicom3.tpl,security.tpl;module/base.tpl: add Sup 55
+	attributes to dictionary and SOP common, move signature elements
+
+021025:	libsrc/standard/sopcl.tpl,appsrc/dcfile/dcdirmk.cc: add spectroscopy and raw
+	data directory record types
+
+021020:	appsrc/acrnema/ancreate.cc: add FL and FD values specified as floats in {} rather than hex
+
+021017:	appsrc/acrnema/*: add OF support
+
+021017:	libsrc/standard/sopclass.tpl: add spectro, raw data
+
+021017:	libsrc/standard/elmdict/mr.tpl: fix name of SignalDomainColumns
+
+021015:	appsrc/dcfile/rawftodc.cc: add ability to select complex components
+
+021012:	appsrc/dcfile/dcdirmk.cc: add specific character set to all directory records
+
+020929:	libsrc/src/dconvert/gen,gaw: convert variable bandwidth to Hz and double
+
+020928:	appsrc/dcfile/dcstats.cc,.man: add decimal value as well as hex
+
+020928:	libsrc/include/dctool/attrtypf.h: modify creation of float values to handle values
+	less than one - decrement exponent after log2, otherwise mantissa goes -ve (this
+	fixes the problem noted on 020706 with NM image (back to 1.9)
+
+020928:	appsrc/dcfile/dcmulti.cc: do not add acquisition stuff at image and frame levels if
+	derived unless specifically required on command line
+
+020926:	libsrc/src/dconvert/gaw,gen/g*mmsc.cc: assume col direction for freq encoding when
+	unknown in deriving acquisition matrix
+
+020923: appsrc/dcfile/dcmulti.cc: move frame image type sequence to shared if possible
+
+020923:	appsrc/dcfile/dcmulti.cc: fix date/time sort (was using Uint32 entries, unsigned hence
+	always +ve return)
+
+020923:	appsrc/dcfile/dcdirmk.cc: add ImageComments to IMAGE record
+
+020923:	appsrc/dcfile/dcmulti.cc: add real world value mapping sequence
+
+020923:	appsrc/dcfile/raw*todc.cc: add multi-frames, also add scale factor to float
+
+020918: appsrc/acrnema/andiff.script: create similar tool to dcdiff to show DataSetTrailingPadding
+
+020914:	appsrc/dcfile/dcostosr.cc: change rindex() to strrchr() (for Solaris)
+
+020914:	config/Configure,Imake.tmpl;libsrc/src/generic/datetype.cc: use timezone external 
+	variable rather than glibc based tm_gmtoff struct member (for other than Linux
+	and Darwin, e.g. Solaris)
+
+020911:	appsrc/dcfile/dcuncat.cc;libsrc/src/dctool/attrmxls.cc;libsrc/include/dctool/uidgen.h:
+	take InConcatenationNumber into account (if present) when making SOPInstanceUIDs,
+	and make sure InstanceNumber remains the same for all instances of a concatenation
+
+020911:	appsrc/dcfile/dcdirmk.cc: add concatention stuff for IMAGE records if present
+
+020911:	appsrc/dcfile/pnmtodc.cc: require -big or -little when bits > 8
+
+020902:	libsrc/src/dcdisp/rdimage.cc: fails on palette color images since getPixelMap()
+	not implemented in usepal.cc ... this must have been true since early work on
+	optimizing display speed ... not fixed yet :(
+
+020902;	libsrc/standard/elmdict/dicom3.tpl,acrnema.tpl;libsrc/src/dctool/attrmxvr.cc: more
+	work on tidying up LUT VR ... essentially always make it OW as per current PS 3.5
+	rules instead of (erroneously) trying to depend on pixel representation (or not for
+	palette color LUT as in 020815 changes)
+
+020901:	config/Configure: tweak to support MacOS X 10.2 changes (but still doesn't
+	provide good include depend path for gcc version 3 since .h versions of headers
+	no longer included; worse, the version 3 libraries have a problem with 0x padding
+	fixed width hex numbers when the value is 0, so test for gcc2 and g++2 and use
+	them if present instead :) (do not know if this is just a Mac thing or a general
+	version 3 problem)
+
+020816:	appsrc/dcfile/rawftodc.cc: add raw (4-byte) float to DICOM SC utility; also
+	involved moving libsrc/include/dconvert/fltype.h to libsrc/include/dctool/
+
+020815:	appsrc/dcfile/dccomb.cc: combine two images into different pixel value ranges
+
+020815:	appsrc/dcfile/dcmulti.cc: add supplemental color LUT
+
+020813: libsrc/standard/condn.tpl,module/mr.tpl: tidy up checks of real-world conditions
+	(by maing them NoConditions)
+
+020813:	libsrc/src/dconvert/gaw,gen/g*mmsc.cc: assume row direction for phase encoding when
+	unknown (actually col direction for freq)
+
+020811:	libsrc/include,src/dctool/attrmxls.*; appsrc/dcfile/dciodvfy.cc: (finally) deal with
+	making sure that meta-information header SOP Class and Instance UIDs match what is
+	in the dataset, rather than copying (obsolete) information - needed a special check
+	for DICOMDIRs since no UIDs in the actual instance - make them up; add a special check
+	in dciodvfy to make sure that meta-information header values (if present) match those
+	in the dataset (or is a directory)
+
+020811:	libsrc/include/dctool/attrtyf.h: add support for addValue(const char *)
+
+020810: libsrc/src/generic/getopns.cc: kip spaces in getoptions to allow -ve floating point 
+	and integer values
+
+020810:	appsrc/dcfile/dcmulti.cc: MR MF - use AcquisitionDuration and
+	MRAcquisitionPhaseEncodingStepsOutOfPlane
+
+020810: libsrc/dconvert/gen.gaw/g*mmsc.cc: add some MRMF attributes including Acquisition
+	Duration and MRAcquisitionPhaseEncodingStepsOutOfPlane
+
+020809:	libsrc/standard/module/mr.tpl;libsrc/support/*java*.awk: manually add IE to macros;
+	not quite right for some (e.g. Frame Type)
+
+020805:	appsrc/dcfile/dcdirmk.cc: add some new MR specific and general optional keys
+
+020802:	libsrc/support/elmtojava*.awk: add tagByName
+
+020730:	appsrc/dcfile/dcmulti.cc: MR MF - add Frame VOI LUT Sequence based on
+	window center and width racked in single images else default
+
+020729:	appsrc/dcfile/antodc.cc: find private attributes in any block, not just 
+	pre-defined; use for Siemens (only)" antodc.cc
+
+020729:	libsrc/support/module.awk: implement VM="" on Condition="" line and pass the
+	desired multiplicity (or 0 if absent) to verifyXX() (which already had the
+	required support for this in place). Use it in module/mr.tpl for Image and
+	Frame Type.
+
+020728:	libsrc/include,src/generic/datetype.*;libsrc/dctool/attrmxls.cc;config/: add
+	Instance Creator UID, Creation Date and Time and Timezone Offset From UTC 
+	derived from current time
+
+020727:	appsrc/dcfile/dcmulti.cc: MR MF - automatically detect temporal position index
+
+020726:	appsrc/dcfile/dcmulti.cc: MR MF - automatically detect stacks
+
+020725:	libsrc/standard/condn.tpl,module/mr.tpl,appsrc/dcfile/dcmulti.cc: do lossy image
+	compression (and ratio) attributes as per CP319 proposal
+
+020723:	libsrc: add root attribute capability to conditions, to use for new MR macros
+
+020722:	appsrc/dcfile/dcmulti.cc: MR multiframe - earliest acq and content DTs
+
+020721:	appsrc/dcfile/dcmulti.cc: more work on MR multiframe, including dates
+	and times in MR Enhanced Image Module, and only copying specific attributes
+	in specific modules, not everything
+
+020720:	appsrc/dcfile/antodc.cc: add Philips private Cardiac Trigger Time
+
+020720:	appsrc/dcfile/dcmulti.cc: more work on MR multiframe, including Image and
+	Frame Type
+
+020720: libsrc/include/dctool/attrval.h: used to return a value only if VM == 1, this
+	was causing dcdirmk to fail on some potentially multi-valued string attributes,
+	now make it return a value if VM >= 1
+
+020717:	libsrc/standard/,appsrc/dcfile/dcostosr.cc: CP 251, 257, 260, Sup 61
+
+020715:	libsrc/src/dcfile/attrmxrd.cc: work around Philips bug with extraneous Item
+	tags nested inside fixe length Items (there is also a wierd group length tag
+	for the 0xfffe group but that is already ignored)
+
+020707: libsrc/standard/support/elmtojava_CreateIEByTag.awk: constrain a few special
+        cases like StudyInstanceUID
+
+020706:	libsrc/standard/support/elmtojava*: generate java dictionary for pixelmed,
+	including information entity by element
+
+020706:	libsrc/standard/module/mr.tpl: include macros in per-frame as well as
+	shared functional group sequence
+
+020706:	libsrc/include/attrtype.h,attrtypf.h: add support for creation of FD
+	values (crude and not yet well tested), also replaced int with float
+	in single-valued constructor of FL and FD - need to check if this has
+	broken anything (e.g. images/dicom/forjpeg2000/discimg/NM1 (0x0009,0x102e)
+	is now 0 rather than 1.9)
+
+020705:	appsrc/dcfile/dcmulti: start to add support for derivation of functional
+	groups for MR multi-frame
+
+020620:	INSTALL,config/Configure: add support for Darwin
+
+020620:	libsrc/support/*.awk: use "next" rather than "break" (Darwin)
+
+020529:	libsrc/standard: rename realworld value first/last value mapped
+
+020529:	libsrc/standard;,libsrc/src/dconvert/gaw,gen/*mmsc.cc;appsrc/dcfile/antodc.cc:
+	rename phase encoding direction to be in-plane
+
+20518:	config/Configure: gzip best argument needs two hyphens in 1.3.3 in
+	RH Linux 7.3
+
+020518:	libsrc/standard/module/pet.tpl: fix typo in condition in PET Series
+
+020506:	appsrc/dcfile/dcmulti.cc: check for and create multiframe MR and SC 
+
+020504:	appsrc/dcfile/dcmulti.cc: allow source multiframe objects if only 1 frame
+
+020501:	libsrc/standard: add new MR objects (sup 49 final text)
+
+020420:	Imakefile: be more explicit than [A-Z]* due to wierd bash expansion
+	that includes lowercase as well; also explicitly exclude CVS files
+	from archive
+
+020420:	config/Configure: cpp is now cpp0 in gcc 2.96 so use cpp* to generate
+	include paths for make depend phase
+
+020419:	appsrc/dcfile/dcdirmk.*: add default values for missing study attributes 
+
+020404:	appsrc/dcfile/dcdirmk.*: add -f option for file with list of files
+
+020316: libsrc/standard/elmdict/philips.tpl: remove duplicate private tags
+
+020215: libsrc/standard/*: update for 2001 standard changes, including CPs
+	for icon image sequence, digital signatures in SOP common; note
+	that including digital sig attributes as a macro caused dciodvfy
+	to fail on some test images ... implemented in-line as work around but
+	there may be an issue with success propagation from macros (try
+	jpeg2000 CT1 for example)
+
+011006:	appsrc/dcfile/dcdirmk: add command line option to set FilesetID
+
+011006: appsrc/dcfile/dcsrmrg.cc: added utility to merge top-level content
+	items (children of root) of several different SR documents
+
+011006: appsrc/dcfile/dcostosr.cc: copy AccessionNumber, StudyDescriptor
+	and make UNVERIFIED
+
+011002:	libsrc/include/attrtypf.h: add conversion from internal float and
+	other numerics to IEEE to support creation of Graphic Data from
+	within appsrc/dcfile/dcostosr.cc.
+
+011001:	libsrc/include/attrtypf.h: copy algorithms from dconvert/fltype.h
+	here to implement getValue(), and have writeData() use them to
+	dump as floating point values, not binary.as before ... later
+	will need to control text dump form and precision to make regression
+	tests repeat OK on different platforms
+
+011001: appsrc/dcfile/dcostosr.cc: added Osiris overlays to SR utility; note
+	big problem is lack of add/get float values to attributes for use
+	with SCOORDs; parsing of label from osiris into measurements is also
+	pretty horrible :(
+
+011001:	appsrc/dcfile/dcsrdump.cc: add a few more value types and details
+
+010706:	appsrc/dconvert/gen/testy2k.sh: use path to appsrc/misc/binpatch
+	rather than assuming it is installed
+
+010704:	*.*: Convert to standard C++ library when using gcc 3.0: this
+	includes:
+	- revised stream seek behavior (use seekg everywhere not rdbuf.streampos)
+	- no stream read of unsigned char arrays
+	- ios::fmtflags not unsigned long
+	- log2() exists in library (don't use own, e.g. for linux)
+	- stream.clear() takes no argument
+	- strstream.h (deprectated) doesn't include iomanip.h
+	- dec and hex need to be scoped with ios:: (sometimes)
+	- strstream extract to integer doesn't leave stsream.good() (getoptns.cc)
+
+	These changes work with gcc 2.96; still don't work with 3.0 since seekg()
+	doesn't seem to set fail() state when past end of stream :(
+
+010523:	appsrc/dcfile/dcswab.script: add script to swap bytes of pixel data
+	leaving everything else alone (e.g. when transfer syntax doesn't
+	match reality)
+
+010523:	appsrc/dcfile/antodc.cc: handle toshiba files with bad VM
+	on PatientOrientation and ImageOrientation and PixelSpacing
+	(trailing backslash) and missing HighBit
+
+010523:	libsrc/src/dcfile/attrmxrd.cc: if ignore out of order tags
+	don't set good flag false else read eventually fails
+
+010523:	config/Configure: notiny version number for gcc 2.96
+
+010523:	config/,docs/: add docs tree derived from doxygen and graphviz
+
+010429:	appsrc/dcdisp/dcdisp.cc: playing around with windowing dynamically
+	rather than after mouse release (not currently active)
+
+010425:	libsrc/standard: RT Treatment Record
+
+010424:	libsrc/support/condn.awk: include else on test for or
+
+010424:	libsrc/standard: continue working on sup 57 support, especially
+	adding "pseudo" modules to test for conditions on attributes defined
+	in the IODs (rather than the modules), as well as multiframe attribute
+	conditionality (re. frame increment pointer)
+
+010423:	libsrc/standard: update to include CP packets 9, 10, Sups 52,
+	53, 57
+
+010323: appsrc/dcfile/dctopgm8.cc,antodc.cc: add include math.h
+        (failed on RH Linux 7 with gcc 2.96) 
+
+010225: appsrc/misc/jpegdump.cc: start work on dumping JPEG 2000
+        bitstream
+
+010217: libsrc/standard/sopcl.tpl: add old trial SR and waveform
+        storage SOP class UIDs (no support for them in the IOD and
+        module stuff though)
+
+010216: appsrc/dcfile/dcbriggs.cc,dcsmpte.cc: Fix yesterday's changes
+	which broke the explicit specification of options with defaults
+
+010215: libsrc/include,src/attrlsln.h,.cc;libsrc/src/attrmxls.cc;
+        appsrc/dcfile/dcdirmk.cc: finally add a generic length and
+        offset calculation that works for nested sequences, abstracted
+        it into a separate module, and used it both to make DICOMDIRs,
+        add tiff IFDs and to insert group lengths; in the process
+        noticed that UT and UN hadn't been added to the fixed length
+        calculation (that is now in attrlsln.cc)
+
+010215: appsrc/dcfile/dcdirmk.cc: High Bit should be set to 7 not 8
+        in Icon Image Sequences
+
+010215: appsrc/dcfile/dcsmpte.cc: add all defaults just like dcbriggs
+
+010215: appsrc/dcfile/dcbriggs.cc: make it default to 8 bits with
+        minval of 0 and maxval of 2^bits-1
+
+010215: libsrc/standard/condn.tpl,module/file.tpl: add remainder of
+        directory record checks in 2000 standard
+
+010215: libsrc/standard/condn.tpl,module/file.tpl: add checks for SR
+        DOCUMENT directory record ... PRESENTATION already there, still
+        others to do.
+
+010215: appsrc/dcfile/dcdirmk.cc: include content date and time for SR
+        DOCUMENT directory record
+
+010214:	appsrc/dcfile/dcdirmk.cc: create lowest level directory records
+	differently depending on sop class ... i.e. not always images as
+	it was before ... added SR DOCUMENT and PRESENTATION, but still
+	more to do; also encountered limit on length of nested sequence
+	attributes (need to fix this before PRESENTATION referenced seqs
+	can be done correctly). ... also highlighted need for general
+	sequence attribute deep clone method
+
+010214:	libsrc/standard,include,libsrc,support/sopcl*: add a new field
+	of directory record type for each sop class, and add a new global
+	function and table to query to get directory record type based on
+	sop class
+
+010115:	libsrc/src/dcfile/attrmxrd.cc,appsrc/dcfile/acrnema/andump.cc:
+	detect incorrect short form of VL for UT VR that some people have
+	used in tests: rather than freaking give error and continue; based
+	on reserved bytes not being zero (risky) :(
+
+010115:	libsrc/src/dcfile/attrmxrd.cc: propagate warnings from sequence
+	item reads upwards
+
+001223:	dcfile/dcunjpeg.script: add support for 8/16 OB/OW selection, as
+	well as extracting decompressed component file name from JPEG log
+	rather than assuming .0 (not always the case)
+
+001223:	support: update gzip noheader patch to not put trailing crc and
+	length on deflated stream, and to not expect it
+
+001220:	appsrc/dcfile/dcdirdmp.cc: add showrecordinfo option
+
+001220:	appsrc/dcfile/dcdirmk.cc: add options to generate directory records in
+	different orders, to generate test cases to see if DICOMDIR parsers can
+	handle backward as well as forward references
+
+001220: libsrc/standard: further updating of dictionary and IODs for consistency
+	with 2000 standard, as well as addition of missing modules for MWL,
+	MPPS, Storage Commitment (still need to do recent print stuff).
+
+001218:	libsrc/standard: update dictionary and IODs for consistency with 2000
+	standard
+
+001218:	libsrc/standard/Imakefile;libsrc/support/elmtoxml.awk: add script
+	to convert standard tags into XML form of data dictionary, creating
+	libsrc/standard/elmdict.xml
+
+001217:	libsrc/standard/elmdict/dicom3.tpl: Referenced Frame Number VM
+	has changed from 1 to 1-n
+
+001217:	libsrc/standard/transyn.tpl: add JPEG-LS and Deflate UIDs
+
+001217:	appsrc/dcinflate.script,dcdeflate.script: add scripts to create and
+	expand deflated transfer syntax, using patched version of gzip with
+	the -x option to not add/expect the gzip header on the deflated data
+	stream.
+
+001217:	libsrc/../dcoptc.cc,dcopto.*,attrmxls.h: add "-justmeta" option to
+	write only the metaheader and not the dataset during a
+	usualManagedAttributeListWrite()
+
+001217:	appsrc/dcrmmeta.cc: add a new utility to strip the metaheader and
+	copy the dataset (only) to a new file, making use of the mandatory
+	metaheader group length element to skip the metaheader rather than
+	parsing it (and backing up when not a group 2 tag); this is to allow
+	support for transfer syntaxes like deflate that don't have a recognizable
+	tag at the start of the dataset
+
+001205:	libsrc/../dcopti,dcstream.h,cc: use command line options to override
+	metaheader and transfer syntax UID (these options were present, just
+	not being used); propagate new argumets to all utilities that create
+	DicomInputStreams (appsrc/dcfile/* and appsrc/dcdisp/*)
+
+001109: config/Imake.tmpl: add DefineBinaryIOFlags as an option that can be
+	defined in site.def or similar to trigger use of ios::binary while
+	opening files (used on non-Unix systems only) - no idea whether it
+	still works or not 
+
+001013:	libsrc/standard/module/sr.tpl: referenced request seq conditional
+	not required
+
+001002:	libsrc/standard/module/waveform.tpl: correct text annotation
+	condition
+
+001002:	libsrc/standard/elmdict/wave.tpl: correct VR for waveform data
+
+000907:	appsrc/misc/jpegsplit.cc: write SOI to start of next file
+	not end of last !
+
+000823: libsrc/include,src/dctool/attrmxls.*,dcopti.cc,dcopt.h;
+	appsrc/dcfile,dcdisp/*.cc: add "-ignoreoutofordertags"
+	option to assist in debugging out of order tags in objects
+	with complex sequence nesting like SR and waveform
+
+000801:	libsrc/standard: update dictionary for Sup 30 FT
+
+000715:	appsrc/dcfile/dcsrdump: created crude tool to traverse sr tree
+	and dump content in form similar to shorthand in book
+
+000625:	libsrc/src,include/dctool/attrlist.*,attrmxls.*,dicomdir.cc;
+	appsrc/dcfile/dciodvfy.cc: earlier fix to add dictionary
+	for private tags to readable AttributeLists wasn't working
+	for dicomdir.cc ... needed to push the saved dictionary pointer
+	all the way up to AttributeList; this allowed a bit of global
+	tidying up of passing dictionaries around as parameters, since
+	any AttributeList user can now getDictionary(). Also renamed and
+	changed the way ManagedAttributeList was allocating the top level
+	dictionary (use "new" rather than class attribute) for consistency
+	of destructors (added to ~AttributeList).
+
+000625:	config/site.p-def: Use new ID for Implementation Class UID as well
+
+000625:	libsrc/include/pixeldat/rawsrc.h: take into account frames when
+	counting rows (bug limited to 1 frame only) ... thanks Alexandre
+	Guimond
+
+000612:	config/site.p-def: Add new UseClunieID 1.3.6.1.4.1.5962
+
+000609: appsrc/misc/jpegsplit.cc: split a jpeg file that has multiple images
+	(between SOI and EOI markers) into separate files; e.g. to take the
+	output of dcraw from a multi-frame encapsulated image with the frames
+	crossing fragment boundaries, and make individual jpeg files suitable
+	to feed to a jpeg decompressor.
+
+000412:	appsrc/dcfile/dcarith.cc: add scale pixels by a floating point factor.
+
+000403:	libsrc/src/dconvert/pq/pqhdrc.h: change string parsing to handle g++
+	library (not istrstream), search for recognition string, not ***,
+	and change calculation of pixel_offset to handle PQ2000 (use the
+	(data_offset-data_offset_actual) rather than assuming \n=END--\n)
+
+000403:	appsrc/dconvert/pq/pqsplit.cc: change string parsing to handle g++
+	library (not istrstream), and change calculation of copy size to
+	handle PQ2000 (use the (data_offset-data_offset_actual) rather
+	than assuming \n=END--\n)
+
+000327:	appsrc/dcfile/antodc: found a Philips MR (T5) that writes different
+	values for row and col pixel spacing (!@#$) that caused the value
+	computed for ReconstructionDiameter to be wrong also - switch
+	to use private FieldOfView value instead, as well as check for bug
+	in PixelSpacing and correct second value.
+
+000320:	appsrc/dconvert/gen/testy2k.sh: make mktime path relative
+
+000319:	libsrc/src/dctool/attrtypv.cc: checking VR routines were deleting the
+	char * returned by the ValueListIterator - stop this; was manifest
+	by condition not matching SOPClassUID in dciodvfy after loosing
+	StringCopy for Linux; moral of the story, getValue() returns copies,
+	(as does AttributeValue which calls it), but directly accessing the
+	values using a ValueListIterator does not (obviously)
+
+000313:	libsrc/standard/elmdict/sr.tpl: fix Referenced Content Item Identifier
+
+000220:	libsrc/include/generic/endtype.h: possible bug in Linux gcc
+	caused test after cast to fail, causing bytes to be swapped
+	in 16 bit words - worked around by assigning it to something
+	before test. Seems to be fixed in gcc 2.95.2, but leave work
+	around in there anyway for old compilers (and what is shipped
+	with most Linux installs).
+
+000220:	libsrc/include/generic/strtype.h,libsrc/include,src/dctool/attrtyps.h,
+	libsrc/src/dctool/attrtypv.cc:
+	strangeness with destructor of StringCopy in list of values on Linux
+	regardless of gcc version; loose StringCopy and use char * instead and
+	remove the delete[]s ... memory leak that will have to be dealt with
+	later
+
+000212:	appsrc/dcfile/dcarith.cc: add zerovalue option (e.g. to remove pixel
+	padding values from CT images)
+
+000206:	appsrc/dcfile/dcsort.cc: quick hack to add secondary key of SeriesNumber;
+	needed to support dcsub of two series keyed by registered dcsort else
+	alternating images from different series not always sorted in same
+	order even if same primary key; need to make secondary key a selectable
+	option later.
+
+000130:	config/Configure: fixes for Linux and X11F86
+
+000130:	libsrc/include/dconvert/fltype.h: Use FLT_MAX rather than HUGE_VAL for
+	missing infinity (Linux)
+
+000130: appsrc/dcfile/pbmtoovl.cc: read bitplane from BinaryInputStream,
+	not invalid cast to istream that older gcc didn't puke on (but
+	should have) - note that the previous behaviour required byte
+	swapping the input which was odd- mirror this with the current
+	LittleEndian setting - should fix this when updating the softcopy
+	demo tests (which will break if changed now)
+
+000130: libsrc/include,src/dctool/attr*: use Binary not DICOMInputStream
+	for value reads, since only endian not VR is required - this allows
+	cleaner fix to pbmtoovl.cc
+
+000130:	appsrc/dcfile/Imakefile: add test for pbmtoovl
+
+000130:	libsrc/src/generic/datetype.cc: correct test on return value of
+	getDDMMYYFromString()
+
+000129:	libsrc/standard: add draft FT of SR
+
+000129:	appsrc/dcfile/dcsort.cc,dcmulti.cc,dcdirmk.cc,libsrc/src/dconvert/pace:
+	tidy up const stuff for gcc 2.95.2 without -permissive
+
+000126	config/Configure: add -isystem rather than -I for X11 includes if
+	gcc 2.95
+
+000126	appsrc/dcfile/dcsort.cc: add -show option to show value of sort key on index 
+
+000126	appsrc/dcfile/dcsort.cc: add Frame of Reference UID check, and make
+	-k synonym for -sortby option
+
+000107	libsrc/src/dctool/attrmxrd.c: when a new sequence item is encountered,
+	create a new data dictionary attached to the item list to allow new set
+	of private creators (ReadableAttributeList::readNewSequenceAttribute);
+	before it was just passing on the main dictionary from the parent list;
+	this does not cause overhead for the standard dictionary because the
+	ElementDictionary constructor already uses reference counting to avoid
+	this.
+
+000107	libsrc/src/dctool/attrseq.cc: change TextOutputStream& SequenceAttribute::write()
+	to use the item specific dictionary - involves downcasting the AttributeList
+	to a ReadableAttributeList - should really add getDictionary() as a method
+	to AttributeList (and return null if none, and then use parent's dictionary)
+
+991222	appsrc/dcfile/dcsub.cc: subtract two 16 bit files
+
+991215	libsrc/support/modtype.awk: support macro as well as module
+
+991215	libsrc/standard: update data dictionary for normalized stuff such
+	as PPS
+
+991215	config/Configure: add -fpermissive to g++ else 2.95.2 under Solaris 8
+	beta fails on Xlib.h without type declarations
+
+991213	appsrc/dcfile/dcdiff.script: compare the dumps of two files
+
+991127	appsrc/dcfile/antodc.cc: more work on Siemens AcquisitionMatrix
+	and add PhaseEncodingDirection and NumberOfPhaseEncodingSteps;
+	still question about Fourier Lines Nominal - phase or freq ?;
+	checked PhaseEncodingDirection with image appearance motion
+	artifact - ok
+
+991127	libsrc/src/dconvert/gen,gaw/g??mmsc.cc: add AcquisitionMatrix and
+	NumberOfPhaseEncodingSteps and correct PhaseEncodingDirection
+	to use freq_dir not swappf
+
+991101	libsrc/standard/: add LB of Waveform Sup 30
+
+991101	libsrc/dconvert/: update Image Date/Time to Content Date/Time
+
+991029	libsrc/standard/: add LB of SR Sup 23
+
+991022	libsrc/standard/: add rev 8 of SR Sup 23
+
+991020	libsrc/standard/elmdict: make VRs consistent with what Easyvision
+	writes on CD for private Philips elements and some SPI, retired ACR-NEMA
+
+991019	appsrc/dcfile/antodc.cc: make flip angle from Philips MR private
+
+991019	appsrc/dcfile/antodc.cc,libsrc/src/generic/datetype.cc: fix all
+	times in dataset to handle Philips MR hh:mm:ssff case (and update
+	getHHMMSSFromString() to handle fraction without . as well as
+	handle no delimiter at all case)
+
+990928	appsrc/dcfile/dcmkpres.cc: add softcopy voi lut sequence to the
+	top level attribute list (!)
+
+990927	appsrc/dcfile/dcmvhier.uid.script: add script to use UIDs rather than
+	study ID and series number for when these are absent or not unique
+	(e.g. Philips AVEU)
+
+990927	appsrc/dcfile/antodc.all.script: always remove Referenced/Source Image
+	Sequence and Icon Image Sequence
+
+990927	appsrc/dcfile/antodc.all.script: do NOT removeinstanceuid because
+	if converting existing DICOM they may be the only series disamiguators
+
+990927	appsrc/dcfile/antodc.all.script: exclude hidden (.) files
+
+990927	appsrc/dcfile/antodc.cc: rewrite image position/orientation(patient)
+	to avoid problems with scientific notation
+
+990914	config/Configure: update some Linux options (log2, gethostid)
+	based on experiments with mklinux DR3
+
+990907	appsrc/dcfile/antodc.cc: try to construct orienation and position
+	from private Philips MR attributes (in exported ANI format even
+	on recent systems like NT5.3)
+
+990907	libsrc/src/dctool/attrmxvr.cc: add SmallestValidPixelValue and
+	LargestValidPixelValue to XS attributes that get fixed up by
+	PixelRepresentation (encountered them in Philips NT5.3)
+
+990905	libsrc/src/dctool/dcattrv.cc: UI verification was failing to
+	detect leading zeroes and empty components
+
+990905	libsrc/src/dctool/dcattrv.cc: ST verification was wrong (<=64
+	and no control chars rather than <=1024 and control chars)
+
+990903	appsrc/dcfile/dcmvhier.script: use BADPAITENT rather than abort
+	if no patient ID and name
+
+990809	appsrc/dcfile/antodc.cc: revisit Series Number generation again -
+	use Acquisition Number for Siemens CT even if Series Number is
+	present but 1 (a la Philips MR), but only if "reasonable" i.e. <100
+	(otherwise had problems with very large different numbers per image
+	with old somatom plus images)
+
+990803	appsrc/dcfile/rawtodc.cc: add byte offset command line parameter
+
+990802	libsrc/standard/elmdict/papyrus.tpl,libsrc/support/elmdict.awk,
+	libsrc/src/elmdict.cc,attrtag.cc: support for dumping Papyrus 60xx
+	private annotations, including fix to Tag::getRepeatingBase() (was
+	using %1 instead of %2 !!)
+
+990722	libsrc/standard/elmdict/: clean up various typos
+
+990722	config/*,libsrc/include/basetype.h: add gethostid use/prototype support
+
+990722	INSTALL, config/site.p-def: add UseClunieQI2ID
+
+990721	appsrc/dcfile/antodc.cc: revisit Series Number generation again -
+	use StudyID for Siemens MR, and Acquisition Number for Siemens
+	CT even if Series Number is present but 1 (a la Philips MR)
+
+990721	appsrc/dcintro/dcintro.man: add -stamp example using date and
+	process number
+
+990719	appsrc/dcfile/antodc.cc: copy private philips slice number into
+	instance number even if present (i.e. overwrite)
+
+990716	libsrc/standard: update for letter ballot text of Sup 33
+
+990716	libsrc/standard: update for final text of Sup 15
+
+990716	libsrc/standard: clean up and add some private elements
+
+990716	libsrc/standard: put old acrnema and spi stuff LO back to LT
+
+990707	appsrc/dcfile/antodc.cc: revisit Series Number generation, and
+	use Study ID for all Siemens, and Acquisition Number for Philips
+	MR, as well as incorporate Philips private Dynamic Scan Number
+	in Series Number (since same value for private Slice Number
+	used to make Instance Number)
+
+990707	appsrc/dcfile/dcmvhier*.script: add check for Warning as well
+	as Error in grep; disambiguate overwrites with counter rather
+	than abort
+
+990622	appsrc/dcfile/dcdirmk.cc: add -novalidatename option to make it
+	more useful for validating patient/study/series keys of sets of images
+	even though filenames are too long or have extensions
+
+990622	libsrc/standard: update VL as per letter ballot text
+
+990622	libsrc/standard/module.tpl,compiod.tpl,strval.tpl: split into separate
+	files per version for various parts/extensions and reassemble on make
+
+990618	libsrc/src/generic/datetype.cc: constructor from string wasn't handling
+	purely numeric (undelimited) strings (e.g. good dicom date strings),
+	so add some special cases for now ... could do better later :(
+
+990618	appsrc/dconvert/genesis/Imakefile,testy2k.sh: add date tests based
+	on patched source images
+
+990618	support/mktime.cc: add utility to use mktime(3) to get unix seconds
+	from yyy/mm/dd/hh/min/ss
+
+990618	libsrc/include/dconvert/dateconv.h: unix: make leap year handle %400
+	for y2k (affects genesis)
+
+990618	libsrc/include/dconvert/dateconv.h: unix: fix day numbering from 0 not
+	1 (affects genesis)
+
+990618	support/testapp: create missing testlog dir on create, not compare
+
+990618	appsrc/misc/binpatch.cc: add integer value patch as well as string,
+	and add tests to see if it works
+
+990618	libsrc/standard: split elmdict.tpl into separate files per version
+	and vendor and reassemble on make
+
+990609	libsrc/standard/condn.tpl: clean up PatientOrientation condition to
+	extend exhaustive list of images to more recent - need to check PET
+	and VL
+
+990609	libsrc/standard/*.tpl: update codes for Sup 32 Final Text
+
+990609	appsrc/dcfile/antodc.cc: assume supine and head first if not
+	otherwise detectable
+
+990609	appsrc/dcfile/antodc.cc: Patient Position - detect supine on
+	truncated to 4 SPI values e.g. SUPI (?Pyramid)
+
+990527	libsrc/dctool/attryps.cc: see atof not atod even for integer getval
+	in order to handle exponential notation (e.g. in window width/center)
+	which are DS VR
+
+990527	appsrc/dcfile/dcarith.cc: generalize to specify operation on command
+	line
+
+990524	libsrc/standard/elmdict.tpl: tidy up some Philips private elements
+	for CT and MR
+
+990520	appsrc/dcfile/dcarith.cc: do single point transform arithmetic on
+	a dicom image ... also involved adding insertPixelPointTransform()
+	method to OtherUnspecifiedLargeAttributeBase, using it in writeData(),
+	and adding filter template PointFilter<Uint16,Uint16> to srcsink.h
+
+990517	libsrc/src/dconvert/pq/*: update to handle leading garbage before
+	header (depends on how files were extracted from tar like file
+	on tape), as well as support later PQ models (e.g. spiral IMTYPE)
+	and clean up pilot vs. axial diameters.
+
+990517	appsrc/dcfile/antodc.cc: clean up CT Rescale Slope/Intercept
+	since too long on some Somatom
+
+990517	appsrc/dcfile/antodc.cc: use Acquisition Number for missing
+	Series Number only for MR (since some Somatom increments per
+	image or two images)
+
+990427	appsrc/dcfile/antodc.cc: fix typo that was causing "null" in
+	StudyID if StudyTime absent
+
+990513	appsrc/dcfile/antodc.all.script: add -removeprivate for all
+
+990427	appsrc/dcfile/antodc.cc: if no Study ID, make one from Study
+	Date and Time
+
+990427	appsrc/dcfile/antodc.cc: create series number from acquisition
+	number if study ID not found
+
+990423	appsrc/dcdisp/dcdisp.cc,libsrc/include,src/rdgray,rdimage.*: add
+	default to ignore Pixel Padding Value when computing image
+	statistics for auto window, and "ignorepadvalue" option to dcdisp
+	to turn this feature off; update man page (long overdue)
+
+990401	appsrc/dcfile/dccp.cc: add "ignorereaderrors" option to copy
+	anyway (e.g. to clean up if trailing garbage)
+
+990331	appsrc/dcfile/dctopgm8.cc: make 8 bit pgm file (e.g. for conversion
+	to GIF) using strategy copied from dcdisp (perhaps more complex than
+	necessary but wanted consistent pipeline).
+
+990329	appsrc/dcfile/antodc.cc: use BaseRawMatrixSize not AcquisitionColumns
+	to derive phase encoding count in AcquisitionMatrix - AcquisitionColumns
+	seems to always be a factor of two greater than shown on film
+
+990329	appsrc/dcfile/antodc.cc: add exposure/time/current conversions
+
+990331	appsrc/dcfile/dctopgx.cc: make PGX file (8 or 16 bit grayscale
+	signed or unsigned litte or big endian (a la PGM) as used in
+	core experiments JPEG2000 VM3.2A.
+
+990211	libsrc/include/dctool/attrtype.h,libsrc/src/dctool/attrmxrd.cc:
+	increase LARGESTOTHERDATATOKEEPINMEMORY to 524288 since using
+	overlays a lot and getValue() not implemented for large other base
+
+990211	appsrc/dcdisp/dcdisp.cc: overlays from 0 to <= 1E not < 1E - was
+	causing "activated" for plane 15 to be uninitialized (and hence
+	sometimes erroneously on)
+
+990210	appsrc/dcfile/dcpost.cc: post localizer with lines in overlay
+
+990210	appsrc/dconvert/pq: convert Picker PQ CT to DICOM
+
+990121	appsrc/dcfile/antodc.cc: complete Overlay Module if present but
+	attributes missing (eg. Siemens Somatom CT)
+
+990121	appsrc/dcfile/antodc.cc: if no Bits Allocated make from Bits Stored
+
+990118	appsrc/dcfile/dcmvhier.script: add ".dcm" suffix
+
+990118	appsrc/dcfile: add some ".all" scripts for antodc, dcunjpeg
+
+990115	libsrc/dcdisp,ourdisp;appsrc/dcdisp: turn off debugging and
+	timing messages
+
+990112	libsrc/standard/elmdict.tpl: make DS not IS VR of some guessed Philips
+	MR private elements
+
+990111	appsrc/dcfile/antodc.cc: if no image orientation/position (early
+	GBS III) then guess it from patient orientation/(slice) location
+
+990106	libsrc/src/dcfile/attrmxrd.cc: support GE bug in skip encapsulated
+	so that doesn't return can't read tag error after skipping wrong
+	length and not recognizing wrong sequence delimiter item - allows
+	dccp to succeed in dcunjpeg.script
+
+990104	libsrc/include/pixeldat/unencap.h: swap item fragment VL bytes when
+	GE tag delimiter byte order bug is present
+
+981222	appsrc/dcfile/antodc.cc: copy private philips slice number into
+	instance number if absent
+
+981222	appsrc/dcfile/Imakefile: move script isntall later so doesn't become
+	default
+
+981218	appsrc/dcfile/dcmulti.cc: add utility to concatenate single frame files
+	into (nonencapsulated) multiframe files, and sort slices by position,
+	orientation, or other numeric parameters (generates non-standard
+	SOP Classes)
+
+981214	appsrc/dcfile/dctable.cc: add utility to dump attribute values into
+	tab delimited table (eg. for spreadsheet)
+
+981118	*/dconvert/himr: convert hitachi mr ... image plane stuff still
+	needs a lot of work
+
+981109	appsrc/dcfile/dcmvhier.script: add script that creates patient/study/
+	series/image hierarchy of DICOM files
+
+981109	appsrc/dcfile/antodc.cc: copy study into series level attributes
+	if no series level (eg. Siemens MR)
+
+981030	appsrc/dcfile/dcmkpres.cc: add linear lut generation
+
+981029	libsrc/src/dctool/dcopto.cc: make default transfer syntax explicit
+	value representation if not specified
+
+981029	appsrc/dcfile/dcmkpres.cc: add utility to create presentation
+	states that reference an image
+
+981029	libsrc/standard/*, et al: ImageNumber becomes InstanceNumber
+
+981029	libsrc/standard/*: add support for frozen sup 33
+
+981028	libsrc/src/generic/getoptns.cc: fix bug that was invalidating leading
+	'-' in option arguments, and allow leading '-' on float args
+
+981027	appsrc/dcfile/antodc.cc: add utility to convert ACR-NEMA or SPI
+	to dicom - currently setup for CT and MR esp. Siemens - special
+	attention to image orientation and position
+
+981027	libsrc/src/dctool/attrmxls.cc: add empty Accession Number with UIDs
+
+981027	libsrc/src,include/dctool/dcopt*.*;appsrc/dcfile/*: add option to
+	suppress use of lengthtoend on read (which is now default)
+
+981015	libsrc/src/dconvert/gen,gaw/genmmsc.cc: make bit depth always 16
+
+981015	libsrc/src/dconvert/gen,gaw/genmmsc.cc: make Filter Type <= 16 chars
+
+981010	appsrc/misc/rawnjl2.cc: update to match DIS N703 document and
+	test against HP LOCO 0.90, add man page, command line options
+	and man page.
+
+980928	libsrc/standard/condn,iodcomp.tpl: DX Positioning is U not M
+
+980926	libsrc/standard,support/module.*,cond.*;libsrc/src/dctool/condn.cc:
+	add ElementPresentAbove/Within capability to conditions to better
+	validate Intra-oral attribute.
+
+980925	libsrc/standard/module.tpl: add dummy 1C Never condition to check for
+	toplevel AnatomicRegionModifierSequence in DXAnatomy to warn about
+	mistake in Sup 32.
+
+980920	libsrc/include/pixeldat/briggsrc.h and appsrc/dcfile/dcbriggs.cc: add
+	ability to generate arbitrary sized patterns, and do signed and invert.
+
+980913	libsrc/include/pixeldat/briggsrc.h and appsrc/dcfile/dcbriggs.cc: add
+	capability to generate 8 target briggs pattern for various bit
+	depth unsigned from minimum to maximum specified values.
+
+980824	appsrc/dcdisp/dcdisp.cc: fix bug from VOI LUT stuff that broke WW/L
+
+980820	appsrc/dcfile/dclutdmp.cc: add utility to dump VOI LUT
+
+980818	libsrc/include/dcdisp/usegray.h,rdgray.h,rdimage.h
+	libsrc/src/dcdisp/usegray.cc,rdgray.cc,rdimage.cc
+	appsrc/dcdisp/dcdisp.cc: add support for VOI LUT
+
+980817	libsrc/src/dctool/attr.cc,attrnew.cc,attrmxrd.cc,
+	libsrc/include/dctool/attrmxls.h,attrtype.h,
+	appsrc/acrnema/ancreate.cc,andump.cc: add support for UT VR
+
+980814	libsrc/standard/elmdict.tpl: add more Senovision private tags
+
+980807	libsrc/standard/module.tpl: fix incorrect mammo image types
+
+980807	appsrc/acrnema/ancreate.cc: add sequence item commands
+
+980806	libsrc/include/pixeldat/smpte*.*: generate from algorithm for any
+	row and column size ... slow but effective
+
+980713	appsrc/acrnema/andump.cc: add ability to dump FL value (but not FD)
+
+980713	libsrc/standard,support/strval.*: support zero length strvals in order
+	to handle DX Image Type 3rd value for dciodvfy
+
+980708	appsrc/misc/rawarith.cc: Add support for signed, clip and mask
+
+980707	appsrc/dcdisp/dcdisp.cc: Add support for displaying 60xx,3000 overlays.
+
+980707	libsrc/src&include/ourdisp/ourdisp.*: Add OurWindowImage::putPoint() to
+	support overlay drawing, and explicitly set foreground/background for
+	imagegc rather than using default graphics context.
+
+980613	appsrc/dcfile/pbmtoovl.cc: Overlay Origin is 1\1 not 0\0
+
+980612	libsrc/standard/elmdict.tpl: add private Senovision 02 tags
+
+980612	libsrc/standard: add DX letter ballot objects
+
+980612	libsrc/dctool/attrmxrd.cc: correct high bit checking to warn if
+	greater than bits stored-1 and change if greater than bits allocated-1
+	(was actually checking wrong because bits stored-1 wasn't in
+	parentheses)
+
+980601	appsrc/dcfile/pbmtoovl.cc: add standalone option with addition
+	of all necessary attributes, as well as force VR of overlay
+	to always be OW and even length VL
+
+980601	config/Configure,Imake.tmpl: Add Xext to library load paths to
+	support shared memory extension
+
+980601	libsrc/src&include/ourdisp/ourdisp.*: add support for X MIT-SHM
+	extension to speed up put'ing X images - dramatically improves
+	the put (down to a few mS) but only works for smaller images
+	(else exceeds shared memory limit and falls back to normal put
+	that uses over-the-wire protocol). One can change /etc/system
+	on Solaris to increase shminfo_shmmax to avoid this if you want.
+	See INSTALL. Once this was done for 4.5k*3k mammo, put went from
+	2.8 secs to 1 or 2 mSecs !!!
+
+980531  libsrc/src&include/dcdisp/rdimage.*,rdgray.*,usegray.*: optimize
+	inner loops of pixel indexing and separate file read from remap
+	on window level/width by caching whole (full depth) image - file
+	read on 4.5k*3k mammo still takes 30secs but rewindow takes 2.2 sec
+	for remap and 2.8 sec for X put, rather than total of 50 secs each
+	time - on smaller images window op is nearly instantaneous - 512
+	square is 150mS. The pixel indexing was optimized by using LUT
+	directly not via virtual call, 8 bit rather than 16 bit LUT,
+	using pointer end check rather than counters (huge gain),
+	and unrolling loop for case of mod 8 row length.
+
+980530	libsrc/src/dconvert/shim/shimptrs.h: use byte not _B extraction of
+	pixel data offset pointer since previous casts break gcc 2.8.1
+
+980519	appsrc/dcfile/pbmtoovl.cc: create standalone overlay from PBM
+
+980519	appsrc/dcfile/dcmerge.cc: merge two DICOM datasets into one
+
+980519	dcopt.h/dcopti.cc: add 2nd opener constructor for use without cin
+
+980519	config/Configure: quote depend path includes to avoid imake/cpp
+	substitution of host and os macros
+
+980405	support/testapp.sh: add test for stdin/stdout filter
+
+980405	appsrc/simple: port all over from old dicom3tools version
+
+980405	config and libsrc/include/generic/datetype.h: Add option to
+	define DEFAULTGUESSEDDATEORDER (defaults to mmddyy). Override in
+	config as "DefaultGuessedDateOrder".
+
+980405	libsrc/src/dctool/attrtypd.h: create new module to handle data/time
+	constructors previously in attrtype.h, add make them check date
+	time value is good else (quietly) add zero length value instead.
+
+980405	libsrc/include/dctool/attrtype.h: move data/time constructors outline
+
+980405	libsrc/include,src/generic/datetype.h,.cc: better error handling
+	and propagation; Y2K changeover 1910
+
+980405	tidy up examples in man pages
+
+980405	libsrc/include/pixeldat/smptesrc.h and appsrc/dcfile/dcsmpte.cc: add
+	capability to generate smpte pattern for any combination of bit
+	depth signed or unsigned from minimum to maximum specified values.
+
+980314	appsrc/dcfile/dctopnm: add a quick and dirty dctopnm based on
+	dctoraw ... it checks byte order, rgb interleaved etc but will
+	not convert them.
+
+980216	libsrc/src/dconvert/gaw,gen: check height/width in image header non-zero
+	else use CT/MR - Synergy broke this - pixel data offset is still not
+	right
+
+980207  libsrc/src/dctool/attrnew.cc: allow OB,OW and UN as well
+
+980206  appsrc/misc/dumptiff: renamed from tiffdump to avoid conflict
+	with Sam Leffler's utility of the same name from the libtiff
+	kit.
+
+980205	appsrc/*,dctool/attrmxls.h,.cc: add ability to write TIFF IFD in
+	DataSetTrailingPadding attribute (works only if no undefined
+	length attributes like sequences)
+
+980205	dctool/dcstream.h,.cc: add pointer to TIFF IFD in metaheader, also
+	made sure NOT to call writing writingMetaHeader() at the time of
+	initializeTransferSyntax() ... the offset isn't known yet ... this
+	is the caller's responsibility before doing any actual writing.
+
+980205	generic/bnchar.h: some generic unpacking/packing byte order functions
+
+980205	dctool/dcopt.h,dcoptc.cc,dcopto.cc: options to control TIFF
+
+980205	libsrc/src/dctool/attrnew.cc: allow addition of Sequence Attribute
+        (found when command line delete of sequence failed)
+
+980105	libsrc/include/dctool/convtype.h: add sign extension to make
+	safe when actual return type is longer, eg. on 64 bit alpha
+
+980105	libsrc/src/dctool/attrmxrd.cc: undefined length + UN is assumed to
+	be SQ (doesn't make any sense otherwise)
+
+980105	libsrc/src/attrtyps.cc: test against 0xffffffff not INTMAX (fails
+	on alpha 64 bit native)
+
+980101	config/Imake.tmpl: add support to pass C_DEBUGFLAGS and 
+	CPLUSPLUS_DEBUGFLAGS and clean up Imakefiles to not wipe out
+
+971229	libsrc/standard/elmdict.tpl: make (0008,0103) SH not CS
+
+971226	libsrc/standard/*: add waveform frozen draft and update VLI frozen
+	draft definition - also added part 6 from SR frozen draft
+
+971121	support/testapp: make stdout binary cmp not string diff
+
+971121	appsrc/dcdisp/dcdisp.cc: add "writeimage" to stdout and include in test
+
+971121	libsrc/src/ourdisp/ourdisp.cc: add write8BitDataTo...Stream()
+
+971121	appsrc/dcdisp/dcdisp.cc: add "ignorewindow"
+
+971121	libsrc/src/ourdisp/ourdisp.cc: mapwidthmin to 0 not 1
+
+971121	libsrc/src/dcdisp/usegray.cc: setImageLevelWidth clamp BOTH lbottom
+	and ltop to mingray AND maxgray else lbottom can go > ltop if
+	fed really screwy values (eg. on command line or in object)
+	
+971120	appsrc/dcdisp/dcdisp.cc: use BitsAllocated not BitsStored for 8 vs. 16
+
+971119	libsrc/src/dcdisp/rdimage.cc: warn if stats sign different but don't
+	override what was specified in object (or overridden on command line)
+
+971119	appsrc/dcintro/dcintro.man: add comment about hyphen in replace string
+
+971002	appsrc/dcfile/dcdirmk.cc: Check Patient, Study, Series values match
+
+971002	appsrc/dcfile/dcdirmk.cc: Missing Image Number is error not assert(0)
+
+970930	libsrc/standard/module.tpl: US Image Planar Config is Type 1 not 1C !!
+
+970919	libsrc/include/dcfile/attrtypn.h: no sign extension of 2 byte text write
+
+970919	libsrc/standard/elmdict.tpl,sopcl.tpl: add ARM, new DLX private stuff
+	(including private overlay elements ... that will be interesting)
+
+970916	libsrc/include,src/dctool/dcopto.cc,h,dcstream.cc,h: add option to
+	write implicit VR metaheaders (old draft ... used inside SdC).
+
+970912	appsrc/acrnema/: add test for UN and private element create/copy/dump
+
+970912	libsrc/src/dctool/attr.cc: write UN VL in long form
+
+970912	appsrc/acrnema/ancreate.cc: write UN VL in long form
+
+970912	libsrc/src/dcdisp/rdimage.cc: color by plane unsigned char to mapPixel()
+
+970909	libsrc/src/dctool/attrmxrd.cc: handle UN VR that changes to different
+	VR based in dictionary but still need to read UN style VL !!
+
+970909	libsrc/src/locale/mesgtext.awk: add 0,0 to end of table (caused seg flt)
+
+970909	libsrc/standard/elmdict.tpl: update some GEMS MR private attributes
+
+970909	libsrc/src,include/dcdisp/rdrgb,rdimage.h,cc: add 24 bit color by plane
+
+970905	config/Imake.tmpl: add Templates.DB to FilesToClean in Imake.tmpl (SC 4.0)
+
+970905  libsrc/src/dctool/attrmxrd.cc: use explicit VR not dict if
+	mismatch (was being left unfilled leading to cascade of
+	warnings and loss of attribute)
+
+970905  libsrc/src/dconvert/gen/genmmsc.cc,
+	libsrc/src/dconvert/gaw/gawmmsc.cc,
+	libsrc/src/dconvert/somp/sompmmsc.cc:
+		fix IntegerStringAttribute ambiguities with SC 4.0
+
+970826  config/Configure: fix source browser flags for -ge 3 version
+
+970820	libsrc/standard/*.tpl: revise VLI for frozen draft version
+
+970808	config/Imake.tmpl: add ii_files to FilesToClean in Imake.tmpl (SGI CC)
+
+970808	appsrc/dcfile.cc,libsrc/src/dctool/attrmxrd.cc: when re-reading
+	tag after changing from meta-header to dataset TS, only do this
+	once ... previously checking and seeking back everytime exposed
+	native SGI Irix CC bug in seek code - doesn't seem to happen
+	early in stream.
+
+970805	config/Configure,Project.p-tmpl,Imake.tmpl: parameterize lbX11.a
+	dependency
+
+970805	config/Configure,Project.p-tmpl: add bin & lib platform dirs
+
+970805	config/Configure: add Irix native CC stuff
+
+970709	libsrc/standard/elmdict.tpl: add revised DRS private VRs (V2.0 CS)
+
+970606	libsrc/standard/cond.tpl: add conditions dependent on sequences.
+
+970523	libsrc/standard/cond.tpl: add multi-value check for MR attributes.
+
+970523	libsrc/src/dcfile/attrtypv.cc: add check for IS > 2^31-1
+
+970519	config/Configure: add path/booleans for native Irix CC.
+
+970505	libsrc/standard/condn.tpl,module.tpl: fix NM Phase Trigger Vector
+        condition.
+
+970425	libsrc/include/dctool/attrtypf.h, etc: add read/write FL/FD support.
+
+970425	libsrc/src/dctool/attrmxrd.cc: add specific message that some VRs
+        are unsupported (specifically FL and FD).
+
+970423	libsrc/*/tagval.*,attrvrfy.cc,attr.h: add support for tag
+        enumerated values.
+
+970423	libsrc/standard/strval.tpl: add ISO_IR 13 and cleanup Specific
+	Character Set (had spaces not tabs).
+
+970423	libsrc/standard/module.tpl: fix Scan Options defined terms in
+	XRay Image to be OK for multiple values.
+
+970423	libsrc/standard/*.tpl: use more NoConditions, eg. for Specific
+        Character Set.
+
+970423	libsrc/standard/*.tpl: fix US Region Calibration conditions and bug
+        in enum values for PixelComponentPhysicalUnits
+
+970423	libsrc/src/dctool/attrmxrd.cc: Add hardwired check for File
+        Meta Information Version of 0x00,0x01
+
+970422	libsrc/standard/*.tpl: add PET stuff from final text (same as lb) draft
+
+970421	libsrc/support/module.awk: add item separator during write
+
+970421	libsrc/standard/*.tpl: add RT stuff from letter ballot draft
+
+970403	appsrc/misc/dcunmeta: add command to remove metaheader
+
+970402	libsrc/standard/elmdict.tpl: add CP72 (0040,0020)
+
+970219	libsrc/standard/elmdict.tpl: add GE CTI and MRLX private dictionaries
+
+970219	libsrc/src/dctool/attrothr.cc,transyn.cc: add pixel endian support
+        to large pixel attribute (cp14), works for read so far.
+
+970217	libsrc/standard/transyn.tpl: add GE big endian pixels, and begin
+        to add support for PixelEndian stuff everywhere
+
+970210	libsrc/standard/sopcl.tpl: add new (real) UIDs for VLI and remove
+	Accession SOP class
+
+970125	libsrc/standard/transyn.tpl: add bad transfer syntax to read bad
+	ecr demo dir to allow further testing (temporary) removed 970210
+
+970125	libsrc/src/dctool/dicomdir.cc: identify 1st record of
+	directory record entry by any attribute ... not just next
+	record pointer ... allows for group length to be present
+
+970113	libsrc/src/dctool/dcstream.cc: initializer bug ... not setting
+	TransferSyntaxToWriteMetaHeader to 0 when not using metaheader -
+	manifest as core dump on Solaris during destruction.
+
+970113	libsrc/src/dctool/attrtypv.cc, etc: validate UID components,
+	not zero length, no leading zeroes.
+
+970113	libsrc/src/dctool/attrmxls.cc, etc: add addlengthtoend support
+
+970113	libsrc/src/dctool/dcopto.cc: add noadddisclaimer to options usage
+
+970106	appsrc/dcfile/dcdirmk.cc: validate filename, check for null type 1's
+
+970106	libsrc/standard/elmdict.tpl: fix type in GE CR QA tags
+
+970102	libsrc/standard/elmdict.tpl: add more Elscint private tags from
+	Passport CS V 2.05
+
+961217  libsrc/include/pixeldat/unencap.h: remove vl==0 assert for fragment
+	table
+
+961217  libsrc/standard/strval.tpl: update SpecificCharacterSet for Supp 9 FT.
+
+961217	libsrc/standard/transyn.tpl: describe .70 as non-hiearchical
+
+961129	libsrc/src/dconvert/gen/genmmsc.cc: Fix VR for Rotation Direction
+
+961121	INSTALL: Added comments about defining a UID root.
+
+961121	libsrc/dctool/uidgen.cc: Use DEFAULTUIDROOT
+
+961120	config/site.def-p: Parameterize all UID related stuff and add
+	a clunie@ge specific option (UseClunieGEID) which no one else
+	should use.
+
+961112	appsrc/dcfile/dcdirmk.cc: Created it, added icon image support.
+
+961112	libsrc/standard/*: Changed some element names to match the current
+	state of the standards documents
+
+961105	appsrc/misc/jpegdump.cc: Cleanup to handle cardiac JPEGs including:
+	- dump contents of variable segments (eg. quant tabs, huffman tabs)
+	- handle wierd "markers" eg 0xffff
+	- get offset right
+	- add setbuf to speed things up
+
+961105	libsrc/include/pixeldat/unencap.h: Initialize lefttoreadthisfragment
+	to zero ... was sometimes not, and failed on some JPEGs
+
+961101	libsrc/standard/elmdict.tpl,module.tpl: Update to vl33lb
+
+961014	config/Configure: For HPUX add UseOwnLog2
+
+961011	appsrc/dcfile/dcfile.cc: add data dump for meta-header
+
+961011	appsrc/acrnema/andump.cc: add UN to long VL check
+
+961011	man/man1: fill in lots of man pages and use source options
+
+961011	libsrc/src/dctool/dicomdir.cc: write VM > 1 filename
+
+961010	appsrc/gXX/gXXmmsc.cc and gxxmmdt.cc add explicit casts to Uint32
+	and DateTime all over to shut old gcc 2.6.3 up (on Ultrix)
+
+961010	appsrc/.../*.cc: explicit casts on input/output opener stuff to
+	istream/ostream * to shut old gcc 2.6.3 up (on Ultrix)
+
+961010	config/Configure: For Ultrix add UseOwnLog2 (log(x)/log(2))
+	(indeed log base n of x is always log(x)/log(n))
+
+961009	libsrc/support/elmdict.awk: Ultrix version of nawk exposed a bug
+	in this script that wasn't checking on the owner match being
+	successful (and resulted in empty elmconst.h etc). Amazing this
+	hadn't shown up before.
+
+961009	./Configure: For Ultrix modify config/Configure to use /bin/sh5
+
+961009	config/Configure: For Ultrix add UseDumbInfinityAndNAN
+
+961009	config/Configure: OSF1 add UseDumbInfinityAndNAN (g++ on Alpha V3.2)
+	(could in theory also pass "-Wl,S" to the linker, but confusing)
+
+961004	Make encountered but unknown private tags UN not OB in dictionary
+
+961004	Add Philips SPI tags for DCI
+
+961002	Add draft Visible Light image (vl33pr document) to data dictionary,
+	IOD and modules. Made up new tags for some conflicting elements
+	and sent them to Dean - BE WARNED ... THESE ARE NOT FINAL. Also
+	had to make up SOP Class UIDs.
+
+961001	dicomdir.*,dcdirdmp.cc: Parse directory record structure within
+	a DICOMDIR and dump its contents quickly, verbosely (-v) or
+	very verbosely (-vv)
+
+960930	attrtypn.h: Allow VL to be shorter than VR specifies (some Siemens
+	SPI lengths of headers and things rae supposed to be UL but are
+	US in some files). Same sort of thing in andump.cc.
+
+960930	Support for UN VR
+
+960930	elmdict.tpl: Update with SPI from latest Numaris
+
+960930	attrmxrd.cc: Warn about duplicate tags but let them through
+
+960929	elmdict.tpl: Table Motion CS not DS
+
+960929	attrvrfy.cc: Add element id to error messages for enum tests etc.
+
+960929	module.tpl, et al: Lossy Compression enum values string not bin
+
+960929	elmdict.tpl: wrong name for 0020,0000
+
+960202	dcdisp: failing on images with high bits set (above bits stored),
+	fixed by adding fromshft stuff to pixel data in attributes to
+	handle shifting and masking (in case funky high bit) - does
+	not yet handle sign extension (? if necessary) - encountered
+	this on an image apparently from UCDMC PACS conversion of a
+	Siemens CT angio recon which has some annotation in overlay
+	planes (Evolution Siemens)
+
+960202	dcdisp: implemented grayscale inversion in usegray.cc to support
+	MONOCHROME1 and added flag for manual inversion - the choice
+	of where the inversion is performed is dubious and probably
+	inefficient
+
+960202	gethttp: needed it anyway and tests ntstream stuff - seems to
+	be a problem with ios or streambuf or whatever returning a
+	bad stream status and less bytes than asked for in a read,
+	but not zero ... clearing the status and continuing seems to
+	work (yuck) ... still occasionally just quits for no reason
+	on really big files :(
+
+
+
+
+

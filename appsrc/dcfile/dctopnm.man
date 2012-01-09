@@ -1,0 +1,111 @@
+.TH DCTOPNM 1 "04 December 2010" "DICOM PS3" "DICOM PS3 - DICOM image to PNM file"
+.SH NAME
+dctopnm \- ACR/NEMA DICOM PS3 ... DICOM PS3 - DICOM image to PNM file
+.SH SYNOPSIS
+.HP 10
+.B dctopnm
+[
+.B \-v|verbose
+]
+[
+.B \-quiet|silent
+]
+.so man1/optin.so
+.so man1/binout.so
+.SH DESCRIPTION
+.LP
+.B dctopnm
+reads the named dicom or acr-nema input file and copies the raw image
+pixel data to a PNM file after adding a PGM or PPM header.
+.LP
+The input file must be unencapsulated, and in the case of > 8 bit data,
+in the same byte order as desired in the output, since the raw bytes
+are copied from input to output without any conversion. Use dccp(1)
+first to change the encoding if necessary.
+.LP
+.SH OPTIONS
+The PNM output goes where it is specified or standard out.
+The verbose output goes to standard error.
+.LP
+The basic input switches are described in dcintro(1). Options specific to this program are:
+.TP
+.B \-quiet|silent
+.RS
+Suppress the normal description of image parameters.
+.RE
+.TP
+.B \-verbose
+.RS
+Display byte offset from file start and message start, in hexadecimal, and dump contents while reading, once read, during replacement, and before writing.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+\ 
+.RE
+% dcfile big.dc3
+.RE
+Meta: UID		1.2.840.10008.1.2.1
+.RE
+Meta: Description	"Explicit VR Little Endian"
+.RE
+Meta: ByteOrder	Little
+.RE
+Meta: VR		Explicit
+.RE
+Meta: Encapsulated	No
+.RE
+Data: UID		1.2.840.10008.1.2.2
+.RE
+Data: Description	"Explicit VR Big Endian"
+.RE
+Data: ByteOrder	Big
+.RE
+Data: VR		Explicit
+.RE
+Data: Encapsulated	No
+.RE
+\ 
+.RE
+% dctopnm big.dc3 big.pgm -endian big
+.RE
+ Rows = 512
+.RE
+ Columns = 512
+.RE
+ NumberOfFrames = 0
+.RE
+ PhotometricInterpretation = MONOCHROME2
+.RE
+ SamplesPerPixel = 1
+.RE
+ BitsAllocated = 16
+.RE
+ BitsStored = 16
+.RE
+ HighBit = 15
+.RE
+ PixelRepresentation = 1
+.RE
+ PlanarConfiguration = 0x0
+.RE
+ Rows*Columns*SamplesPerPixel*BitsAllocated/8 = 0x80000
+.RE
+Writing ...
+.RE
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR dccp(1) ,
+.BR pnmtodc(1) ,
+.BR rawtodc(1) ,
+.BR dctoraw(1) ,
+.BR dctopgm8(1) ,
+.BR dcintro(1)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS

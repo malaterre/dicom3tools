@@ -1,0 +1,265 @@
+.TH ANCREATE 1 "19 Jan 2007" "DICOM PS3" "DICOM PS3 - Create dicom file"
+.SH NAME
+ancreate \- ACR/NEMA DICOM PS3 ... Create dicom file
+.SH SYNOPSIS
+.HP 10
+.B ancreate
+[
+.B \-b|big
+]
+[
+.B \-e|explicit
+]
+[
+.B \-p|preamble
+]
+[
+.B \-v|verbose
+]
+<
+.I inputfilename
+>
+.I outputfilename
+.SH DESCRIPTION
+.LP
+.B ancreate
+creates a dicom 3 or earlier acr/nema file from a description of attributes. The description of attributes matches the output of dcdump, so that pieces of dumped files can be edited and files reconstructed. Note that the library of dicom attribute handling, dictionary, and transfer syntax routines are NOT used in this program, which allows it to be used as a standalone program to test the library and other utilities.
+.LP
+Everything needed to create a file is specified in a description read from standard input, apart from some very simple rules that recognize certain value representations for special treatment of the output format (eg. OW, OB and SQ in explicit value representation transfer syntaxes are handled differently).
+.LP
+The description consists of lines of the following format:
+.LP
+.B attributes  ...
+.RE
+
+.RE
+(group,element) .* VR=<vr> VL=<vl> [vals]
+.RE
+(group,element) .* VR=<vr> VL=<vl> <vals>
+.RE
+(group,element) .* VR=<FD|FL> VL=<vl> {vals}
+.RE
+
+Note that the group, element, value length, and values are always in hexadecimal format, whether a leading "0x" is present or not. Hence "14" and "014" are both interpreted as "0x14", or 20 decimal, in these positions (unlike data descriptions). Multiple values should be delimited with a '\\' for string values (CS, DS. etc.) and a ',' for binary attributes (US, etc.).
+Make sure there are no spaces between values or the value length will be computed incorrectly (i.e. the number of values are computed from the number of non-value characters).
+.LP
+The value length is measured against the value length specified, and a warning is issued if they are different. The actual value, rather than the specified value is used, for all except value representations of OW, OB and SQ. This allows the special value of 0xffffffff to be passed (which means "unspecified" to dicom), as well as allowing the actual values to be included on separate lines following the attribute description. Remember that the value length is in bytes, not the number of values, and must be correct if not 0xffffffff, and even the latter is only supported in DICOM for certain encapsulated transfer syntaxes such as JPEG, and not the normal and default transfer syntaxes.
+.LP
+If the values for an OB or OW attribute are to be specified on suceeding lines, remember to include an empty value list "[]" or the parser will freak.
+.LP
+An empty value list like "[]" is also required after each SQ (Sequence) element, even though the "payload" of the
+sequence follows enclosed in delimited items.
+.LP
+Anything after a # either at the start of a line, or after the value of a data element, will be treated as
+a comment and skipped.
+.LP
+White space may preceed the the first symbol of a command or data element.
+.LP
+.B transfer syntax commands ...
+.RE
+
+.RE
+%implicit
+.RE
+%explicit
+.RE
+%little
+.RE
+%big
+.RE
+
+Note that the use of big always forces explicit value representation, as there is no valid "implicit value representation big endian" transfer syntax in dicom. These commands are present here, as well as in the command-line options, to allow a change in transfer syntax, such as after a metaheader.
+.LP
+.B sequence commands ...
+.RE
+
+.RE
+%item
+.RE
+%enditem
+.RE
+%endseq
+.RE
+
+Use these commands to insert contents of undefined length sequences - remember to set
+the VL of the enclosing sequence attribute to 0xFFFFFFFF and include an empty value "[]".
+Note that the "-ancreate" option of the andump utility can be used to generate these.
+
+.LP
+.B data value format commands ...
+.RE
+
+.RE
+%byte
+.RE
+%short
+.RE
+%word
+.RE
+%long
+.RE
+
+Specify the interpretation of subsequent data values, as 8, 16 or 32 bit values. Short and word are synonymous. Use of these commands is usually unnecessary, as the presence of an OB or OW value representation in an attribute description automagically sets the data type to byte or short as appropriate. Prior to such an attribute, and in the absence of a data value format command, the default type is byte.
+.LP
+.B data ...
+.RE
+
+.RE
+hexvalue(s)
+.RE
+octalvalue(s)
+.RE
+decvalue(s)
+\n
+Note that the C convention of hexvalues starting with "0x", octal values starting with "0", and others being decimal values is followed for data values (unlike attribute descriptions). The data values are included in the output at the current position.
+.LP
+.SH OPTIONS
+Only redirection from standard input or to standard output are
+supported. Input and output file names may not
+be specified. Errors and warnings goes to standard error.
+.LP
+The default transfer syntax is implicit value representation, little endian.
+.PP
+Options specific to this program are:
+.TP
+.B \-b|big
+.RS
+Big endian transfer syntax.
+.RE
+.TP
+.B \-e|explicit
+.RS
+Explicit value representation transfer syntax.
+.RE
+.TP
+.B \-p|preamble
+.RS
+Include file preamble (128 bytes of zero plus "DICM" magic string) before writing anything.
+Note that this option is completely independent of whether or not any meta information header
+(group 0x0002) elements are manually added from the input stream or not.
+.RE
+.TP
+.B \-v|verbose
+.RS
+Dump data element tags and command numnber (not precisely the same as
+the input line number) to stderr while parsing. Helps to localize errors
+in the input.
+.RE
+.SH ENVIRONMENT
+.LP
+\ 
+.SH EXAMPLES
+.LP
+.RE
+Sample attributes that can be fed to ancreate:
+.RE
+
+.RE
+% ancreate >test
+.RE
+(0000x8,0000x8) VR=<CS> VL=<0x14> <ORIGINAL\\PRIMARY\\MPR> 
+.RE
+(0000x8,000x16) VR=<UI> VL=<0x10> <1.2.840.10008.0> 
+.RE
+(0x0018,0x9104) VR=<FD> VL=<0x0010> {13.69,1.36e-08} 
+.RE
+(000x28,0000x0) VR=<UL> VL=<0x4> [0xb6]
+.RE
+(000028,000002) VR=<US> VL=<2> [1]
+.RE
+(000028,000004) VR=<CS> VL=<c> <MONOCHROME2> 
+.RE
+(0x6000,000x50) VR=<SS> VL=<0x4> [0x5c31,0x2031]
+.LP
+.RE
+Sample use of unspecified vl ...
+.RE
+
+.RE
+% ancreate >test
+.RE
+(0x7fe0,000x10) OX PixelData VR=<OW> VL=<0xffffffff> []
+.LP
+.RE
+Sample use of data values ...
+.RE
+
+.RE
+% ancreate >test
+.RE
+(0x7fe0,000x10) OX PixelData VR=<OW> VL=<0x8> []
+.RE
+0x10 0x12
+.RE
+0x24 0x36
+.RE
+
+.RE
+% dcdump test
+.RE
+(0x7fe0,000x10) OX PixelData     VR=<OW>   VL=<0x8> 
+.RE
+
+.RE
+% od -x test
+.RE
+0000000  e07f 1000 0800 0000 1000 1200 2400 3600
+.RE
+0000020
+.LP
+.RE
+
+.RE
+Sample use of metaheader, then explicit big syntax ...
+.RE
+
+.RE
+% ancreate >test
+.RE
+(0000x2,000x10) UI TransferSyntaxUID VR=<UI> VL=<0x14>
+.RE
+                <1.2.840.10008.1.2.2>
+.RE
+%big
+.RE
+(000028,000002) VR=<US> VL=<2> [1]
+.LP
+.RE
+Should be able to find no differences:
+.RE
+
+.RE
+% dcdump test 2>test.dump
+.RE
+% ancreate <test.dump >test2
+.RE
+% cmp test test2
+.RE
+% dcdump test2 2>test2.dump
+.RE
+% diff -b test.dump test2.dump
+.RE
+
+.RE
+(unless of course there are OB or OW attributes, in which case the data will be elided, and the comparison will fail, or there is a metaheader present which changes the transfer syntax in the middle of the file).
+.SH FILES
+.LP
+\ 
+.SH SEE ALSO
+.BR andump(1) ,
+.BR dcdump(1) ,
+.BR dcintro(1) ,
+.BR dcintro(3) ,
+.BR dcintro(5)
+.SH AUTHOR
+Copyright (C) 1993-2010. David A. Clunie DBA PixelMed Publishing. All rights reserved.
+.SH BUGS
+In the attribute descriptions, the group, element, value length, and values are always in hexadecimal format, whether a leading "0x" is present or not. This is because dcdump adopts such a convention, with slightly different output on different platforms and compilers. In particular lib-g++ does not output the "x" in hexadecimal formats :(
+.LP
+It would be nice to have the verbose output reference actual line numbers rather
+than just command numbers.
+.LP
+It would be nice to have the error messages reference actual line numbers.
+.LP
+The maximum input line length is 32768 and will be truncated after that causing errors and corruption - this really should be unlimited.
+

@@ -1,0 +1,37 @@
+To use dcdisp with web server/browser:
+
+1. In the unix browser's mailcap file (perhaps your home .mailcap) add:
+
+	application/x-dicom; echo "Press 'Q' in DICOM display window to quit" \; /usr/local/bin/dcdisp -noattributes %s
+
+  (obviously with the path replaced as required)
+  (note that if ; is used, it must be escaped \;)
+
+  or, if full help information is wanted:
+
+	application/x-dicom; /usr/local/bin/dcdisp -noattributes -showwithhelp %s
+
+  or, if you need no guidance:
+
+	application/x-dicom; /usr/local/bin/dcdisp -noattributes %s
+
+  the reload the file by using Options/Preferences/Helpers in Netscape
+
+2. In the servers conf/mime.types (if using CERN httpd) add a mapping
+   from some convenient extension to application/x-dicom:
+
+	application/x-dicom            dicom dc3 dcm d10 ctn
+
+
+If on a Mac, with Netscape, use the preferences/general/helpers
+panel to link application/x-dicom to some viewing application - I tried
+Dr.Razz from ftp.u.washington.edu/public/razz (versions 0.8a5 and 0.91b6
+both worked fine). Choose the "acrN" from the mac file type list.
+
+I also tried Osiris 2.5 but it didn't seem to recognize any other
+mac file type than PAPY or PICT, it wouldn't even open the sample
+DICOM files on the CD-ROM when they were double clicked. It did
+recognized them if they were opened from within Osiris from the File
+menu, but this is no use from Netscape. These CD-ROM files had a file
+type of DICM for future reference.
+

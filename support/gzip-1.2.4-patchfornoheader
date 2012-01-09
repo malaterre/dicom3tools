@@ -1,0 +1,617 @@
+diff -r -c gzip-1.2.4/gzip.1 gzip-1.2.4-dac/gzip.1
+*** gzip-1.2.4/gzip.1	Wed Aug 18 14:44:09 1993
+--- gzip-1.2.4-dac/gzip.1	Sun Dec 17 14:21:01 2000
+***************
+*** 5,11 ****
+  .SH SYNOPSIS
+  .ll +8
+  .B gzip
+! .RB [ " \-acdfhlLnNrtvV19 " ]
+  .RB [ \-S\ suffix ]
+  [
+  .I "name \&..."
+--- 5,11 ----
+  .SH SYNOPSIS
+  .ll +8
+  .B gzip
+! .RB [ " \-acdfhlLnNrtvV19x " ]
+  .RB [ \-S\ suffix ]
+  [
+  .I "name \&..."
+***************
+*** 173,178 ****
+--- 173,182 ----
+  or decompressing.
+  
+  .SH OPTIONS
++ .TP
++ .B \-x --no-header
++ Do not create or expect a gzip header ... write or read a purely compressed
++ bitstream only. Unless overridden, a suffix of ".dfl" will be added/expected.
+  .TP
+  .B \-a --ascii
+  Ascii text mode: convert end-of-lines using local conventions. This option
+diff -r -c gzip-1.2.4/gzip.c gzip-1.2.4-dac/gzip.c
+*** gzip-1.2.4/gzip.c	Thu Aug 19 09:39:43 1993
+--- gzip-1.2.4-dac/gzip.c	Sun Dec 17 14:19:10 2000
+***************
+*** 198,203 ****
+--- 198,204 ----
+  
+  		/* local variables */
+  
++ int noheader = 0;     /* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+  int ascii = 0;        /* convert end-of-lines to local OS conventions */
+  int to_stdout = 0;    /* output to stdout (-c) */
+  int decompress = 0;   /* decompress (-d) */
+***************
+*** 243,248 ****
+--- 244,250 ----
+  struct option longopts[] =
+  {
+   /* { name  has_arg  *flag  val } */
++     {"no-header",  0, 0, 'x'}, /* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+      {"ascii",      0, 0, 'a'}, /* ascii text mode */
+      {"to-stdout",  0, 0, 'c'}, /* write output on standard output */
+      {"stdout",     0, 0, 'c'}, /* write output on standard output */
+***************
+*** 293,299 ****
+  local void copy_stat    OF((struct stat *ifstat));
+  local void do_exit      OF((int exitcode));
+        int main          OF((int argc, char **argv));
+! int (*work) OF((int infile, int outfile)) = zip; /* function to call */
+  
+  #ifndef NO_DIR
+  local void treat_dir    OF((char *dir));
+--- 295,301 ----
+  local void copy_stat    OF((struct stat *ifstat));
+  local void do_exit      OF((int exitcode));
+        int main          OF((int argc, char **argv));
+! int (*work) OF((int infile, int outfile, int noheader)) = zip; /* function to call */
+  
+  #ifndef NO_DIR
+  local void treat_dir    OF((char *dir));
+***************
+*** 307,313 ****
+  /* ======================================================================== */
+  local void usage()
+  {
+!     fprintf(stderr, "usage: %s [-%scdfhlLnN%stvV19] [-S suffix] [file ...]\n",
+  	    progname,
+  #if O_BINARY
+  	    "a",
+--- 309,315 ----
+  /* ======================================================================== */
+  local void usage()
+  {
+!     fprintf(stderr, "usage: %s [-%scdfhlLnN%stvV19x] [-S suffix] [file ...]\n",
+  	    progname,
+  #if O_BINARY
+  	    "a",
+***************
+*** 326,331 ****
+--- 328,334 ----
+  local void help()
+  {
+      static char  *help_msg[] = {
++  " -x --no-header   inflate/deflate only - don't write/check for gzip header",	/* DAC 2000/12/17 */
+  #if O_BINARY
+   " -a --ascii       ascii text; convert end-of-lines using local conventions",
+  #endif
+***************
+*** 478,486 ****
+      strncpy(z_suffix, Z_SUFFIX, sizeof(z_suffix)-1);
+      z_len = strlen(z_suffix);
+  
+!     while ((optc = getopt_long (argc, argv, "ab:cdfhH?lLmMnNqrS:tvVZ123456789",
+  				longopts, (int *)0)) != EOF) {
+  	switch (optc) {
+          case 'a':
+              ascii = 1; break;
+  	case 'b':
+--- 481,493 ----
+      strncpy(z_suffix, Z_SUFFIX, sizeof(z_suffix)-1);
+      z_len = strlen(z_suffix);
+  
+!     while ((optc = getopt_long (argc, argv, "xab:cdfhH?lLmMnNqrS:tvVZ123456789",
+  				longopts, (int *)0)) != EOF) {
+  	switch (optc) {
++         case 'x':
++ 	    strncpy(z_suffix, ".dfl", sizeof(z_suffix)-1);
++ 	    z_len = strlen(z_suffix);
++             noheader = 1; break;	/* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+          case 'a':
+              ascii = 1; break;
+  	case 'b':
+***************
+*** 672,678 ****
+      /* Actually do the compression/decompression. Loop over zipped members.
+       */
+      for (;;) {
+! 	if ((*work)(fileno(stdin), fileno(stdout)) != OK) return;
+  
+  	if (!decompress || last_member || inptr == insize) break;
+  	/* end of file */
+--- 679,685 ----
+      /* Actually do the compression/decompression. Loop over zipped members.
+       */
+      for (;;) {
+! 	if ((*work)(fileno(stdin), fileno(stdout), noheader) != OK) return;
+  
+  	if (!decompress || last_member || inptr == insize) break;
+  	/* end of file */
+***************
+*** 811,817 ****
+      /* Actually do the compression/decompression. Loop over zipped members.
+       */
+      for (;;) {
+! 	if ((*work)(ifd, ofd) != OK) {
+  	    method = -1; /* force cleanup */
+  	    break;
+  	}
+--- 818,824 ----
+      /* Actually do the compression/decompression. Loop over zipped members.
+       */
+      for (;;) {
+! 	if ((*work)(ifd, ofd, noheader) != OK) {
+  	    method = -1; /* force cleanup */
+  	    break;
+  	}
+***************
+*** 1154,1159 ****
+--- 1161,1175 ----
+      uch flags;     /* compression flags */
+      char magic[2]; /* magic header */
+      ulg stamp;     /* time stamp */
++ 
++     if (noheader) {		/* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
++ 	method = DEFLATED;
++ 	work=unzip;
++ 	flags=0;
++ 	inptr = 0;
++ 	last_member = 1;
++ 	return method;
++     }
+  
+      /* If --force and --stdout, zcat == cat, so do not complain about
+       * premature end of file: use try_byte instead of get_byte.
+diff -r -c gzip-1.2.4/gzip.h gzip-1.2.4-dac/gzip.h
+*** gzip-1.2.4/gzip.h	Fri Aug 13 08:35:33 1993
+--- gzip-1.2.4-dac/gzip.h	Sun Dec 17 13:53:26 2000
+***************
+*** 259,276 ****
+  		   if (exit_code == OK) exit_code = WARNING;}
+  
+  	/* in zip.c: */
+! extern int zip        OF((int in, int out));
+  extern int file_read  OF((char *buf,  unsigned size));
+  
+  	/* in unzip.c */
+! extern int unzip      OF((int in, int out));
+  extern int check_zipfile OF((int in));
+  
+  	/* in unpack.c */
+! extern int unpack     OF((int in, int out));
+  
+  	/* in unlzh.c */
+! extern int unlzh      OF((int in, int out));
+  
+  	/* in gzip.c */
+  RETSIGTYPE abort_gzip OF((void));
+--- 259,276 ----
+  		   if (exit_code == OK) exit_code = WARNING;}
+  
+  	/* in zip.c: */
+! extern int zip        OF((int in, int out, int noheader));
+  extern int file_read  OF((char *buf,  unsigned size));
+  
+  	/* in unzip.c */
+! extern int unzip      OF((int in, int out, int noheader));
+  extern int check_zipfile OF((int in));
+  
+  	/* in unpack.c */
+! extern int unpack     OF((int in, int out, int noheader));
+  
+  	/* in unlzh.c */
+! extern int unlzh      OF((int in, int out, int noheader));
+  
+  	/* in gzip.c */
+  RETSIGTYPE abort_gzip OF((void));
+***************
+*** 293,299 ****
+  extern   int (*read_buf) OF((char *buf, unsigned size));
+  
+  	/* in util.c: */
+! extern int copy           OF((int in, int out));
+  extern ulg  updcrc        OF((uch *s, unsigned n));
+  extern void clear_bufs    OF((void));
+  extern int  fill_inbuf    OF((int eof_ok));
+--- 293,299 ----
+  extern   int (*read_buf) OF((char *buf, unsigned size));
+  
+  	/* in util.c: */
+! extern int copy           OF((int in, int out, int noheader));
+  extern ulg  updcrc        OF((uch *s, unsigned n));
+  extern void clear_bufs    OF((void));
+  extern int  fill_inbuf    OF((int eof_ok));
+diff -r -c gzip-1.2.4/lzw.c gzip-1.2.4-dac/lzw.c
+*** gzip-1.2.4/lzw.c	Fri Aug 13 08:35:33 1993
+--- gzip-1.2.4-dac/lzw.c	Sun Dec 17 13:50:20 2000
+***************
+*** 13,20 ****
+  static int msg_done = 0;
+  
+  /* Compress in to out with lzw method. */
+! int lzw(in, out)
+      int in, out;
+  {
+      if (msg_done) return ERROR;
+      msg_done = 1;
+--- 13,21 ----
+  static int msg_done = 0;
+  
+  /* Compress in to out with lzw method. */
+! int lzw(in, out, noheader)
+      int in, out;
++     int noheader;	    /* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+  {
+      if (msg_done) return ERROR;
+      msg_done = 1;
+diff -r -c gzip-1.2.4/lzw.h gzip-1.2.4-dac/lzw.h
+*** gzip-1.2.4/lzw.h	Fri Aug 13 08:35:34 1993
+--- gzip-1.2.4-dac/lzw.h	Sun Dec 17 13:54:20 2000
+***************
+*** 38,42 ****
+  extern int maxbits;      /* max bits per code for LZW */
+  extern int block_mode;   /* block compress mode -C compatible with 2.0 */
+  
+! extern int lzw    OF((int in, int out));
+! extern int unlzw  OF((int in, int out));
+--- 38,42 ----
+  extern int maxbits;      /* max bits per code for LZW */
+  extern int block_mode;   /* block compress mode -C compatible with 2.0 */
+  
+! extern int lzw    OF((int in, int out, int noheader));
+! extern int unlzw  OF((int in, int out, int noheader));
+diff -r -c gzip-1.2.4/unlzh.c gzip-1.2.4-dac/unlzh.c
+*** gzip-1.2.4/unlzh.c	Fri Aug 13 08:35:37 1993
+--- gzip-1.2.4-dac/unlzh.c	Sun Dec 17 13:49:25 2000
+***************
+*** 382,390 ****
+  /* ===========================================================================
+   * Unlzh in to out. Return OK or ERROR.
+   */
+! int unlzh(in, out)
+      int in;
+      int out;
+  {
+      unsigned n;
+      ifd = in;
+--- 382,391 ----
+  /* ===========================================================================
+   * Unlzh in to out. Return OK or ERROR.
+   */
+! int unlzh(in, out, noheader)
+      int in;
+      int out;
++     int noheader;	    /* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+  {
+      unsigned n;
+      ifd = in;
+diff -r -c gzip-1.2.4/unlzw.c gzip-1.2.4-dac/unlzw.c
+*** gzip-1.2.4/unlzw.c	Fri Aug 13 09:31:10 1993
+--- gzip-1.2.4-dac/unlzw.c	Sun Dec 17 13:51:07 2000
+***************
+*** 189,196 ****
+   *   The magic header has already been checked and skipped.
+   *   bytes_in and bytes_out have been initialized.
+   */
+! int unlzw(in, out) 
+      int in, out;    /* input and output file descriptors */
+  {
+      REG2   char_type  *stackp;
+      REG3   code_int   code;
+--- 189,197 ----
+   *   The magic header has already been checked and skipped.
+   *   bytes_in and bytes_out have been initialized.
+   */
+! int unlzw(in, out, noheader) 
+      int in, out;    /* input and output file descriptors */
++     int noheader;	    /* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+  {
+      REG2   char_type  *stackp;
+      REG3   code_int   code;
+diff -r -c gzip-1.2.4/unpack.c gzip-1.2.4-dac/unpack.c
+*** gzip-1.2.4/unpack.c	Fri Aug 13 08:35:38 1993
+--- gzip-1.2.4-dac/unpack.c	Sun Dec 17 13:49:04 2000
+***************
+*** 182,189 ****
+   *   the compressed data, from offsets inptr to insize-1 included.
+   *   The magic header has already been checked. The output buffer is cleared.
+   */
+! int unpack(in, out)
+      int in, out;            /* input and output file descriptors */
+  {
+      int len;                /* Bit length of current code */
+      unsigned eob;           /* End Of Block code */
+--- 182,190 ----
+   *   the compressed data, from offsets inptr to insize-1 included.
+   *   The magic header has already been checked. The output buffer is cleared.
+   */
+! int unpack(in, out, noheader)
+      int in, out;            /* input and output file descriptors */
++     int noheader;	    /* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+  {
+      int len;                /* Bit length of current code */
+      unsigned eob;           /* End Of Block code */
+diff -r -c gzip-1.2.4/unzip.c gzip-1.2.4-dac/unzip.c
+*** gzip-1.2.4/unzip.c	Fri Aug 13 08:35:39 1993
+--- gzip-1.2.4-dac/unzip.c	Sat Dec 23 13:32:00 2000
+***************
+*** 96,103 ****
+   *   the compressed data, from offsets inptr to insize-1 included.
+   *   The magic header has already been checked. The output buffer is cleared.
+   */
+! int unzip(in, out)
+      int in, out;   /* input and output file descriptors */
+  {
+      ulg orig_crc = 0;       /* original crc */
+      ulg orig_len = 0;       /* original uncompressed length */
+--- 96,104 ----
+   *   the compressed data, from offsets inptr to insize-1 included.
+   *   The magic header has already been checked. The output buffer is cleared.
+   */
+! int unzip(in, out, noheader)
+      int in, out;   /* input and output file descriptors */
++     int noheader;	    /* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+  {
+      ulg orig_crc = 0;       /* original crc */
+      ulg orig_len = 0;       /* original uncompressed length */
+***************
+*** 109,115 ****
+  
+      updcrc(NULL, 0);           /* initialize crc */
+  
+!     if (pkzip && !ext_header) {  /* crc and length at the end otherwise */
+  	orig_crc = LG(inbuf + LOCCRC);
+  	orig_len = LG(inbuf + LOCLEN);
+      }
+--- 110,116 ----
+  
+      updcrc(NULL, 0);           /* initialize crc */
+  
+!     if (!noheader && pkzip && !ext_header) {  /* crc and length at the end otherwise */ /* DAC 2000/12/23 add noheader */
+  	orig_crc = LG(inbuf + LOCCRC);
+  	orig_len = LG(inbuf + LOCLEN);
+      }
+***************
+*** 146,185 ****
+  	error("internal error, invalid method");
+      }
+  
+!     /* Get the crc and original length */
+!     if (!pkzip) {
+!         /* crc32  (see algorithm.doc)
+! 	 * uncompressed input size modulo 2^32
+!          */
+! 	for (n = 0; n < 8; n++) {
+! 	    buf[n] = (uch)get_byte(); /* may cause an error if EOF */
+! 	}
+! 	orig_crc = LG(buf);
+! 	orig_len = LG(buf+4);
+! 
+!     } else if (ext_header) {  /* If extended header, check it */
+! 	/* signature - 4bytes: 0x50 0x4b 0x07 0x08
+! 	 * CRC-32 value
+!          * compressed size 4-bytes
+!          * uncompressed size 4-bytes
+! 	 */
+! 	for (n = 0; n < EXTHDR; n++) {
+! 	    buf[n] = (uch)get_byte(); /* may cause an error if EOF */
+  	}
+- 	orig_crc = LG(buf+4);
+- 	orig_len = LG(buf+12);
+-     }
+  
+!     /* Validate decompression */
+!     if (orig_crc != updcrc(outbuf, 0)) {
+! 	error("invalid compressed data--crc error");
+!     }
+!     if (orig_len != (ulg)bytes_out) {
+! 	error("invalid compressed data--length error");
+      }
+  
+      /* Check if there are more entries in a pkzip file */
+!     if (pkzip && inptr + 4 < insize && LG(inbuf+inptr) == LOCSIG) {
+  	if (to_stdout) {
+  	    WARN((stderr,
+  		  "%s: %s has more than one entry--rest ignored\n",
+--- 147,188 ----
+  	error("internal error, invalid method");
+      }
+  
+!     if (!noheader) {							/* DAC 2000/12/23 */
+! 	/* Get the crc and original length */
+! 	if (!pkzip) {
+! 	    /* crc32  (see algorithm.doc)
+! 	     * uncompressed input size modulo 2^32
+! 	     */
+! 	    for (n = 0; n < 8; n++) {
+! 		buf[n] = (uch)get_byte(); /* may cause an error if EOF */
+! 	    }
+! 	    orig_crc = LG(buf);
+! 	    orig_len = LG(buf+4);
+! 
+! 	} else if (ext_header) {  /* If extended header, check it */
+! 	    /* signature - 4bytes: 0x50 0x4b 0x07 0x08
+! 	     * CRC-32 value
+! 	     * compressed size 4-bytes
+!  	     * uncompressed size 4-bytes
+! 	     */
+! 	    for (n = 0; n < EXTHDR; n++) {
+! 	        buf[n] = (uch)get_byte(); /* may cause an error if EOF */
+! 	    }
+! 	    orig_crc = LG(buf+4);
+! 	    orig_len = LG(buf+12);
+  	}
+  
+! 	/* Validate decompression */
+! 	if (orig_crc != updcrc(outbuf, 0)) {
+! 	    error("invalid compressed data--crc error");
+! 	}
+! 	if (orig_len != (ulg)bytes_out) {
+! 	    error("invalid compressed data--length error");
+! 	}
+      }
+  
+      /* Check if there are more entries in a pkzip file */
+!     if (!noheader && pkzip && inptr + 4 < insize && LG(inbuf+inptr) == LOCSIG) {	/* DAC 2000/12/23 */
+  	if (to_stdout) {
+  	    WARN((stderr,
+  		  "%s: %s has more than one entry--rest ignored\n",
+diff -r -c gzip-1.2.4/util.c gzip-1.2.4-dac/util.c
+*** gzip-1.2.4/util.c	Fri Aug 13 08:35:40 1993
+--- gzip-1.2.4-dac/util.c	Sun Dec 17 13:52:46 2000
+***************
+*** 36,43 ****
+   * Copy input to output unchanged: zcat == cat with --force.
+   * IN assertion: insize bytes have already been read in inbuf.
+   */
+! int copy(in, out)
+      int in, out;   /* input and output file descriptors */
+  {
+      errno = 0;
+      while (insize != 0 && (int)insize != EOF) {
+--- 36,44 ----
+   * Copy input to output unchanged: zcat == cat with --force.
+   * IN assertion: insize bytes have already been read in inbuf.
+   */
+! int copy(in, out, noheader)
+      int in, out;   /* input and output file descriptors */
++     int noheader;	    /* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+  {
+      errno = 0;
+      while (insize != 0 && (int)insize != EOF) {
+diff -r -c gzip-1.2.4/zip.c gzip-1.2.4-dac/zip.c
+*** gzip-1.2.4/zip.c	Fri Aug 13 08:35:40 1993
+--- gzip-1.2.4-dac/zip.c	Sat Dec 23 13:37:35 2000
+***************
+*** 30,37 ****
+   * IN assertions: the input and output buffers are cleared.
+   *   The variables time_stamp and save_orig_name are initialized.
+   */
+! int zip(in, out)
+      int in, out;            /* input and output file descriptors */
+  {
+      uch  flags = 0;         /* general purpose bit flags */
+      ush  attr = 0;          /* ascii/binary flag */
+--- 30,38 ----
+   * IN assertions: the input and output buffers are cleared.
+   *   The variables time_stamp and save_orig_name are initialized.
+   */
+! int zip(in, out, noheader)
+      int in, out;            /* input and output file descriptors */
++     int noheader;	    /* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+  {
+      uch  flags = 0;         /* general purpose bit flags */
+      ush  attr = 0;          /* ascii/binary flag */
+***************
+*** 43,76 ****
+  
+      /* Write the header to the gzip file. See algorithm.doc for the format */
+  
+!     method = DEFLATED;
+!     put_byte(GZIP_MAGIC[0]); /* magic header */
+!     put_byte(GZIP_MAGIC[1]);
+!     put_byte(DEFLATED);      /* compression method */
+  
+!     if (save_orig_name) {
+! 	flags |= ORIG_NAME;
+      }
+-     put_byte(flags);         /* general flags */
+-     put_long(time_stamp);
+- 
+-     /* Write deflated file to zip file */
+-     crc = updcrc(0, 0);
+  
+      bi_init(out);
+      ct_init(&attr, &method);
+      lm_init(level, &deflate_flags);
+  
+!     put_byte((uch)deflate_flags); /* extra flags */
+!     put_byte(OS_CODE);            /* OS identifier */
+! 
+!     if (save_orig_name) {
+! 	char *p = basename(ifname); /* Don't save the directory part. */
+! 	do {
+  	    put_char(*p);
+! 	} while (*p++);
+      }
+-     header_bytes = (long)outcnt;
+  
+      (void)deflate();
+  
+--- 44,81 ----
+  
+      /* Write the header to the gzip file. See algorithm.doc for the format */
+  
+!     if (!noheader) {		/* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+! 	method = DEFLATED;
+! 	put_byte(GZIP_MAGIC[0]); /* magic header */
+! 	put_byte(GZIP_MAGIC[1]);
+! 	put_byte(DEFLATED);      /* compression method */
+! 
+! 	if (save_orig_name) {
+! 	    flags |= ORIG_NAME;
+! 	}
+! 	put_byte(flags);         /* general flags */
+! 	put_long(time_stamp);
+  
+! 	/* Write deflated file to zip file */
+! 	crc = updcrc(0, 0);
+      }
+  
+      bi_init(out);
+      ct_init(&attr, &method);
+      lm_init(level, &deflate_flags);
+  
+!     if (!noheader) {		/* DAC 2000/12/17: inflate/deflate only - don't write/check for gzip header */
+! 	put_byte((uch)deflate_flags); /* extra flags */
+! 	put_byte(OS_CODE);            /* OS identifier */
+! 
+! 	if (save_orig_name) {
+! 	  char *p = basename(ifname); /* Don't save the directory part. */
+! 	  do {
+  	    put_char(*p);
+! 	  } while (*p++);
+! 	}
+! 	header_bytes = (long)outcnt;
+      }
+  
+      (void)deflate();
+  
+***************
+*** 85,94 ****
+      }
+  #endif
+  
+!     /* Write the crc and uncompressed size */
+!     put_long(crc);
+!     put_long(isize);
+!     header_bytes += 2*sizeof(long);
+  
+      flush_outbuf();
+      return OK;
+--- 90,101 ----
+      }
+  #endif
+  
+!     if (!noheader) {	/* DAC 2000/12/23: inflate/deflate only - don't write/check for gzip header */
+! 	/* Write the crc and uncompressed size */
+! 	put_long(crc);
+! 	put_long(isize);
+! 	header_bytes += 2*sizeof(long);
+!     }
+  
+      flush_outbuf();
+      return OK;

@@ -1,0 +1,16 @@
+MANSUFFIX = 3
+
+CPLUSPLUS_EXTRA_INCLUDES  = $(PROJECTLIBOURDISPEXTRAINCLUDES)
+
+CPLUSPLUS_SRCS = ourdisp.cc
+
+OBJS =           ourdisp.o
+
+LibraryTarget($(PROJECTLIBDIR)/lib$(PROJECTOURDISPLIBNAME).a,$(OBJS))
+
+depend::	wlcursor.cbm wlmask.cbm
+
+clean::
+	rm -f wlcursor.cbm wlmask.cbm
+
+DependCCTarget()

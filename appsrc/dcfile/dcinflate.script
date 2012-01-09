@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# usage: dcinflate infile outfile
+#
+#
+TMPROOT=/tmp/`basename $0`.$$
+
+DCCP=dccp
+DCRMMETA=dcrmmeta
+GZIP=gzip
+
+$DCRMMETA $1 $TMPROOT.1.tmp
+$GZIP -d -x < $TMPROOT.1.tmp > $TMPROOT.2.tmp
+rm -f $TMPROOT.1.tmp
+$DCCP $TMPROOT.2.tmp $2
+rm -f $TMPROOT.2.tmp
+
